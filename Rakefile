@@ -23,6 +23,19 @@ RSpec::Core::RakeTask.new do |spec|
   spec.rspec_opts = ['-f progress', '-r ./spec/spec_helper.rb', '--color', '--backtrace']
 end
 
+begin
+  require 'yard'
+  YARD::Rake::YardocTask.new do |t|
+    t.files   = [
+      'README',
+      'lib/netaddr.rb',
+      'lib/netaddr/**/*.rb',
+    ]
+    t.options = ['--protected', '--private']
+  end
+rescue LoadError
+end
+
 require 'rake/rdoctask'
 desc 'Generate documentation'
 Rake::RDocTask.new(:rdoc) do |rdoc|

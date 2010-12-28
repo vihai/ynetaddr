@@ -1,2 +1,4 @@
 netaddr.gemspec
 pkg/
+.yardoc/
+doc/
