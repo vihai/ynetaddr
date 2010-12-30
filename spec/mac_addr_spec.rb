@@ -15,11 +15,11 @@ describe Netaddr::MacAddr, 'constructor' do
   end
 
   it 'reject invalid empty address' do
-    lambda { Netaddr::MacAddr.new('') }.should raise_error(Netaddr::MacAddr::InvalidFormat)
+    lambda { Netaddr::MacAddr.new('') }.should raise_error(ArgumentError)
   end
 
   it 'reject invalid address with alphanumeric chars' do
-    lambda { Netaddr::MacAddr.new('0012.3456.fbar') }.should raise_error(Netaddr::MacAddr::InvalidFormat)
+    lambda { Netaddr::MacAddr.new('0012.3456.fbar') }.should raise_error(ArgumentError)
   end
 
 end

@@ -8,40 +8,31 @@ describe Netaddr::IPv4IfAddr, 'constructor' do
   end
 
   it 'rejects network address' do
-    lambda { Netaddr::IPv4IfAddr.new('10.0.0.0/8') }.should raise_error(Netaddr::IPv4IfAddr::InvalidAddress)
+    lambda { Netaddr::IPv4IfAddr.new('10.0.0.0/8') }.should raise_error(ArgumentError)
   end
 
   it 'rejects broadcast address' do
-    lambda { Netaddr::IPv4IfAddr.new('10.255.255.255/8') }.should raise_error(Netaddr::IPv4IfAddr::InvalidAddress)
+    lambda { Netaddr::IPv4IfAddr.new('10.255.255.255/8') }.should raise_error(ArgumentError)
   end
 
   it 'reject invalid empty address' do
-    lambda { Netaddr::IPv4IfAddr.new('') }.should raise_error(Netaddr::IPv4IfAddr::InvalidFormat)
+    lambda { Netaddr::IPv4IfAddr.new('') }.should raise_error(ArgumentError)
   end
 
   it 'reject addr without length' do
-    lambda { Netaddr::IPv4IfAddr.new('10.0.255.0') }.should raise_error(Netaddr::IPv4IfAddr::InvalidFormat)
+    lambda { Netaddr::IPv4IfAddr.new('10.0.255.0') }.should raise_error(ArgumentError)
   end
 
   it 'reject addr with slash but without length' do
-    lambda { Netaddr::IPv4IfAddr.new('10.0.255.0/') }.should raise_error(Netaddr::IPv4IfAddr::InvalidFormat)
+    lambda { Netaddr::IPv4IfAddr.new('10.0.255.0/') }.should raise_error(ArgumentError)
   end
 
   it 'reject addr without addr' do
-    lambda { Netaddr::IPv4IfAddr.new('/24') }.should raise_error(Netaddr::IPv4IfAddr::InvalidFormat)
+    lambda { Netaddr::IPv4IfAddr.new('/24') }.should raise_error(ArgumentError)
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'mask' do
-  it 'is correctly calculated' do
-    Netaddr::IPv4IfAddr.new('0.0.0.1/0').mask.should == 0x00000000
-    Netaddr::IPv4IfAddr.new('10.255.255.1/8').mask.should == 0xff000000
-    Netaddr::IPv4IfAddr.new('10.255.255.1/31').mask.should == 0xfffffffe
-    Netaddr::IPv4IfAddr.new('10.255.255.1/32').mask.should == 0xffffffff
-  end
-end
-
-describe Netaddr::IPv4IfAddr, 'mask_dotquad' do
+describe Netaddr::IPv4IfAddr, :mask_dotquad do
   it 'is correctly calculated' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').mask_dotquad.should == '0.0.0.0'
     Netaddr::IPv4IfAddr.new('10.255.255.1/8').mask_dotquad.should == '255.0.0.0'
@@ -50,16 +41,16 @@ describe Netaddr::IPv4IfAddr, 'mask_dotquad' do
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'wildcard' do
+describe Netaddr::IPv4IfAddr, :wildcard_dotquad do
   it 'is correctly calculated' do
-    Netaddr::IPv4IfAddr.new('0.0.0.1/0').wildcard.should == 0xffffffff
-    Netaddr::IPv4IfAddr.new('10.255.255.1/8').wildcard.should == 0x00ffffff
-    Netaddr::IPv4IfAddr.new('10.255.255.1/31').wildcard.should == 0x00000001
-    Netaddr::IPv4IfAddr.new('10.255.255.1/32').wildcard.should == 0x00000000
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').wildcard_dotquad.should == '255.255.255.255'
+    Netaddr::IPv4IfAddr.new('10.255.255.1/8').wildcard_dotquad.should == '0.255.255.255'
+    Netaddr::IPv4IfAddr.new('10.255.255.1/31').wildcard_dotquad.should == '0.0.0.1'
+    Netaddr::IPv4IfAddr.new('10.255.255.1/32').wildcard_dotquad.should == '0.0.0.0'
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'ipclass' do
+describe Netaddr::IPv4IfAddr, :ipclass do
   it 'is correctly calculated' do
     Netaddr::IPv4IfAddr.new('10.0.0.1/8').ipclass.should == :a
     Netaddr::IPv4IfAddr.new('172.16.0.1/12').ipclass.should == :b
@@ -69,7 +60,7 @@ describe Netaddr::IPv4IfAddr, 'ipclass' do
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'is_rfc1918?' do
+describe Netaddr::IPv4IfAddr, :is_rfc1918? do
   it 'calculates the correct values' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').is_rfc1918?.should be_false
     Netaddr::IPv4IfAddr.new('1.0.0.1/8').is_rfc1918?.should be_false
@@ -84,7 +75,57 @@ describe Netaddr::IPv4IfAddr, 'is_rfc1918?' do
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'to_s' do
+# parent class methods
+
+describe Netaddr::IPv4IfAddr, :network do
+  it 'is correctly calculated' do
+# TODO
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :mask do
+  it 'is correctly calculated' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').mask.should == 0x00000000
+    Netaddr::IPv4IfAddr.new('10.255.255.1/8').mask.should == 0xff000000
+    Netaddr::IPv4IfAddr.new('10.255.255.1/31').mask.should == 0xfffffffe
+    Netaddr::IPv4IfAddr.new('10.255.255.1/32').mask.should == 0xffffffff
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :wildcard do
+  it 'is correctly calculated' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').wildcard.should == 0xffffffff
+    Netaddr::IPv4IfAddr.new('10.255.255.1/8').wildcard.should == 0x00ffffff
+    Netaddr::IPv4IfAddr.new('10.255.255.1/31').wildcard.should == 0x00000001
+    Netaddr::IPv4IfAddr.new('10.255.255.1/32').wildcard.should == 0x00000000
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :address do
+  it 'is correctly calculated' do
+# TODO
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :nic_id do
+  it 'is correctly calculated' do
+# TODO
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :include? do
+  it 'is correctly calculated' do
+# TODO
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :== do
+  it 'is correctly calculated' do
+# TODO
+  end
+end
+
+describe Netaddr::IPv4IfAddr, :to_s do
   it 'produces correct output' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').to_s.should == '0.0.0.1/0'
     Netaddr::IPv4IfAddr.new('10.0.0.1/8').to_s.should == '10.0.0.1/8'
@@ -93,7 +134,7 @@ describe Netaddr::IPv4IfAddr, 'to_s' do
   end
 end
 
-describe Netaddr::IPv4IfAddr, 'to_hash' do
+describe Netaddr::IPv4IfAddr, :to_hash do
   it 'produces correct output' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').to_hash.should == { :addr => 0x00000001, :length => 0 }
     Netaddr::IPv4IfAddr.new('10.0.0.1/8').to_hash.should == { :addr => 0x0a000001, :length => 8 }

@@ -5,8 +5,6 @@ module Netaddr
   #
   class IPv4Addr < IPAddr
 
-    class InvalidFormat < StandardError ; end
-
     include Comparable
 
     # Instantiates a new IPv4 address object
@@ -17,9 +15,12 @@ module Netaddr
     #             [a.b.c.d]
     #             a.b.c.d
     #
-    # Raises InvalidFormat if the representation isn't valid
+    # Raises ArgumentError if the representation isn't valid
     #
     def initialize(addr = '127.0.0.1')
+
+      @net_class = IPv4Net
+
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       if addr.respond_to?(:to_ipv4addr)
@@ -33,11 +34,11 @@ module Netaddr
 
         parts = addr.split('.')
 
-        raise InvalidFormat if parts.empty?
+        raise ArgumentError, 'Empty address' if parts.empty?
 
         @addr = parts.map { |c|
-                    raise InvalidFormat unless c =~ /^\d+$/
-                    raise InvalidFormat if c.to_i > 255 || c.to_i < 0
+                    raise ArgumentError, 'Invalid digit' unless c =~ /^\d+$/
+                    raise ArgumentError, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
                   c.to_i }.pack('C*').unpack('N').first
       else
         raise "Cannot initialize from #{addr}"
@@ -93,68 +94,16 @@ module Netaddr
       end
     end
 
-    # @return [Boolean] true if the network covers only unicast range
-    #
-    # Raised an error if the network spans both unicast and multicast space
+    # @return [Boolean] true if a unicast address
     #
     def unicast?
       [:a, :b, :c].include?(ipclass)
     end
 
-    # @return [Boolean] true if the network is within the multicas address range
-    #
-    # Raised an error if the network spans both unicast and multicast space or reserved
+    # @return [Boolean] true if address is in multicast range
     #
     def multicast?
       ipclass == :d
-    end
-
-    # @param [String, IPv4Net] net An IPv4Net or String representation of an IPv4 network
-    # @return [Boolean] true if the IPv4 network includes this IP address
-    #
-    def included_in?(net)
-      net = IPv4Net.new(net) if !net.kind_of?(IPv4Net)
-
-      net.include?(self)
-    end
-
-    # @return [IPv4Addr] the "next" IPv4 address while enumerating hosts in a network, needed to be Comparable
-    #
-    def succ
-      IPv4Addr.new(@addr + 1)
-    end
-
-    # Compare two IPv4 addresses. The address may be compared to another IPv4Addr object or a string representation of it
-    #
-    # @return [Boolean] true if the IP addresses match.
-    #
-    def ==(other)
-      other = IPv4Addr.new(other) if !other.kind_of?(IPv4Addr)
-      @addr == other.to_i
-    end
-
-    alias eql? ==
-    alias === ==
-
-    # Compare two IPv4 addresses. This is used just to implement hosts enumeration since there is no real ordering
-    #
-    def <=>(other)
-      other = IPv4Addr.new(other) if !other.kind_of?(IPv4Addr)
-      @addr <=> other.to_i
-    end
-
-    # Sum n to the host part and return a new IPv4Addr. Note that there is no check that the produced IP address is valid
-    # and in the same network.
-    #
-    def +(n)
-      IPv4Addr.new(@addr + n)
-    end
-
-    # Subtract n to the host part and return a new IPv4Addr. Note that there is no check that the produced IP address is valid
-    # and in the same network.
-    #
-    def -(n)
-      IPv4Addr.new(@addr - n)
     end
 
     # Convert to IPv4Addr.
@@ -162,12 +111,6 @@ module Netaddr
     #
     def to_ipv4addr
       self
-    end
-
-    # @return [Integer] an integer (host-byte-order) representation of the IP address
-    #
-    def to_i
-      @addr
     end
 
     # @return [String] a canonical dottet-quad string representation of the IP address
@@ -180,18 +123,6 @@ module Netaddr
     #
     def to_s_bracketed
       "[#{to_s}]"
-    end
-
-    # @return [String] a human-readable representation of the IP address
-    #
-    def inspect
-      "#<%IPv4:#{to_s}>"
-    end
-
-    # @return [Integer] a hash value to use an IP address as a key
-    #
-    def hash
-      @addr
     end
   end
 end

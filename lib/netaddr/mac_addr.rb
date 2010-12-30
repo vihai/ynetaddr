@@ -5,7 +5,6 @@ module Netaddr
   #
   class MacAddr
 
-    class InvalidFormat < StandardError ; end
     class BadArithmetic < StandardError ; end
 
     include Comparable
@@ -19,7 +18,7 @@ module Netaddr
     #             hh:hh:hh:hh:hh:hh
     #             hhhhhhhhhhhh
     #
-    # Raises InvalidFormat if the format is not supported
+    # Raises ArgumentError if the format is not supported
     #
     def initialize(addr = '0000:0000:0000')
       # TODO implement all inet_aton formats with hex/octal and classful addresses
@@ -32,11 +31,11 @@ module Netaddr
 
         addr = addr.to_s.downcase
 
-        raise InvalidFormat.new('Invalid characters found') if addr =~ /[^0-9a-z:.]/
+        raise ArgumentError, 'Invalid characters found' if addr =~ /[^0-9a-z:.]/
 
         addr = addr.to_s.tr('^[0-9a-f]', '')
 
-        raise InvalidFormat.new('Wrong size') if addr.length != 12
+        raise ArgumentError, 'Wrong size' if addr.length != 12
 
         # From hex to Fixnum/Bignum
         @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
@@ -164,7 +163,7 @@ module Netaddr
     # Example: "00:12:34:56:78:9a"
     #
     def to_s
-      sprintf('%012x', @addr).scan(/../).join(':')
+     ('%012x' % @addr).scan(/../).join(':')
     end
 
     # @return [String] the dot separated 2-octet representation of the MAC-address as used in Cisco IOS
@@ -172,7 +171,7 @@ module Netaddr
     # Example: "0012.3456.789a"
     #
     def to_s_cisco
-      sprintf('%012x', @addr).scan(/..../).join('.')
+      ('%012x' % @addr).scan(/..../).join('.')
     end
 
     # @return [String] the dash separated octet representation of the MAC-address
@@ -180,7 +179,7 @@ module Netaddr
     # Example: "00-12-34-56-78-9a"
     #
     def to_s_dash
-      sprintf('%012x', @addr).scan(/../).join('-')
+      ('%012x' % @addr).scan(/../).join('-')
     end
 
     # @return [String] the dash separated octet representation of the MAC-address
