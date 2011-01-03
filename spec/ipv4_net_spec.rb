@@ -90,6 +90,10 @@ describe Netaddr::IPv4Net, :multicast? do
 end
 
 describe Netaddr::IPv4Net, :broadcast do
+  it 'is of type Netaddr::IPv4Addr' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').broadcast.should be_an_instance_of(Netaddr::IPv4Addr)
+  end
+
   it 'calculates the correct value' do
     Netaddr::IPv4Net.new('192.168.0.0/29').broadcast.should == 0xc0a80007
     Netaddr::IPv4Net.new('192.168.0.0/30').broadcast.should == 0xc0a80003
@@ -127,10 +131,45 @@ end
 # parent class methods
 
 describe Netaddr::IPv4Net, :prefix= do
-# TODO
+  it 'returns prefix' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').prefix = '192.167.0.0').should == '192.167.0.0'
+  end
+
+  it 'assigns prefix host bits' do
+    a = Netaddr::IPv4Net.new('192.168.0.0/16')
+    a.prefix = '192.167.0.0'
+    a.should == Netaddr::IPv4Net.new('192.167.0.0/16')
+  end
+
+  it 'resets host bits' do
+    a = Netaddr::IPv4Net.new('192.168.0.0/16')
+    a.prefix = '192.167.0.255'
+    a.should == Netaddr::IPv4Net.new('192.167.0.0/16')
+  end
+end
+
+describe Netaddr::IPv4Net, :length= do
+  it 'returns length' do
+    (Netaddr::IPv4Net.new('192.168.0.0/24').length = 16).should == 16
+  end
+
+  it 'rejects invalid length' do
+    lambda { Netaddr::IPv4Net.new('192.168.0.0/24').length = -1 }.should raise_error
+    lambda { Netaddr::IPv4Net.new('192.168.0.0/24').length = 33 }.should raise_error
+  end
+
+  it 'resets host bits' do
+    a = Netaddr::IPv4Net.new('192.168.22.0/24')
+    a.length = 16
+    a.should == Netaddr::IPv4Net.new('192.168.0.0/16')
+  end
 end
 
 describe Netaddr::IPv4Net, :mask do
+  it 'is kind of Integer' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').mask.should be_an_kind_of(Integer)
+  end
+
   it 'is correctly calculated' do
     Netaddr::IPv4Net.new('0.0.0.0/0').mask.should == 0x00000000
     Netaddr::IPv4Net.new('10.255.255.0/8').mask.should == 0xff000000
@@ -140,6 +179,10 @@ describe Netaddr::IPv4Net, :mask do
 end
 
 describe Netaddr::IPv4Net, :wildcard do
+  it 'is kind of Integer' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').wildcard.should be_an_kind_of(Integer)
+  end
+
   it 'is correctly calculated' do
     Netaddr::IPv4Net.new('0.0.0.0/0').wildcard.should == 0xffffffff
     Netaddr::IPv4Net.new('10.255.255.0/8').wildcard.should == 0x00ffffff
@@ -166,6 +209,10 @@ describe Netaddr::IPv4Net, :hosts do
 end
 
 describe Netaddr::IPv4Net, :host_min do
+  it 'is of type Netaddr::IPv4Addr' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').host_min.should be_an_instance_of(Netaddr::IPv4Addr)
+  end
+
   it 'calculates the correct values' do
     Netaddr::IPv4Net.new('192.168.0.0/29').host_min.should == 0xc0a80001
     Netaddr::IPv4Net.new('192.168.0.0/30').host_min.should == 0xc0a80001
@@ -175,6 +222,10 @@ describe Netaddr::IPv4Net, :host_min do
 end
 
 describe Netaddr::IPv4Net, :host_max do
+  it 'is of type Netaddr::IPv4Addr' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').host_min.should be_an_instance_of(Netaddr::IPv4Addr)
+  end
+
   it 'calculates the correct values' do
     Netaddr::IPv4Net.new('192.168.0.0/29').host_max.should == 0xc0a80006
     Netaddr::IPv4Net.new('192.168.0.0/30').host_max.should == 0xc0a80002
@@ -184,7 +235,17 @@ describe Netaddr::IPv4Net, :host_max do
 end
 
 describe Netaddr::IPv4Net, :network do
-# TODO
+  it 'is of type Netaddr::IPv4Addr' do
+    Netaddr::IPv4Net.new('0.0.0.0/0').network.should be_an_instance_of(Netaddr::IPv4Addr)
+  end
+
+  it 'calculates the correct values' do
+    Netaddr::IPv4Net.new('192.168.0.255/24').network.should == Netaddr::IPv4Addr.new('192.168.0.0')
+    Netaddr::IPv4Net.new('192.168.0.0/29').network.should == Netaddr::IPv4Addr.new('192.168.0.0')
+    Netaddr::IPv4Net.new('192.168.0.0/30').network.should == Netaddr::IPv4Addr.new('192.168.0.0')
+    Netaddr::IPv4Net.new('192.168.0.0/31').network.should == nil
+    Netaddr::IPv4Net.new('192.168.0.0/32').network.should == nil
+  end
 end
 
 describe Netaddr::IPv4Net, :include? do
@@ -203,7 +264,7 @@ describe Netaddr::IPv4Net, :to_s do
   it 'produces correct output' do
     Netaddr::IPv4Net.new('0.0.0.0/0').to_s.should == '0.0.0.0/0'
     Netaddr::IPv4Net.new('10.0.0.0/8').to_s.should == '10.0.0.0/8'
-    Netaddr::IPv4Net.new('192.168.255.255/24').to_s.should == '192.168.255.0/24' 
+    Netaddr::IPv4Net.new('192.168.255.255/24').to_s.should == '192.168.255.0/24'
     Netaddr::IPv4Net.new('192.168.255.255/32').to_s.should == '192.168.255.255/32'
   end
 end
@@ -222,6 +283,7 @@ describe Netaddr::IPv4Net, :== do
     (Netaddr::IPv4Net.new('0.0.0.0/0') == Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
     (Netaddr::IPv4Net.new('0.0.0.0/0') == Netaddr::IPv4Net.new('4.0.0.0/0')).should be_true
     (Netaddr::IPv4Net.new('10.0.0.0/8') == Netaddr::IPv4Net.new('10.0.0.0/8')).should be_true
+    (Netaddr::IPv4Net.new('192.168.255.255/24') == Netaddr::IPv4Net.new('192.168.255.0/24')).should be_true
     (Netaddr::IPv4Net.new('192.168.255.255/24') == Netaddr::IPv4Net.new('192.168.255.255/24')).should be_true
     (Netaddr::IPv4Net.new('192.168.255.255/32') == Netaddr::IPv4Net.new('192.168.255.255/32')).should be_true
   end
@@ -311,6 +373,32 @@ describe Netaddr::IPv4Net, :>= do
   end
 end
 
+describe Netaddr::IPv4Net, :overlaps do
+  it 'is false for smaller non-overlapping networks' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('10.1.1.1/24')).should be_false
+  end
+
+  it 'is false for bigger non-overlapping networks' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('10.0.0.0/8')).should be_false
+  end
+
+  it 'is false for equal-size non-overlapping networks' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('192.169.0.0/16')).should be_false
+  end
+
+  it 'is true for same network' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('192.168.0.0/16')).should be_true
+  end
+
+  it 'is true for bigger network containing us' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('192.0.0.0/8')).should be_true
+  end
+
+  it 'is true for smaller network contained' do
+    (Netaddr::IPv4Net.new('192.168.0.0/16').overlaps('192.168.16.0/24')).should be_true
+  end
+end
+
 describe Netaddr::IPv4Net, :>> do
   it 'operates correctly' do
     (Netaddr::IPv4Net.new('192.168.0.0/24') >> 1).should == Netaddr::IPv4Net.new('192.168.0.0/25')
@@ -330,5 +418,15 @@ describe Netaddr::IPv4Net, :<< do
 end
 
 describe Netaddr::IPv4Net, :=== do
-# TODO
+  it 'returns true if other is an IPv4 address and is contained in this network' do
+    (Netaddr::IPv4Net.new('192.168.0.0/24') === Netaddr::IPv4Addr.new('192.168.0.254')).should be_true
+  end
+
+  it 'returns false if other is not contained in this network' do
+    (Netaddr::IPv4Net.new('192.168.0.0/24') === Netaddr::IPv4Addr.new('192.168.1.254')).should be_false
+  end
+
+  it 'returns false if other is not IPv4 address' do
+    (Netaddr::IPv4Net.new('192.168.0.0/24') === 1234).should be_false
+  end
 end

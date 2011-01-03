@@ -20,6 +20,17 @@ describe Netaddr::IPv6Addr, 'constructor' do
     Netaddr::IPv6Addr.new('[::1]').to_i.should == 0x00000000000000000000000000000001
     Netaddr::IPv6Addr.new('[1::]').to_i.should == 0x00010000000000000000000000000000
   end
+
+  it 'rejects invalid addresses' do
+    lambda { Netaddr::IPv6Addr.new('') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('[]') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('[:::]') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('[::::]') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('[1::1::1]') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('foo') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('2a02::4fg0') }.should raise_error(ArgumentError)
+    lambda { Netaddr::IPv6Addr.new('2a02::1/64') }.should raise_error(ArgumentError)
+  end
 end
 
 describe Netaddr::IPv6Addr, :hton do
@@ -27,39 +38,90 @@ describe Netaddr::IPv6Addr, :hton do
 end
 
 describe Netaddr::IPv6Addr, :reverse do
-# TODO
+  it 'produces correct output' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').reverse.should ==
+      'b.b.b.b.b.0.9.a.f.f.f.f.9.9.9.9.0.0.0.0.d.c.b.a.4.3.2.1.2.0.a.2.ip6.arpa'
+  end
 end
 
 describe Netaddr::IPv6Addr, :unicast? do
-# TODO
+  it 'has correct result' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').unicast?.should be_true
+    Netaddr::IPv6Addr.new('[::0]').unicast?.should be_false
+    Netaddr::IPv6Addr.new('[::1]').unicast?.should be_true
+    Netaddr::IPv6Addr.new('[ff00:1:2:3:4:5:6:7]').unicast?.should be_false
+  end
 end
 
 describe Netaddr::IPv6Addr, :new_multicast do
-# TODO
+  it 'produces an IPv6Addr' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'produces a multicast IPv6Addr' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).multicast?.should be_true
+  end
+
+  it 'raises an error if group_id is bigger than available space' do
+    lambda { Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0x1ffff0000000000000000000000000000) }.should raise_error
+  end
+
+  it 'produces multicas address with correct scope' do
+    Netaddr::IPv6Addr.new_multicast(:interface_local, false, false, false, 1234).multicast_scope.should == :interface_local
+    Netaddr::IPv6Addr.new_multicast(:link_local, false, false, false, 1234).multicast_scope.should == :link_local
+    Netaddr::IPv6Addr.new_multicast(:admin_local, false, false, false, 1234).multicast_scope.should == :admin_local
+    Netaddr::IPv6Addr.new_multicast(:site_local, false, false, false, 1234).multicast_scope.should == :site_local
+    Netaddr::IPv6Addr.new_multicast(:organization_local, false, false, false, 1234).multicast_scope.should == :organization_local
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 1234).multicast_scope.should == :global
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('::').multicast?.should be_false
+    Netaddr::IPv6Addr.new('::1').multicast?.should be_false
+    Netaddr::IPv6Addr.new('2a02:20:bad:c0de:1:2:3:4').multicast?.should be_false
+    Netaddr::IPv6Addr.new('ff00:20:bad:c0de:1:2:3:4').multicast?.should be_true
+    Netaddr::IPv6Addr.new('ffff:ff:bad:c0de:1:2:3:4').multicast?.should be_true
+    Netaddr::IPv6Addr.new('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff').multicast?.should be_true
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_transient? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_transient?.should be_false
+    Netaddr::IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_transient?.should be_true
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_well_known? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_well_known?.should be_true
+    Netaddr::IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_well_known?.should be_false
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_prefix_based? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_prefix_based?.should be_false
+    Netaddr::IPv6Addr.new_multicast(:global, false, true, false, 0).multicast_prefix_based?.should be_true
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_embedded_rp? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_embedded_rp?.should be_false
+    Netaddr::IPv6Addr.new_multicast(:global, false, false, true, 0).multicast_embedded_rp?.should be_true
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_embedded_rp do
-# TODO
+  it 'produces correct result' do
+    Netaddr::IPv6Addr.new('FF7e:b40:2001:DB8:BEEF:FEED::1234').multicast_embedded_rp.should == '2001:DB8:BEEF:FEED::b'
+    Netaddr::IPv6Addr.new('FF7e:b20:2001:DB8::1234').multicast_embedded_rp.should == '2001:DB8::b'
+    Netaddr::IPv6Addr.new('FF7e:b20:2001:DB8:DEAD::1234').multicast_embedded_rp.should == '2001:DB8::b'
+    Netaddr::IPv6Addr.new('FF7e:b30:2001:DB8:BEEF::1234').multicast_embedded_rp.should == '2001:DB8:BEEF::b'
+  end
 end
 
 describe Netaddr::IPv6Addr, 'multicast_scope' do
@@ -87,20 +149,59 @@ describe Netaddr::IPv6Addr, 'multicast_scope' do
   end
 end
 
-describe Netaddr::IPv6Addr, :multicast_all_routers? do
-# TODO
+describe Netaddr::IPv6Addr, :multicast_all_nodes? do
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_all_nodes?.should be_true
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_all_nodes?.should be_true
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:1').multicast_all_nodes?.should be_false
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:2').multicast_all_nodes?.should be_false
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:2').multicast_all_nodes?.should be_false
+    Netaddr::IPv6Addr.new('ff05:0:0:0:0:0:0:2').multicast_all_nodes?.should be_false
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:2').multicast_all_nodes?.should be_false
+  end
 end
 
-describe Netaddr::IPv6Addr, :multicast_all_nodes? do
-# TODO
+describe Netaddr::IPv6Addr, :multicast_all_routers? do
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_all_routers?.should be_false
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_all_routers?.should be_false
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:1').multicast_all_routers?.should be_false
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:2').multicast_all_routers?.should be_true
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:2').multicast_all_routers?.should be_true
+    Netaddr::IPv6Addr.new('ff05:0:0:0:0:0:0:2').multicast_all_routers?.should be_true
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:2').multicast_all_routers?.should be_false
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_solicited_node? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:1').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff01:0:0:0:0:0:0:2').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff02:0:0:0:0:0:0:2').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff05:0:0:0:0:0:0:2').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff0e:0:0:0:0:0:0:2').multicast_solicited_node?.should be_false
+    Netaddr::IPv6Addr.new('ff02::1:ff12:3456').multicast_solicited_node?.should be_true
+    Netaddr::IPv6Addr.new('ff02::1:fe12:3456').multicast_solicited_node?.should be_false
+  end
+end
+
+describe Netaddr::IPv6Addr, :multicast_solicited_node_id do
+  it 'return correct node id' do
+    Netaddr::IPv6Addr.new('ff02::1:ff12:3456').multicast_solicited_node_id.should == 0x123456
+  end
+
+  it 'raises an error if not a multicast solcited node address' do
+    lambda { Netaddr::IPv6Addr.new('ff02::1:ef12:3456').multicast_solicited_node_id }.should raise_error
+  end
 end
 
 describe Netaddr::IPv6Addr, :multicast_source_specific? do
-# TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('ff0e0000000000000000000012345678').multicast_source_specific?.should be_false
+    Netaddr::IPv6Addr.new('ff3e0000000000000000000012345678').multicast_source_specific?.should be_true
+  end
 end
 
 describe Netaddr::IPv6Addr, :to_s do
@@ -117,66 +218,148 @@ describe Netaddr::IPv6Addr, :to_s do
     Netaddr::IPv6Addr.new('[::C0A8:0001]').to_s.should == '::c0a8:1'
     Netaddr::IPv6Addr.new('[::ffff:192.168.0.1]').to_s.should == '::ffff:192.168.0.1'
     Netaddr::IPv6Addr.new('[::ffff:C0A8:0001]').to_s.should == '::ffff:192.168.0.1'
-  end
-
-  it 'rejects invalid addresses' do
-    lambda { Netaddr::IPv6Addr.new('') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('[]') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('[:::]') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('[::::]') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('[1::1::1]') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('foo') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('2a02::4fg0') }.should raise_error(ArgumentError)
-    lambda { Netaddr::IPv6Addr.new('2a02::1/64') }.should raise_error(ArgumentError)
+    Netaddr::IPv6Addr.new('[ff00::1]').to_s.should == 'ff00::1'
   end
 end
 
 # Parent-class methods
 
 describe Netaddr::IPv6Addr, :included_in? do
-#TODO
+  it 'matches correctly' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').included_in?('2a02::/16').should be_true
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').included_in?('::/0').should be_true
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').included_in?('2a03::/32').should be_false
+  end
 end
 
 describe Netaddr::IPv6Addr, :succ do
-#TODO
+  it 'returns a Netaddr::IPv6Addr' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').succ.should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'computes proper value' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').succ.should == '2a02:1234:abcd:0000:9999:ffff:a90b:bbbc'
+  end
 end
 
 describe Netaddr::IPv6Addr, :== do
-#TODO
+  it 'autconverts string other' do
+    (Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
+      '[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').should be_true
+  end
+
+  it 'return true for equal addresses' do
+    (Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
+      Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).should be_true
+  end
+
+  it 'return false for different adddresses' do
+    (Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
+      Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbc]')).should be_false
+  end
 end
 
 describe Netaddr::IPv6Addr, :<=> do
-#TODO
+  it 'returns a kind of Integer' do
+    (Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') <=>
+      Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).should be_a_kind_of(Integer)
+  end
+
+  it 'compares correctly' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') <=>
+      Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')).should == 0
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') <=>
+      Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbc')).should == -1
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') <=>
+      Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbba')).should == 1
+  end
 end
 
 describe Netaddr::IPv6Addr, :+ do
-#TODO
+  it 'returns of type Netaddr::IPv6Addr' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') + 1).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'sums correctly' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') + 1) == '2a02:1234:abcd:0000:9999:ffff:a90b:bbbc'
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') + (-1)) == '2a02:1234:abcd:0000:9999:ffff:a90b:bbba'
+  end
 end
 
 describe Netaddr::IPv6Addr, :- do
-#TODO
+  it 'returns of type Netaddr::IPv6Addr' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - 1).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'subtracts correctly' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - 1) == '2a02:1234:abcd:0000:9999:ffff:a90b:bbbc'
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - (-1)) == '2a02:1234:abcd:0000:9999:ffff:a90b:bbba'
+  end
 end
 
 describe Netaddr::IPv6Addr, :| do
-#TODO
+  it 'returns of type Netaddr::IPv6Addr' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') | 0x0000ffff).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'operates correctly'do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') | 0x0000ffff).should == 0x2a021234abcd00009999ffffa90bffff
+  end
 end
 
 describe Netaddr::IPv6Addr, :& do
-#TODO
+  it 'returns of type Netaddr::IPv6Addr' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') & 0x0000ffff).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'operates correctly'do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') & 0x0000ffff).should == 0xbbbb
+  end
 end
 
 describe Netaddr::IPv6Addr, :mask do
-#TODO
+  it 'returns of type Netaddr::IPv6Addr' do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').mask(0x0000ffff)).should be_an_instance_of(Netaddr::IPv6Addr)
+  end
+
+  it 'operates correctly'do
+    (Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').mask(0x0000ffff)).should == 0xbbbb
+  end
 end
 
 describe Netaddr::IPv6Addr, :mask! do
-#TODO
+  it 'returns self' do
+    a = Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')
+    a.mask!(0xffff0000).should be_equal(a)
+  end
+
+  it 'masks correctly' do
+    a = Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')
+    a.to_i.should == 0x2a021234abcd00009999ffffa90bbbbb
+    a.mask!(0xffff0000)
+    a.to_i.should == 0xa90b0000
+  end
 end
 
 describe Netaddr::IPv6Addr, :to_i do
-#TODO
+  it 'returns a kind of Integer' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_i.should be_a_kind_of(Integer)
+  end
+
+  it 'converts to integer' do
+    Netaddr::IPv6Addr.new('::0').to_i.should == 0
+    Netaddr::IPv6Addr.new('::').to_i.should == 0
+    Netaddr::IPv6Addr.new('::1').to_i.should == 1
+    Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').to_i.should == 0x2a021234abcd00009999ffffa90bbbbb
+  end
 end
 
 describe Netaddr::IPv6Addr, :hash do
-#TODO
+  it 'returns a kind of Integer' do
+    Netaddr::IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').hash.should be_a_kind_of(Integer)
+  end
+
+  it 'produces a hash' do
+    Netaddr::IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').hash.should == 0x2a021234abcd00009999ffffa90bbbbb
+  end
 end

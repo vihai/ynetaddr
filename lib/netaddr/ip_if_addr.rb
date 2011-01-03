@@ -30,7 +30,7 @@ module Netaddr
     # @return [IPAddr] containing the host part (nic ID in IPv6 terms) of interface address
     #
     def nic_id
-      @addr & (@fullmask >> @length)
+      @addr.to_i & (@fullmask >> @length)
     end
 
     # @return [Boolean] true if the specified IP address is included in the same interface's network

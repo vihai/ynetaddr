@@ -59,47 +59,86 @@ describe Netaddr::IPv6Net, :prefix_hex do
 end
 
 describe Netaddr::IPv6Net, :unicast? do
-  it 'is correctly calculated' do
-#    Netaddr::IPv6Net.new('10.0.0.0/8').unicast?.should be_true
-#    Netaddr::IPv6Net.new('172.16.0.0/12').unicast?.should be_true
-#    Netaddr::IPv6Net.new('192.168.0.0/16').unicast?.should be_true
-#    Netaddr::IPv6Net.new('224.0.0.0/32').unicast?.should be_false
-#    Netaddr::IPv6Net.new('240.0.0.0/32').unicast?.should be_false
+  it 'return false for multicast range' do
+    Netaddr::IPv6Net.new('f000::/4').unicast?.should be_false
+    Netaddr::IPv6Net.new('ff00::/8').unicast?.should be_false
+    Netaddr::IPv6Net.new('ff70::/9').unicast?.should be_false
+    Netaddr::IPv6Net.new('ffff::/16').unicast?.should be_false
+  end
+
+  it 'returns true for unicast range' do
+    Netaddr::IPv6Net.new('2a02:20::/32').unicast?.should be_true
   end
 end
 
 describe Netaddr::IPv6Net, :multicast? do
-  it 'is correctly calculated' do
-#    Netaddr::IPv6Net.new('10.0.0.0/8').multicast?.should be_false
-#    Netaddr::IPv6Net.new('172.16.0.0/12').multicast?.should be_false
-#    Netaddr::IPv6Net.new('192.168.0.0/16').multicast?.should be_false
-#    Netaddr::IPv6Net.new('224.0.0.0/32').multicast?.should be_true
-#    Netaddr::IPv6Net.new('240.0.0.0/32').multicast?.should be_false
+  it 'returns true if network wholly multicast' do
+    Netaddr::IPv6Net.new('ff00::/8').multicast?.should be_true
+    Netaddr::IPv6Net.new('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/32').multicast?.should be_true
+    Netaddr::IPv6Net.new('ff7f:1:2:3::/96').multicast?.should be_true
+  end
+
+  it 'returns false if network wholly not multicast' do
+    Netaddr::IPv6Net.new('2a02::/32').multicast?.should be_false
+    Netaddr::IPv6Net.new('::/8').multicast?.should be_false
+  end
+
+  it 'returns false if network partially multicast' do
+    Netaddr::IPv6Net.new('f::/4').multicast?.should be_false
   end
 end
 
 describe Netaddr::IPv6Net, :new_pb_multicast do
   it 'produces correct address' do
-# TODO
+    Netaddr::IPv6Net.new('2a02:20:1:2::5/64').new_pb_multicast(:global, 0x1234).should == 'ff3e:40:2a02:20:1:2:0:1234'
   end
 end
 
 describe Netaddr::IPv6Net, :reverse do
   it 'calculates the correct values' do
-#    Netaddr::IPv6Net.new('0.0.0.0/0').reverse.should == '.in-addr.arpa'
-#    Netaddr::IPv6Net.new('10.0.0.0/8').reverse.should == '10.in-addr.arpa'
-#    Netaddr::IPv6Net.new('172.16.0.0/12').reverse.should == '172.in-addr.arpa'
-#    Netaddr::IPv6Net.new('192.168.0.0/16').reverse.should == '168.192.in-addr.arpa'
-#    Netaddr::IPv6Net.new('192.168.32.0/24').reverse.should == '32.168.192.in-addr.arpa'
-#    Netaddr::IPv6Net.new('192.168.32.1/32').reverse.should == '1.32.168.192.in-addr.arpa'
+    Netaddr::IPv6Net.new('::/0').reverse.should == '.ip6.arpa'
+    Netaddr::IPv6Net.new('2a02:20:1:2::/64').reverse.should == '2.0.0.0.1.0.0.0.0.2.0.0.2.0.a.2.ip6.arpa'
+    Netaddr::IPv6Net.new('2a02:20:1:2::5/128').reverse.should ==
+      '5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.0.2.0.0.2.0.a.2.ip6.arpa'
   end
 end
 
 
 # parent class methods
 
-describe Netaddr::IPv4Net, :prefix= do
-# TODO
+describe Netaddr::IPv6Net, :prefix= do
+  it 'returns prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').prefix = '2a02:30::').should == '2a02:30::'
+  end
+
+  it 'assigns prefix host bits' do
+    a = Netaddr::IPv6Net.new('2a02:20::/32')
+    a.prefix = '2a02:30::'
+    a.should == Netaddr::IPv6Net.new('2a02:30::/32')
+  end
+
+  it 'resets host bits' do
+    a = Netaddr::IPv6Net.new('2a02:20::/32')
+    a.prefix = '2a02:30::44'
+    a.should == Netaddr::IPv6Net.new('2a02:30::/32')
+  end
+end
+
+describe Netaddr::IPv6Net, :length= do
+  it 'returns length' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').length = 16).should == 16
+  end
+
+  it 'rejects invalid length' do
+    lambda { Netaddr::IPv6Net.new('2a02:20::/32').length = -1 }.should raise_error
+    lambda { Netaddr::IPv6Net.new('2a02:20::/32').length = 129 }.should raise_error
+  end
+
+  it 'resets host bits' do
+    a = Netaddr::IPv6Net.new('2a02:20::/32')
+    a.length = 16
+    a.should == Netaddr::IPv6Net.new('2a02::/16')
+  end
 end
 
 describe Netaddr::IPv6Net, :mask do
@@ -124,52 +163,44 @@ end
 
 describe Netaddr::IPv6Net, :hosts do
   it 'produces a range' do
-#    Netaddr::IPv6Net.new('10.0.0.0/8').hosts.should be_kind_of(Range)
+    Netaddr::IPv6Net.new('2a02:20:1:2::/64').hosts.should be_kind_of(Range)
   end
 
   it 'produces the correct range' do
-#    Netaddr::IPv6Net.new('192.168.0.0/29').hosts.should be_eql(
-#      Netaddr::IPv6Addr.new('192.168.0.1')..Netaddr::IPv6Addr.new('192.168.0.6'))
-#    Netaddr::IPv6Net.new('192.168.0.0/30').hosts.should be_eql(
-#      Netaddr::IPv6Addr.new('192.168.0.1')..Netaddr::IPv6Addr.new('192.168.0.2'))
-#    Netaddr::IPv6Net.new('192.168.0.0/31').hosts.should be_eql(
-#      Netaddr::IPv6Addr.new('192.168.0.0')..Netaddr::IPv6Addr.new('192.168.0.1'))
-#    Netaddr::IPv6Net.new('192.168.0.0/32').hosts.should be_eql(
-#      Netaddr::IPv6Addr.new('192.168.0.0')..Netaddr::IPv6Addr.new('192.168.0.0'))
+    Netaddr::IPv6Net.new('2a02:20:1:2::/64').hosts.should be_eql(
+      Netaddr::IPv6Addr.new('2a02:20:1:2::0')..
+      Netaddr::IPv6Addr.new('2a02:20:1:2:ffff:ffff:ffff:ffff'))
+    Netaddr::IPv6Net.new('2a02:20:1:2::1/127').hosts.should be_eql(
+      Netaddr::IPv6Addr.new('2a02:20:1:2::0')..
+      Netaddr::IPv6Addr.new('2a02:20:1:2::1'))
+    Netaddr::IPv6Net.new('2a02:20:1:2::1/128').hosts.should be_eql(
+      Netaddr::IPv6Addr.new('2a02:20:1:2::1')..
+      Netaddr::IPv6Addr.new('2a02:20:1:2::1'))
   end
 end
 
 describe Netaddr::IPv6Net, :host_min do
   it 'calculates the correct values' do
-#    Netaddr::IPv6Net.new('192.168.0.0/29').host_min.should == 0xc0a80001
-#    Netaddr::IPv6Net.new('192.168.0.0/30').host_min.should == 0xc0a80001
-#    Netaddr::IPv6Net.new('192.168.0.0/31').host_min.should == 0xc0a80000
-#    Netaddr::IPv6Net.new('192.168.0.0/32').host_min.should == 0xc0a80000
+    Netaddr::IPv6Net.new('2a02:20:1:2::/64').host_min.should == 0x2a020020000100020000000000000000
+    Netaddr::IPv6Net.new('2a02:20:1:2::0/127').host_min.should == 0x2a020020000100020000000000000000
+    Netaddr::IPv6Net.new('2a02:20:1:2::1/128').host_min.should == 0x2a020020000100020000000000000001
   end
 end
 
 describe Netaddr::IPv6Net, :host_max do
   it 'calculates the correct values' do
-#    Netaddr::IPv6Net.new('192.168.0.0/29').host_max.should == 0xc0a80006
-#    Netaddr::IPv6Net.new('192.168.0.0/30').host_max.should == 0xc0a80002
-#    Netaddr::IPv6Net.new('192.168.0.0/31').host_max.should == 0xc0a80001
-#    Netaddr::IPv6Net.new('192.168.0.0/32').host_max.should == 0xc0a80000
+    Netaddr::IPv6Net.new('2a02:20:1:2::/64').host_max.should == 0x2a02002000010002ffffffffffffffff
+    Netaddr::IPv6Net.new('2a02:20:1:2::0/127').host_max.should == 0x2a020020000100020000000000000001
+    Netaddr::IPv6Net.new('2a02:20:1:2::1/128').host_max.should == 0x2a020020000100020000000000000001
   end
 end
 
-describe Netaddr::IPv4Net, :network do
-# TODO
-end
-
 describe Netaddr::IPv6Net, :include? do
-  it 'calculates the correct values' do
-#    Netaddr::IPv6Net.new('0.0.0.0/0').include?(Netaddr::IPv6Addr.new('1.2.3.4')).should be_true
-#    Netaddr::IPv6Net.new('0.0.0.0/0').include?(Netaddr::IPv6Addr.new('0.0.0.0')).should be_true
-#    Netaddr::IPv6Net.new('0.0.0.0/0').include?(Netaddr::IPv6Addr.new('255.255.255.255')).should be_true
-#    Netaddr::IPv6Net.new('10.0.0.0/8').include?(Netaddr::IPv6Addr.new('9.255.255.255')).should be_false
-#    Netaddr::IPv6Net.new('10.0.0.0/8').include?(Netaddr::IPv6Addr.new('10.0.0.0')).should be_true
-#    Netaddr::IPv6Net.new('10.0.0.0/8').include?(Netaddr::IPv6Addr.new('10.255.255.255')).should be_true
-#    Netaddr::IPv6Net.new('10.0.0.0/8').include?(Netaddr::IPv6Addr.new('11.0.0.0')).should be_false
+  it 'matches correctly' do
+    (Netaddr::IPv6Net.new('2a02:20::1/32').include?('2a02:19::0')).should be_false
+    (Netaddr::IPv6Net.new('2a02:20::1/32').include?('2a02:20::0')).should be_true
+    (Netaddr::IPv6Net.new('2a02:20::1/32').include?('2a02:20::1')).should be_true
+    (Netaddr::IPv6Net.new('2a02:20::1/32').include?('2a02:20:ffff::1')).should be_true
   end
 end
 
@@ -186,121 +217,175 @@ end
 
 describe Netaddr::IPv6Net, 'to_hash' do
   it 'produces correct output' do
+    Netaddr::IPv6Net.new('2a02:20::/128').to_hash.should == { :prefix => '2a02:20::', :length => 128 }
   end
 end
 
 describe Netaddr::IPv6Net, :== do
-  it 'matches equal networks' do
-##    (Netaddr::IPv4Net.new('0.0.0.0/0') == Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-##    (Netaddr::IPv4Net.new('0.0.0.0/0') == Netaddr::IPv4Net.new('4.0.0.0/0')).should be_true
-##    (Netaddr::IPv4Net.new('10.0.0.0/8') == Netaddr::IPv4Net.new('10.0.0.0/8')).should be_true
-##    (Netaddr::IPv4Net.new('192.168.255.255/24') == Netaddr::IPv4Net.new('192.168.255.255/24')).should be_true
-##    (Netaddr::IPv4Net.new('192.168.255.255/32') == Netaddr::IPv4Net.new('192.168.255.255/32')).should be_true
+  it 'return true if networks are equal' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') == '2a02:20::/32').should be_true
   end
 
-  it 'doesn\'t match different networks' do
-#    (Netaddr::IPv4Net.new('10.0.0.0/8') == Netaddr::IPv4Net.new('13.0.0.0/8')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.255.255/24') == Netaddr::IPv4Net.new('192.168.255.255/32')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.255.255/32') == Netaddr::IPv4Net.new('192.168.255.255/24')).should be_false
+  it 'returns false if networks have different prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') == '2a02:21::/32').should be_false
+  end
+
+  it 'returns false if networks have different prefix length' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') == '2a02:20::/31').should be_false
   end
 end
 
-describe Netaddr::IPv4Net, :< do
-  it 'compares correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.1.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('5.5.5.5/0')).should be_true
-#    (Netaddr::IPv4Net.new('5.5.5.5/0') < Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') < Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.0.0/16')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.0.0/23')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.0.0/25')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('192.168.0.0/32')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') < Netaddr::IPv4Net.new('10.0.0.0/8')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') < Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') < Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') < Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('255.255.255.255/32') < Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
+describe Netaddr::IPv6Net, :< do
+  it 'is false for smaller networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') < Netaddr::IPv6Net.new('2a02:20::/33')).should be_false
+  end
+
+  it 'is false for equal-size networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') < Netaddr::IPv6Net.new('2a02:20::/32')).should be_false
+  end
+
+  it 'is false for non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') < Netaddr::IPv6Net.new('2a02:10::/31')).should be_false
+  end
+
+  it 'is true for networks bigger than us with same prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') < Netaddr::IPv6Net.new('2a02:20::/31')).should be_true
+  end
+
+  it 'is true for networks bigger than us with different but contained prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') < Netaddr::IPv6Net.new('2a02:21::/16')).should be_true
   end
 end
 
-describe Netaddr::IPv4Net, :<= do
-  it 'compares correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.1.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('5.5.5.5/0')).should be_true
-#    (Netaddr::IPv4Net.new('5.5.5.5/0') <= Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') <= Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.0.0/16')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.0.0/23')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.0.0/24')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.0.0/25')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('192.168.0.0/32')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') <= Netaddr::IPv4Net.new('10.0.0.0/8')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') <= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') <= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') <= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('255.255.255.255/32') <= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
+describe Netaddr::IPv6Net, :<= do
+  it 'is false for smaller networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') <= Netaddr::IPv6Net.new('2a02:20::/33')).should be_false
+  end
+
+  it 'is true for equal-size coincident networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') <= Netaddr::IPv6Net.new('2a02:20::/32')).should be_true
+  end
+
+  it 'is false for equal-size non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:21::/32') <= Netaddr::IPv6Net.new('2a02:20::/32')).should be_false
+  end
+
+  it 'is false for non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') <= Netaddr::IPv6Net.new('2a02:10::/31')).should be_false
+  end
+
+  it 'is true for networks bigger than us with same prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') <= Netaddr::IPv6Net.new('2a02:20::/31')).should be_true
+  end
+
+  it 'is true for networks bigger than us with different but contained prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') <= Netaddr::IPv6Net.new('2a02:21::/16')).should be_true
   end
 end
 
-describe Netaddr::IPv4Net, :> do
-  it 'compares correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.1.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('5.5.5.5/0')).should be_false
-#    (Netaddr::IPv4Net.new('5.5.5.5/0') > Netaddr::IPv4Net.new('192.168.0.0/24')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.0.0/16')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.0.0/23')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.0.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.0.0/25')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('192.168.0.0/32')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') > Netaddr::IPv4Net.new('10.0.0.0/8')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') > Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') > Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') > Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('255.255.255.255/32') > Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
+describe Netaddr::IPv6Net, :> do
+  it 'is false for smaller non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:30::/33')).should be_false
+  end
+
+  it 'is true for smaller contained networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:20:0::/33')).should be_true
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:20:1::/33')).should be_true
+  end
+
+  it 'is false for equal-size networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:20::/32')).should be_false
+  end
+
+  it 'is false for non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:10::/31')).should be_false
+  end
+
+  it 'is false for networks bigger than us with same prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:20::/31')).should be_false
+  end
+
+  it 'is false for networks bigger than us with different but contained prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') > Netaddr::IPv6Net.new('2a02:21::/16')).should be_false
   end
 end
 
-describe Netaddr::IPv4Net, :>= do
-  it 'compares correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.1.0/24')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('5.5.5.5/0')).should be_false
-#    (Netaddr::IPv4Net.new('5.5.5.5/0') >= Netaddr::IPv4Net.new('192.168.0.0/24')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.0.0/16')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.0.0/23')).should be_false
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.0.0/24')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.0.0/25')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('192.168.0.0/32')).should be_true
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >= Netaddr::IPv4Net.new('10.0.0.0/8')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') >= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/1') >= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
-#    (Netaddr::IPv4Net.new('0.0.0.0/0') >= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_true
-#    (Netaddr::IPv4Net.new('255.255.255.255/32') >= Netaddr::IPv4Net.new('0.0.0.0/0')).should be_false
+describe Netaddr::IPv6Net, :>= do
+  it 'is false for smaller non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:30::/33')).should be_false
+  end
+
+  it 'is true for smaller contained networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:20:0::/33')).should be_true
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:20:1::/33')).should be_true
+  end
+
+  it 'is true for equal-size networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:20::/32')).should be_true
+  end
+
+  it 'is false for non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:10::/31')).should be_false
+  end
+
+  it 'is false for networks bigger than us with same prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:20::/31')).should be_false
+  end
+
+  it 'is false for networks bigger than us with different but contained prefix' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') >= Netaddr::IPv6Net.new('2a02:21::/16')).should be_false
   end
 end
 
-describe Netaddr::IPv4Net, :>> do
+describe Netaddr::IPv6Net, :overlaps do
+  it 'is false for smaller non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/33')).should be_false
+  end
+
+  it 'is false for bigger non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/31')).should be_false
+  end
+
+  it 'is false for equal-size non-overlapping networks' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/32')).should be_false
+  end
+
+  it 'is true for same network' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02:20::/32')).should be_true
+  end
+
+  it 'is true for bigger network containing us' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02::/16')).should be_true
+  end
+
+  it 'is true for smaller network contained' do
+    (Netaddr::IPv6Net.new('2a02:20::/32').overlaps('2a02:20:1::/48')).should be_true
+  end
+end
+
+describe Netaddr::IPv6Net, :>> do
   it 'operates correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >> 1).should == Netaddr::IPv4Net.new('192.168.0.0/25')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >> 2).should == Netaddr::IPv4Net.new('192.168.0.0/26')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >> 9).should == Netaddr::IPv4Net.new('192.168.0.0/32')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') >> -1).should == Netaddr::IPv4Net.new('192.168.0.0/23')
+    (Netaddr::IPv6Net.new('2a02:20::/32') >> 1).should == '2a02:20::/33'
   end
 end
 
-describe Netaddr::IPv4Net, :<< do
+describe Netaddr::IPv6Net, :<< do
   it 'operates correctly' do
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') << 1).should == Netaddr::IPv4Net.new('192.168.0.0/23')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') << 2).should == Netaddr::IPv4Net.new('192.168.0.0/22')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') << 25).should == Netaddr::IPv4Net.new('0.0.0.0/0')
-#    (Netaddr::IPv4Net.new('192.168.0.0/24') << -1).should == Netaddr::IPv4Net.new('192.168.0.0/25')
+    (Netaddr::IPv6Net.new('2a02:20::/32') << 1).should == '2a02:20::/31'
+    (Netaddr::IPv6Net.new('2a02:21::/32') << 1).should == '2a02:20::/31'
   end
 end
 
-describe Netaddr::IPv4Net, :=== do
-# TODO
+describe Netaddr::IPv6Net, :=== do
+  it 'returns true if other is an IPv6 address and is contained in this network' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') === Netaddr::IPv6Addr.new('2a02:20::1')).should be_true
+  end
+
+  it 'returns false if other is not IPv6 address' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') === 1234).should be_false
+  end
+
+  it 'returns false if other is not contained in this network' do
+    (Netaddr::IPv6Net.new('2a02:20::/32') === Netaddr::IPv6Addr.new('2a02:ff::1')).should be_false
+  end
 end

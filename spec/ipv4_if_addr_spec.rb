@@ -78,12 +78,32 @@ end
 # parent class methods
 
 describe Netaddr::IPv4IfAddr, :network do
+
+  it 'is of type Netaddr::IPv4Net' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').network.should be_an_instance_of(Netaddr::IPv4Net)
+  end
+
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').network.should == Netaddr::IPv4Net.new('0.0.0.0/0')
+    Netaddr::IPv4IfAddr.new('1.0.0.1/8').network.should == Netaddr::IPv4Net.new('1.0.0.0/8')
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').network.should == Netaddr::IPv4Net.new('10.0.0.0/8')
+    Netaddr::IPv4IfAddr.new('172.15.0.1/12').network.should == Netaddr::IPv4Net.new('172.15.0.0/12')
+    Netaddr::IPv4IfAddr.new('172.16.0.1/12').network.should == Netaddr::IPv4Net.new('172.16.0.0/12')
+    Netaddr::IPv4IfAddr.new('192.167.0.1/16').network.should == Netaddr::IPv4Net.new('192.167.0.0/16')
+    Netaddr::IPv4IfAddr.new('192.168.0.1/16').network.should == Netaddr::IPv4Net.new('192.168.0.0/16')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/24').network.should == Netaddr::IPv4Net.new('192.168.32.0/24')
+    Netaddr::IPv4IfAddr.new('192.168.32.0/31').network.should == Netaddr::IPv4Net.new('192.168.32.0/31')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/31').network.should == Netaddr::IPv4Net.new('192.168.32.0/31')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/32').network.should == Netaddr::IPv4Net.new('192.168.32.1/32')
+    Netaddr::IPv4IfAddr.new('192.169.32.1/32').network.should == Netaddr::IPv4Net.new('192.169.32.1/32')
   end
 end
 
 describe Netaddr::IPv4IfAddr, :mask do
+  it 'is a kind of Integer' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').mask.should be_a_kind_of(Integer)
+  end
+
   it 'is correctly calculated' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').mask.should == 0x00000000
     Netaddr::IPv4IfAddr.new('10.255.255.1/8').mask.should == 0xff000000
@@ -93,6 +113,10 @@ describe Netaddr::IPv4IfAddr, :mask do
 end
 
 describe Netaddr::IPv4IfAddr, :wildcard do
+  it 'is a kind of Integer' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').wildcard.should be_a_kind_of(Integer)
+  end
+
   it 'is correctly calculated' do
     Netaddr::IPv4IfAddr.new('0.0.0.1/0').wildcard.should == 0xffffffff
     Netaddr::IPv4IfAddr.new('10.255.255.1/8').wildcard.should == 0x00ffffff
@@ -102,26 +126,66 @@ describe Netaddr::IPv4IfAddr, :wildcard do
 end
 
 describe Netaddr::IPv4IfAddr, :address do
+  it 'is of type Netaddr::IPv4Addr' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').address.should be_an_instance_of(Netaddr::IPv4Addr)
+  end
+
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').address.should == Netaddr::IPv4Addr.new('0.0.0.1')
+    Netaddr::IPv4IfAddr.new('1.0.0.1/8').address.should == Netaddr::IPv4Addr.new('1.0.0.1')
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').address.should == Netaddr::IPv4Addr.new('10.0.0.1')
+    Netaddr::IPv4IfAddr.new('172.15.0.1/12').address.should == Netaddr::IPv4Addr.new('172.15.0.1')
+    Netaddr::IPv4IfAddr.new('172.16.0.1/12').address.should == Netaddr::IPv4Addr.new('172.16.0.1')
+    Netaddr::IPv4IfAddr.new('192.167.0.1/16').address.should == Netaddr::IPv4Addr.new('192.167.0.1')
+    Netaddr::IPv4IfAddr.new('192.168.0.1/16').address.should == Netaddr::IPv4Addr.new('192.168.0.1')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/24').address.should == Netaddr::IPv4Addr.new('192.168.32.1')
+    Netaddr::IPv4IfAddr.new('192.168.32.0/31').address.should == Netaddr::IPv4Addr.new('192.168.32.0')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/31').address.should == Netaddr::IPv4Addr.new('192.168.32.1')
+    Netaddr::IPv4IfAddr.new('192.168.32.1/32').address.should == Netaddr::IPv4Addr.new('192.168.32.1')
+    Netaddr::IPv4IfAddr.new('192.169.32.1/32').address.should == Netaddr::IPv4Addr.new('192.169.32.1')
   end
 end
 
 describe Netaddr::IPv4IfAddr, :nic_id do
+  it 'is kind of Integer' do
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').nic_id.should be_a_kind_of(Integer)
+  end
+
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('1.0.0.1/8').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('172.15.0.1/12').nic_id.should == 0x000f0001
+    Netaddr::IPv4IfAddr.new('172.16.0.1/12').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('192.167.0.1/16').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('192.168.0.1/16').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('192.168.32.1/24').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('192.168.32.0/31').nic_id.should == 0
+    Netaddr::IPv4IfAddr.new('192.168.32.1/31').nic_id.should == 1
+    Netaddr::IPv4IfAddr.new('192.168.32.1/32').nic_id.should == 0
+    Netaddr::IPv4IfAddr.new('192.169.32.1/32').nic_id.should == 0
   end
 end
 
 describe Netaddr::IPv4IfAddr, :include? do
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').include?(Netaddr::IPv4Addr.new('1.2.3.4')).should be_true
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').include?(Netaddr::IPv4Addr.new('0.0.0.0')).should be_true
+    Netaddr::IPv4IfAddr.new('0.0.0.1/0').include?(Netaddr::IPv4Addr.new('255.255.255.255')).should be_true
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').include?(Netaddr::IPv4Addr.new('9.255.255.255')).should be_false
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').include?(Netaddr::IPv4Addr.new('10.0.0.0')).should be_true
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').include?(Netaddr::IPv4Addr.new('10.255.255.255')).should be_true
+    Netaddr::IPv4IfAddr.new('10.0.0.1/8').include?(Netaddr::IPv4Addr.new('11.0.0.0')).should be_false
   end
 end
 
 describe Netaddr::IPv4IfAddr, :== do
-  it 'is correctly calculated' do
-# TODO
+  it 'matches equal interface addresses' do
+    (Netaddr::IPv4IfAddr.new('0.0.0.1/0') == Netaddr::IPv4IfAddr.new('0.0.0.1/0')).should be_true
+    (Netaddr::IPv4IfAddr.new('0.0.0.1/0') == Netaddr::IPv4IfAddr.new('4.0.0.1/0')).should be_false
+    (Netaddr::IPv4IfAddr.new('10.0.0.1/8') == Netaddr::IPv4IfAddr.new('10.0.0.1/8')).should be_true
+    (Netaddr::IPv4IfAddr.new('192.168.255.254/24') == Netaddr::IPv4IfAddr.new('192.168.255.254/24')).should be_true
+    (Netaddr::IPv4IfAddr.new('192.168.255.255/32') == Netaddr::IPv4IfAddr.new('192.168.255.255/32')).should be_true
   end
 end
 

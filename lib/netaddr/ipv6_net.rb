@@ -7,9 +7,6 @@ module Netaddr
 
     MASK = 0xffffffffffffffffffffffffffffffff
 
-    attr_reader :prefix
-    attr_accessor :length
-
     # Instantiates a new IPv6 network object
     #
     # @param net Any supported IPv6 representation to initialize from:
@@ -28,8 +25,6 @@ module Netaddr
       @fullmask = MASK
       @max_length = 128
       @address_class = IPv6Addr
-
-      # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       if net.respond_to?(:to_ipv6net)
         @prefix = IPv6Addr.new(net.to_ipv6net.prefix)
@@ -77,9 +72,10 @@ module Netaddr
     # @return [Boolean] true if the network covers only unicast range
     #
     # Raised an error if the network spans both unicast and multicast or reserved space
+    # How should we treat ::0 and ::1 ?
     #
     def unicast?
-#TODO
+      !overlaps('ff00::/8')
     end
 
     # @return [Boolean] true if the network is within the multicas address range
@@ -87,7 +83,7 @@ module Netaddr
     # Raised an error if the network spans both unicast and multicast space or reserved
     #
     def multicast?
-      self < 'ff00::/8'
+      self <= 'ff00::/8'
     end
 
     # Build an prefix-based multicast address from this network
@@ -112,7 +108,7 @@ module Netaddr
     #                  the output with contain the smaller aligned prefix.
     #
     def reverse
-#      [@prefix].pack('N').unpack('C*')[0...(@length / 8)].reverse.join('.') + '.in-addr.arpa'
+      ('%032x' % @prefix).split('')[0...@length/4].reverse.join('.') + '.ip6.arpa'
     end
 
     # @return [IPv6Net] self
@@ -121,5 +117,16 @@ module Netaddr
       self
     end
 
+    # @return [IPAddr] the first usable host of this network
+    #
+    def host_min
+      @prefix
+    end
+
+    # @return [IPAddr] the last usable host of this network
+    #
+    def host_max
+      @prefix | wildcard
+    end
   end
 end

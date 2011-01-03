@@ -85,7 +85,7 @@ module Netaddr
     # @return [Boolean] true if a unicast address (per RFC4291 Sec 2.3)
     #
     def unicast?
-      self != '::' && self != '::1' && !included_in?('ff00::/8')
+      self != '::' && !included_in?('ff00::/8')
     end
 
     # Build a multicast IPv6 address with specified characteristics
@@ -104,9 +104,15 @@ module Netaddr
     # @return [IPv6Addr] the resulting multicast address
     #
     def self.new_multicast(scope, transient, prefix_based, embedded_rp, group_id)
-      raise ArgumentError, 'invalid group id' if (group_id & 0xffff00000000000000000000000000000) != 0
+      raise ArgumentError, 'invalid group id' if (group_id & 0xffff0000000000000000000000000000) != 0
 
-      mc = 0xff00000000000000000000000000000000
+      if scope.kind_of?(Symbol)
+        raise ArgumentError, 'scope not recognized' if SCOPE_SYMBOLS[scope].nil?
+        scope = SCOPE_SYMBOLS[scope]
+      end
+
+      mc = 0xff000000000000000000000000000000
+      mc |= scope << 112
       mc |= (transient ? 1 : 0) << 116
       mc |= (prefix_based ? 1 : 0) << 117
       mc |= (embedded_rp ? 1 : 0) << 118
@@ -119,7 +125,7 @@ module Netaddr
     #
     # @param [Integer, Symbol] scope is the multicast address scope (see {#new_multicast})
     def self.new_ss_multicast(scope, group_id)
-      raise ArgumentError, 'invalid group id' if (group_id & 0xfffffffffffffffffffffffff00000000) != 0
+      raise ArgumentError, 'invalid group id' if (group_id & 0xffffffffffffffffffffffff00000000) != 0
       new_multicast(scope, true, true, false, group_id)
     end
 
@@ -133,7 +139,7 @@ module Netaddr
     #
     def multicast_transient?
       raise 'Not a multicast address' if !multicast?
-      !!@addr[116]
+      @addr[116] != 0
     end
 
     # @return [Boolean] true if the address is well-known (transient bit is not set) (RFC4291 Sec 2.7)
@@ -146,14 +152,14 @@ module Netaddr
     #
     def multicast_prefix_based?
       raise 'Not a multicast address' if !multicast?
-      !!@addr[117]
+      @addr[117] != 0
     end
 
     # @return [Boolean] true if the embedded-rp (R) bit is set (RFC4291 Sec 2.7)
     #
     def multicast_embedded_rp?
       raise 'Not a multicast address' if !multicast?
-      !!@addr[118]
+      @addr[118] != 0
     end
 
     # Obtain the embedded RP in a multicast address
@@ -166,10 +172,10 @@ module Netaddr
 
       riid = (@addr & (0xf << 104)) >> 104
       plen = (@addr & (0xff << 96)) >> 96
-      prefix = ((@addr & (0xffffffffffffffff << 32)) >> 32) & (((1 << plen) - 1) << (64 - plen))
+      prefix =  (@addr & (((1 << plen) - 1) << (32 + (64 - plen)))) << 32
       group_id = @addr & 0xffffffff
 
-      IPv6IfAddr.new({ :addr => (prefix | riid), :length => plen })
+      IPv6Addr.new(prefix | riid)
     end
 
     # @return [Symbol] the multicast scope as a symbol
@@ -196,16 +202,16 @@ module Netaddr
       end
     end
 
-    # @return [Boolean] true if the address is a multicast all-routers well-known address (See RFC4291 Sec 2.7.1)
-    #
-    def multicast_all_routers?
-      self == 'ff01::2' || self == 'ff02::2' || self == 'ff05::2'
-    end
-
     # @return [Boolean] true if the address is a multicast all-nodes well-known address (See RFC4291 Sec 2.7.1)
     #
     def multicast_all_nodes?
       self == 'ff01::1' || self == 'ff02::1'
+    end
+
+    # @return [Boolean] true if the address is a multicast all-routers well-known address (See RFC4291 Sec 2.7.1)
+    #
+    def multicast_all_routers?
+      self == 'ff01::2' || self == 'ff02::2' || self == 'ff05::2'
     end
 
     # @return [Boolean] true if the address is a multicast solicited-node address (See RFC4291 Sec 2.7.1)
@@ -214,11 +220,18 @@ module Netaddr
       included_in?('ff02::1:ff00:0000/104')
     end
 
+    # @return [Integer] the host-id part of a multicast solicited-node address (See RFC4291 Sec 2.7.1)
+    #
+    def multicast_solicited_node_id
+      raise 'Not a multicast solicited node address' if !multicast_solicited_node?
+      @addr & 0xffffff
+    end
+
     # @return [Boolean] true if the address is a source-specific multicast address (See RFC4291 Sec 2.7.1)
     #
     def multicast_source_specific?
       raise 'Not a multicast address' if !multicast?
-      (prefix & 0xfff0ffffffffffffffffffff00000000) == 0xff300000000000000000000000000000
+      (@addr & 0xfff0ffffffffffffffffffff00000000) == 0xff300000000000000000000000000000
     end
 
     # Convert to IPv6Addr.

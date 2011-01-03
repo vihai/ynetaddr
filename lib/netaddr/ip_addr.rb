@@ -73,6 +73,7 @@ module Netaddr
     #
     def mask!(mask)
       @addr &= mask
+      self
     end
 
     # @return [Integer] an integer (host-byte-order) representation of the IP address

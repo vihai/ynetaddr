@@ -21,7 +21,6 @@ module Netaddr
     # Raises ArgumentError if the format is not supported
     #
     def initialize(addr = '0000:0000:0000')
-      # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       if addr.respond_to?(:to_macaddr)
         @addr = addr.to_macaddr.raw_addr
@@ -59,7 +58,7 @@ module Netaddr
     # @return [Boolean] true if the address is unicast
     #
     def unicast?
-      !(@addr && 0x100000000000)
+      (@addr & 0x010000000000) == 0
     end
 
     # Returns true if the address is multicast
@@ -67,7 +66,7 @@ module Netaddr
     # @return [Boolean] true if the address is multicast
     #
     def multicast?
-      !!(@addr && 0x100000000000) && !broadcast?
+      (@addr & 0x010000000000) != 0 && !broadcast?
     end
 
     # Returns true if the address is broadcast
@@ -83,7 +82,7 @@ module Netaddr
     # @return [Boolean] true if the address is locally administered
     #
     def locally_administered?
-      !(@addr & 0x200000000000)
+      (@addr & 0x020000000000) == 0
     end
 
     # Returns true if the address is globally unique
@@ -91,7 +90,7 @@ module Netaddr
     # @return [Boolean] true if the address is globally unique
     #
     def globally_unique?
-      !!(@addr & 0x200000000000)
+      (@addr & 0x020000000000) != 0
     end
 
     # Returns the OUI part of the address
@@ -99,7 +98,7 @@ module Netaddr
     # @return [Integer] OUI part of the address
     #
     def oui
-      (@addr & 0xcfffff000000) >> 24
+      (@addr & 0xfcffff000000) >> 24
     end
 
     # Returns the NIC part of the address
@@ -115,16 +114,15 @@ module Netaddr
     # @return [Boolean] true if the address matches
     #
     def ==(other)
+      other = self.class.new(other) if !other.kind_of?(self.class)
       @addr == other.to_i
     end
 
     alias eql? ==
-
-    def ===(other)
-      @addr == other.to_i
-    end
+    alias === ==
 
     def <=>(other)
+      other = self.class.new(other) if !other.kind_of?(self.class)
       @addr <=> other.to_i
     end
 

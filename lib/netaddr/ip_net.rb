@@ -3,13 +3,29 @@ module Netaddr
 
   class IPNet
 
+    attr_reader :prefix
+    attr_reader :length
+
     # Explicitly set the prefix. If any host bits are set, they will be reset to zero
     #
-    # @param [Integer] p Integer host byte-order representation of the prefix
+    # @param [Integer, IPAddr] p Integer host byte-order representation of the prefix
     # @return [Integer] the actual prefix set
     #
     def prefix=(p)
-      @prefix = self.class.new(p).mask!(mask)
+      p = @address_class.new(p) if !p.kind_of?(@address_class)
+      @prefix = p.mask(mask)
+    end
+
+    # Explicitly set the prefix length. If any host bits are set, they will be reset to zero
+    #
+    # @param [Integer, IPAddr] l Integer new length
+    # @return [Integer] the actual length set
+    #
+    def length=(l)
+      raise 'Invalid prefix length' if l < 0 || l > @max_length
+
+      @length = l
+      @prefix = @prefix & mask
     end
 
     # @return the mask as host byte-ordering Integer
@@ -30,39 +46,6 @@ module Netaddr
     #
     def hosts
       host_min..host_max
-    end
-
-    # @return [IPAddr] the first usable host of this network
-    #
-    # /31s and /32s for IPv4 and /127 and /128 for IPv6 are properly handled
-    #
-    def host_min
-      if @length >= @max_length - 1
-        @prefix
-      else
-        @prefix + 1
-      end
-    end
-
-    # @return [IPAddr] the last usable host of this network
-    #
-    # /31s and /32s for IPv4 and /127 and /128 for IPv6 are properly handled
-    #
-    def host_max
-      if @length == @max_length
-        @prefix
-      elsif @length == @max_length - 1
-        @prefix | wildcard
-      else
-        (@prefix | wildcard) - 1
-      end
-    end
-
-    # @return [IPAddr] the network address of this network or nil if not applicable
-    #
-    def network
-      return nil if @length >= @max_length - 1
-      @prefix
     end
 
     # @return [Boolean] true if the specified IP address is contained in the network.
@@ -93,6 +76,7 @@ module Netaddr
     # @return [Boolean] true if both objects represent the same network
     #
     def ==(other)
+      other = self.class.new(other) if !other.kind_of?(self.class)
       @prefix == other.prefix && @length == other.length
     end
 
@@ -122,6 +106,13 @@ module Netaddr
     def >=(other)
       other = self.class.new(other) unless other.kind_of?(self.class)
       @length <= other.length && ((other.prefix & mask) == @prefix)
+    end
+
+    # @return [Boolean] true if the other network overlaps with us
+    #
+    def overlaps(other)
+      other = self.class.new(other) unless other.kind_of?(self.class)
+      self <= other || self >= other
     end
 
     # @return [IPNet] a network enlarged by n bits, keeping the same prefix (resetting the host bytes)

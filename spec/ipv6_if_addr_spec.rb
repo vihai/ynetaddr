@@ -52,11 +52,12 @@ end
 
 describe Netaddr::IPv6IfAddr, :network do
   it 'is correctly calculated' do
-#    Netaddr::IPv6IfAddr.new('::1/0').network.should == 
-#    Netaddr::IPv6IfAddr.new('2a::1/8').network.should == 
-#    Netaddr::IPv6IfAddr.new('2a02:20::1/32').network.should == 
-#    Netaddr::IPv6IfAddr.new('2a02:20::1/127').network.should == 
-#    Netaddr::IPv6IfAddr.new('2a02:20::1/128').network.should == 
+    Netaddr::IPv6IfAddr.new('::1/0').network.should == '::/0'
+    Netaddr::IPv6IfAddr.new('2a::1/8').network.should == '2a::/8'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/32').network.should == '2a02:20::/32'
+    Netaddr::IPv6IfAddr.new('2a02:20:ffff:ffff:ffff:ffff:ffff:ffff/32').network.should == '2a02:20::/32'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/127').network.should == '2a02:20::0/127'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/128').network.should == '2a02:20::1/128'
   end
 end
 
@@ -83,25 +84,44 @@ end
 
 describe Netaddr::IPv6IfAddr, :address do
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv6IfAddr.new('::1/0').address.should == '::1'
+    Netaddr::IPv6IfAddr.new('2a::1/8').address.should == '2a::1'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/32').address.should == '2a02:20::1'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/127').address.should == '2a02:20::1'
+    Netaddr::IPv6IfAddr.new('2a02:20::1/128').address.should == '2a02:20::1'
   end
 end
 
 describe Netaddr::IPv6IfAddr, :nic_id do
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv6IfAddr.new('::1/0').nic_id.should == 1
+    Netaddr::IPv6IfAddr.new('2a::1/8').nic_id.should == 0x002a0000000000000000000000000001
+    Netaddr::IPv6IfAddr.new('2a02:20::1/32').nic_id.should == 1
+    Netaddr::IPv6IfAddr.new('2a02:20::1/127').nic_id.should == 1
+    Netaddr::IPv6IfAddr.new('2a02:20::1/128').nic_id.should == 0
   end
 end
 
 describe Netaddr::IPv6IfAddr, :include? do
-  it 'is correctly calculated' do
-# TODO
+  it 'matches correctly' do
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32').include?('2a02:19::0')).should be_false
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32').include?('2a02:20::0')).should be_true
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32').include?('2a02:20::1')).should be_true
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32').include?('2a02:20:ffff::1')).should be_true
   end
 end
 
 describe Netaddr::IPv6IfAddr, :== do
-  it 'is correctly calculated' do
-# TODO
+  it 'return true if interface addresses are equal' do
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32') == '2a02:20::1/32').should be_true
+  end
+
+  it 'returns false if interface addreses have different address' do
+    (Netaddr::IPv6IfAddr.new('2a02:20::2/32') == '2a02:20::1/32').should be_false
+  end
+
+  it 'returns false if interface addreses have different mask length' do
+    (Netaddr::IPv6IfAddr.new('2a02:20::1/32') == '2a02:20::1/31').should be_false
   end
 end
 
@@ -117,6 +137,6 @@ end
 
 describe Netaddr::IPv6IfAddr, :to_hash do
   it 'is correctly calculated' do
-# TODO
+    Netaddr::IPv6IfAddr.new('::5/32').should == { :addr => 0x5, :length => 32 }
   end
 end

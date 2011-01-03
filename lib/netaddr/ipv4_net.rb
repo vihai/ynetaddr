@@ -7,9 +7,6 @@ module Netaddr
 
     MASK = 0xffffffff
 
-    attr_reader :prefix
-    attr_accessor :length
-
     # Instantiates a new IPv4 network object
     #
     # @param net Any supported IPv4 representation to initialize from:
@@ -109,6 +106,13 @@ module Netaddr
       ipclass == :d
     end
 
+    # @return [IPAddr] the network address of this network or nil if not applicable
+    #
+    def network
+      return nil if @length >= @max_length - 1
+      @prefix
+    end
+
     # @return [IPAddr] the broadcast address of this network or nil if not applicable
     #
     def broadcast
@@ -133,6 +137,32 @@ module Netaddr
     #
     def to_ipv4net
       self
+    end
+
+    # @return [IPAddr] the first usable host of this network
+    #
+    # /31s and /32s for are properly handled
+    #
+    def host_min
+      if @length >= @max_length - 1
+        @prefix
+      else
+        @prefix + 1
+      end
+    end
+
+    # @return [IPAddr] the last usable host of this network
+    #
+    # /31s and /32s are properly handled
+    #
+    def host_max
+      if @length == @max_length
+        @prefix
+      elsif @length == @max_length - 1
+        @prefix | wildcard
+      else
+        (@prefix | wildcard) - 1
+      end
     end
   end
 end
