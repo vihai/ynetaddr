@@ -5,7 +5,7 @@ begin
   require 'jeweler'
 
   Jeweler::Tasks.new do |s|
-    s.name = 'netaddr'
+    s.name = 'ynetaddr'
     s.summary = 'Network addressing object'
     s.email = 'daniele@orlandi.com'
     s.homepage = 'http://www.orlandi.com/'
