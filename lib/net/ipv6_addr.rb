@@ -1,5 +1,5 @@
 
-module Netaddr
+module Net
 
   # IPv6 Address class
   #

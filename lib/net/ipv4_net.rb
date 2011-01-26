@@ -1,11 +1,24 @@
 
-module Netaddr
+module Net
 
   # IPv4 Network class
   #
   class IPv4Net < IPNet
 
     MASK = 0xffffffff
+
+    def self.summarize(list)
+      list.map! do |x|
+        case x
+        when IPv4Net ; x
+        when IPv4Addr ; IPv4Net.new(:prefix => x, :length => 32)
+        else x =~ /\// ? IPv4Net.new(x) : IPv4Net.new(:prefix => x, :length => 32)
+        end
+      end
+
+      list
+    end
+
 
     # Instantiates a new IPv4 network object
     #

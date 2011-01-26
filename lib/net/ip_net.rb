@@ -1,5 +1,5 @@
 
-module Netaddr
+module Net
 
   class IPNet
 

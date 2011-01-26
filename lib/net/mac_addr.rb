@@ -1,5 +1,5 @@
 
-module Netaddr
+module Net
 
   # Implements IEEE 802 MAC-address class with arithmetic and utility methods
   #

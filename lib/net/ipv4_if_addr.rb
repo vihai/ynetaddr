@@ -1,5 +1,5 @@
 
-module Netaddr
+module Net
 
   # IPv4 Interface Address class
   #

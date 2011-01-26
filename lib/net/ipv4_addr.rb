@@ -1,5 +1,5 @@
 
-module Netaddr
+module Net
 
   # IPv4 Address class
   #
@@ -104,6 +104,15 @@ module Netaddr
     #
     def multicast?
       ipclass == :d
+    end
+
+    # @return [MacAddr] corresponding MAC address
+    #
+    # Idea got from Dustin Spinhirne's Netaddr gem
+    def multicast_mac
+      raise 'not a multicast address' if !multicast?
+
+      MacAddr.new((@addr & 0x007fffff) | 0x01005e000000)
     end
 
     # Convert to IPv4Addr.

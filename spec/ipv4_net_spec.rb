@@ -1,5 +1,5 @@
 
-require File.expand_path('../../lib/netaddr', __FILE__)
+require 'ynetaddr'
 
 describe Netaddr::IPv4Net, 'constructor' do
   it 'accepts d.d.d.d/l format' do

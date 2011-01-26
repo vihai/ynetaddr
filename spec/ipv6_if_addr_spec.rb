@@ -1,5 +1,5 @@
 
-require File.expand_path('../../lib/netaddr', __FILE__)
+require 'ynetaddr'
 
 describe Netaddr::IPv6IfAddr, 'constructor' do
   it 'accepts hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh/l format' do
