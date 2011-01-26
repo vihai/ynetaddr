@@ -75,7 +75,7 @@ module Net
     # How should we treat ::0 and ::1 ?
     #
     def unicast?
-      !overlaps('ff00::/8')
+      !overlaps?('ff00::/8')
     end
 
     # @return [Boolean] true if the network is within the multicas address range
@@ -115,6 +115,18 @@ module Net
     #
     def to_ipv6net
       self
+    end
+
+    # @return [IPAddr] the first IP of this network
+    #
+    def ip_min
+      @prefix
+    end
+
+    # @return [IPAddr] the last IP of this network
+    #
+    def ip_max
+      @prefix | wildcard
     end
 
     # @return [IPAddr] the first usable host of this network

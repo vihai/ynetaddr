@@ -40,9 +40,13 @@ module Net
       @fullmask >> @length
     end
 
-    # @return [Range] a range of valid hosts in the network
+    # @return [Range] a range of IP addresses in the network
     #
-    # /31s and /32s for IPv4 and /127 and /128 for IPv6 are properly handled
+    def addresses
+      ip_min..ip_max
+    end
+
+    # @return [Range] a range of valid hosts in the network
     #
     def hosts
       host_min..host_max
@@ -110,7 +114,7 @@ module Net
 
     # @return [Boolean] true if the other network overlaps with us
     #
-    def overlaps(other)
+    def overlaps?(other)
       other = self.class.new(other) unless other.kind_of?(self.class)
       self <= other || self >= other
     end

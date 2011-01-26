@@ -161,6 +161,40 @@ describe Net::IPv6Net, :wildcard do
   end
 end
 
+describe Net::IPv6Net, :addresses do
+  it 'produces a range' do
+    Net::IPv6Net.new('2a02:20:1:2::/64').addresses.should be_kind_of(Range)
+  end
+
+  it 'produces the correct range' do
+    Net::IPv6Net.new('2a02:20:1:2::/64').addresses.should be_eql(
+      Net::IPv6Addr.new('2a02:20:1:2::0')..
+      Net::IPv6Addr.new('2a02:20:1:2:ffff:ffff:ffff:ffff'))
+    Net::IPv6Net.new('2a02:20:1:2::1/127').addresses.should be_eql(
+      Net::IPv6Addr.new('2a02:20:1:2::0')..
+      Net::IPv6Addr.new('2a02:20:1:2::1'))
+    Net::IPv6Net.new('2a02:20:1:2::1/128').addresses.should be_eql(
+      Net::IPv6Addr.new('2a02:20:1:2::1')..
+      Net::IPv6Addr.new('2a02:20:1:2::1'))
+  end
+end
+
+describe Net::IPv6Net, :ip_min do
+  it 'calculates the correct values' do
+    Net::IPv6Net.new('2a02:20:1:2::/64').ip_min.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::0/127').ip_min.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::1/128').ip_min.should == 0x2a020020000100020000000000000001
+  end
+end
+
+describe Net::IPv6Net, :ip_max do
+  it 'calculates the correct values' do
+    Net::IPv6Net.new('2a02:20:1:2::/64').ip_max.should == 0x2a02002000010002ffffffffffffffff
+    Net::IPv6Net.new('2a02:20:1:2::0/127').ip_max.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::1/128').ip_max.should == 0x2a020020000100020000000000000001
+  end
+end
+
 describe Net::IPv6Net, :hosts do
   it 'produces a range' do
     Net::IPv6Net.new('2a02:20:1:2::/64').hosts.should be_kind_of(Range)
@@ -337,29 +371,29 @@ describe Net::IPv6Net, :>= do
   end
 end
 
-describe Net::IPv6Net, :overlaps do
+describe Net::IPv6Net, :overlaps? do
   it 'is false for smaller non-overlapping networks' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/33')).should be_false
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02:30::/33')).should be_false
   end
 
   it 'is false for bigger non-overlapping networks' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/31')).should be_false
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02:30::/31')).should be_false
   end
 
   it 'is false for equal-size non-overlapping networks' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02:30::/32')).should be_false
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02:30::/32')).should be_false
   end
 
   it 'is true for same network' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02:20::/32')).should be_true
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02:20::/32')).should be_true
   end
 
   it 'is true for bigger network containing us' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02::/16')).should be_true
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02::/16')).should be_true
   end
 
   it 'is true for smaller network contained' do
-    (Net::IPv6Net.new('2a02:20::/32').overlaps('2a02:20:1::/48')).should be_true
+    (Net::IPv6Net.new('2a02:20::/32').overlaps?('2a02:20:1::/48')).should be_true
   end
 end
 

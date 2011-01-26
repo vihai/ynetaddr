@@ -191,6 +191,49 @@ describe Net::IPv4Net, :wildcard do
   end
 end
 
+describe Net::IPv4Net, :addresses do
+  it 'produces a range' do
+    Net::IPv4Net.new('10.0.0.0/8').addresses.should be_kind_of(Range)
+  end
+
+  it 'produces the correct range' do
+    Net::IPv4Net.new('192.168.0.0/29').addresses.should be_eql(
+      Net::IPv4Addr.new('192.168.0.0')..Net::IPv4Addr.new('192.168.0.7'))
+    Net::IPv4Net.new('192.168.0.0/30').addresses.should be_eql(
+      Net::IPv4Addr.new('192.168.0.0')..Net::IPv4Addr.new('192.168.0.3'))
+    Net::IPv4Net.new('192.168.0.0/31').addresses.should be_eql(
+      Net::IPv4Addr.new('192.168.0.0')..Net::IPv4Addr.new('192.168.0.1'))
+    Net::IPv4Net.new('192.168.0.0/32').addresses.should be_eql(
+      Net::IPv4Addr.new('192.168.0.0')..Net::IPv4Addr.new('192.168.0.0'))
+  end
+end
+
+describe Net::IPv4Net, :ip_min do
+  it 'is of type Net::IPv4Addr' do
+    Net::IPv4Net.new('0.0.0.0/0').ip_min.should be_an_instance_of(Net::IPv4Addr)
+  end
+
+  it 'calculates the correct values' do
+    Net::IPv4Net.new('192.168.0.0/29').ip_min.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/30').ip_min.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/31').ip_min.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/32').ip_min.should == 0xc0a80000
+  end
+end
+
+describe Net::IPv4Net, :ip_max do
+  it 'is of type Net::IPv4Addr' do
+    Net::IPv4Net.new('0.0.0.0/0').ip_min.should be_an_instance_of(Net::IPv4Addr)
+  end
+
+  it 'calculates the correct values' do
+    Net::IPv4Net.new('192.168.0.0/29').ip_max.should == 0xc0a80007
+    Net::IPv4Net.new('192.168.0.0/30').ip_max.should == 0xc0a80003
+    Net::IPv4Net.new('192.168.0.0/31').ip_max.should == 0xc0a80001
+    Net::IPv4Net.new('192.168.0.0/32').ip_max.should == 0xc0a80000
+  end
+end
+
 describe Net::IPv4Net, :hosts do
   it 'produces a range' do
     Net::IPv4Net.new('10.0.0.0/8').hosts.should be_kind_of(Range)
@@ -373,29 +416,29 @@ describe Net::IPv4Net, :>= do
   end
 end
 
-describe Net::IPv4Net, :overlaps do
+describe Net::IPv4Net, :overlaps? do
   it 'is false for smaller non-overlapping networks' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('10.1.1.1/24')).should be_false
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('10.1.1.1/24')).should be_false
   end
 
   it 'is false for bigger non-overlapping networks' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('10.0.0.0/8')).should be_false
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('10.0.0.0/8')).should be_false
   end
 
   it 'is false for equal-size non-overlapping networks' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('192.169.0.0/16')).should be_false
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('192.169.0.0/16')).should be_false
   end
 
   it 'is true for same network' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('192.168.0.0/16')).should be_true
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('192.168.0.0/16')).should be_true
   end
 
   it 'is true for bigger network containing us' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('192.0.0.0/8')).should be_true
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('192.0.0.0/8')).should be_true
   end
 
   it 'is true for smaller network contained' do
-    (Net::IPv4Net.new('192.168.0.0/16').overlaps('192.168.16.0/24')).should be_true
+    (Net::IPv4Net.new('192.168.0.0/16').overlaps?('192.168.16.0/24')).should be_true
   end
 end
 

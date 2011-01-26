@@ -152,9 +152,19 @@ module Net
       self
     end
 
-    # @return [IPAddr] the first usable host of this network
+    # @return [IPAddr] the first IP address in this network
     #
-    # /31s and /32s for are properly handled
+    def ip_min
+      @prefix
+    end
+
+    # @return [IPAddr] the last IP address in this network
+    #
+    def ip_max
+      @prefix | wildcard
+    end
+
+    # @return [IPAddr] the first usable host of this network
     #
     def host_min
       if @length >= @max_length - 1
