@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Daniele Orlandi"]
-  s.date = %q{2011-01-07}
+  s.date = %q{2011-01-26}
   s.description = %q{Implements MAC address, IPv4/IPv6 addresses/networks/interfaces}
   s.email = %q{daniele@orlandi.com}
   s.extra_rdoc_files = [
@@ -18,18 +18,18 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     "VERSION",
-    "lib/netaddr.rb",
-    "lib/netaddr/ip_addr.rb",
-    "lib/netaddr/ip_if_addr.rb",
-    "lib/netaddr/ip_net.rb",
-    "lib/netaddr/ip_tree.rb",
-    "lib/netaddr/ipv4_addr.rb",
-    "lib/netaddr/ipv4_if_addr.rb",
-    "lib/netaddr/ipv4_net.rb",
-    "lib/netaddr/ipv6_addr.rb",
-    "lib/netaddr/ipv6_if_addr.rb",
-    "lib/netaddr/ipv6_net.rb",
-    "lib/netaddr/mac_addr.rb",
+    "lib/net/ip_addr.rb",
+    "lib/net/ip_if_addr.rb",
+    "lib/net/ip_net.rb",
+    "lib/net/ip_tree.rb",
+    "lib/net/ipv4_addr.rb",
+    "lib/net/ipv4_if_addr.rb",
+    "lib/net/ipv4_net.rb",
+    "lib/net/ipv6_addr.rb",
+    "lib/net/ipv6_if_addr.rb",
+    "lib/net/ipv6_net.rb",
+    "lib/net/mac_addr.rb",
+    "lib/ynetaddr.rb",
     "spec/ipv4_addr_spec.rb",
     "spec/ipv4_if_addr_spec.rb",
     "spec/ipv4_net_spec.rb",
