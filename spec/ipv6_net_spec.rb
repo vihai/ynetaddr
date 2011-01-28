@@ -179,19 +179,19 @@ describe Net::IPv6Net, :addresses do
   end
 end
 
-describe Net::IPv6Net, :ip_min do
+describe Net::IPv6Net, :first_ip do
   it 'calculates the correct values' do
-    Net::IPv6Net.new('2a02:20:1:2::/64').ip_min.should == 0x2a020020000100020000000000000000
-    Net::IPv6Net.new('2a02:20:1:2::0/127').ip_min.should == 0x2a020020000100020000000000000000
-    Net::IPv6Net.new('2a02:20:1:2::1/128').ip_min.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::/64').first_ip.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::0/127').first_ip.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::1/128').first_ip.should == 0x2a020020000100020000000000000001
   end
 end
 
-describe Net::IPv6Net, :ip_max do
+describe Net::IPv6Net, :last_ip do
   it 'calculates the correct values' do
-    Net::IPv6Net.new('2a02:20:1:2::/64').ip_max.should == 0x2a02002000010002ffffffffffffffff
-    Net::IPv6Net.new('2a02:20:1:2::0/127').ip_max.should == 0x2a020020000100020000000000000001
-    Net::IPv6Net.new('2a02:20:1:2::1/128').ip_max.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::/64').last_ip.should == 0x2a02002000010002ffffffffffffffff
+    Net::IPv6Net.new('2a02:20:1:2::0/127').last_ip.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::1/128').last_ip.should == 0x2a020020000100020000000000000001
   end
 end
 
@@ -213,19 +213,19 @@ describe Net::IPv6Net, :hosts do
   end
 end
 
-describe Net::IPv6Net, :host_min do
+describe Net::IPv6Net, :first_host do
   it 'calculates the correct values' do
-    Net::IPv6Net.new('2a02:20:1:2::/64').host_min.should == 0x2a020020000100020000000000000000
-    Net::IPv6Net.new('2a02:20:1:2::0/127').host_min.should == 0x2a020020000100020000000000000000
-    Net::IPv6Net.new('2a02:20:1:2::1/128').host_min.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::/64').first_host.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::0/127').first_host.should == 0x2a020020000100020000000000000000
+    Net::IPv6Net.new('2a02:20:1:2::1/128').first_host.should == 0x2a020020000100020000000000000001
   end
 end
 
-describe Net::IPv6Net, :host_max do
+describe Net::IPv6Net, :last_host do
   it 'calculates the correct values' do
-    Net::IPv6Net.new('2a02:20:1:2::/64').host_max.should == 0x2a02002000010002ffffffffffffffff
-    Net::IPv6Net.new('2a02:20:1:2::0/127').host_max.should == 0x2a020020000100020000000000000001
-    Net::IPv6Net.new('2a02:20:1:2::1/128').host_max.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::/64').last_host.should == 0x2a02002000010002ffffffffffffffff
+    Net::IPv6Net.new('2a02:20:1:2::0/127').last_host.should == 0x2a020020000100020000000000000001
+    Net::IPv6Net.new('2a02:20:1:2::1/128').last_host.should == 0x2a020020000100020000000000000001
   end
 end
 

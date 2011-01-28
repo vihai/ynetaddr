@@ -154,19 +154,19 @@ module Net
 
     # @return [IPAddr] the first IP address in this network
     #
-    def ip_min
+    def first_ip
       @prefix
     end
 
     # @return [IPAddr] the last IP address in this network
     #
-    def ip_max
+    def last_ip
       @prefix | wildcard
     end
 
     # @return [IPAddr] the first usable host of this network
     #
-    def host_min
+    def first_host
       if @length >= @max_length - 1
         @prefix
       else
@@ -178,7 +178,7 @@ module Net
     #
     # /31s and /32s are properly handled
     #
-    def host_max
+    def last_host
       if @length == @max_length
         @prefix
       elsif @length == @max_length - 1

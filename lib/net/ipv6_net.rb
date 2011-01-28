@@ -119,25 +119,25 @@ module Net
 
     # @return [IPAddr] the first IP of this network
     #
-    def ip_min
+    def first_ip
       @prefix
     end
 
     # @return [IPAddr] the last IP of this network
     #
-    def ip_max
+    def last_ip
       @prefix | wildcard
     end
 
     # @return [IPAddr] the first usable host of this network
     #
-    def host_min
+    def first_host
       @prefix
     end
 
     # @return [IPAddr] the last usable host of this network
     #
-    def host_max
+    def last_host
       @prefix | wildcard
     end
   end

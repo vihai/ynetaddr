@@ -44,13 +44,13 @@ module Net
     # @return [Range] a range of IP addresses in the network
     #
     def addresses
-      ip_min..ip_max
+      first_ip..last_ip
     end
 
     # @return [Range] a range of valid hosts in the network
     #
     def hosts
-      host_min..host_max
+      first_host..last_host
     end
 
     # @return [Boolean] true if the specified IP address is contained in the network.

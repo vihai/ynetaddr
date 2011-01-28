@@ -208,29 +208,29 @@ describe Net::IPv4Net, :addresses do
   end
 end
 
-describe Net::IPv4Net, :ip_min do
+describe Net::IPv4Net, :first_ip do
   it 'is of type Net::IPv4Addr' do
-    Net::IPv4Net.new('0.0.0.0/0').ip_min.should be_an_instance_of(Net::IPv4Addr)
+    Net::IPv4Net.new('0.0.0.0/0').first_ip.should be_an_instance_of(Net::IPv4Addr)
   end
 
   it 'calculates the correct values' do
-    Net::IPv4Net.new('192.168.0.0/29').ip_min.should == 0xc0a80000
-    Net::IPv4Net.new('192.168.0.0/30').ip_min.should == 0xc0a80000
-    Net::IPv4Net.new('192.168.0.0/31').ip_min.should == 0xc0a80000
-    Net::IPv4Net.new('192.168.0.0/32').ip_min.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/29').first_ip.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/30').first_ip.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/31').first_ip.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/32').first_ip.should == 0xc0a80000
   end
 end
 
-describe Net::IPv4Net, :ip_max do
+describe Net::IPv4Net, :last_ip do
   it 'is of type Net::IPv4Addr' do
-    Net::IPv4Net.new('0.0.0.0/0').ip_min.should be_an_instance_of(Net::IPv4Addr)
+    Net::IPv4Net.new('0.0.0.0/0').first_ip.should be_an_instance_of(Net::IPv4Addr)
   end
 
   it 'calculates the correct values' do
-    Net::IPv4Net.new('192.168.0.0/29').ip_max.should == 0xc0a80007
-    Net::IPv4Net.new('192.168.0.0/30').ip_max.should == 0xc0a80003
-    Net::IPv4Net.new('192.168.0.0/31').ip_max.should == 0xc0a80001
-    Net::IPv4Net.new('192.168.0.0/32').ip_max.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/29').last_ip.should == 0xc0a80007
+    Net::IPv4Net.new('192.168.0.0/30').last_ip.should == 0xc0a80003
+    Net::IPv4Net.new('192.168.0.0/31').last_ip.should == 0xc0a80001
+    Net::IPv4Net.new('192.168.0.0/32').last_ip.should == 0xc0a80000
   end
 end
 
@@ -251,29 +251,29 @@ describe Net::IPv4Net, :hosts do
   end
 end
 
-describe Net::IPv4Net, :host_min do
+describe Net::IPv4Net, :first_host do
   it 'is of type Net::IPv4Addr' do
-    Net::IPv4Net.new('0.0.0.0/0').host_min.should be_an_instance_of(Net::IPv4Addr)
+    Net::IPv4Net.new('0.0.0.0/0').first_host.should be_an_instance_of(Net::IPv4Addr)
   end
 
   it 'calculates the correct values' do
-    Net::IPv4Net.new('192.168.0.0/29').host_min.should == 0xc0a80001
-    Net::IPv4Net.new('192.168.0.0/30').host_min.should == 0xc0a80001
-    Net::IPv4Net.new('192.168.0.0/31').host_min.should == 0xc0a80000
-    Net::IPv4Net.new('192.168.0.0/32').host_min.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/29').first_host.should == 0xc0a80001
+    Net::IPv4Net.new('192.168.0.0/30').first_host.should == 0xc0a80001
+    Net::IPv4Net.new('192.168.0.0/31').first_host.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/32').first_host.should == 0xc0a80000
   end
 end
 
-describe Net::IPv4Net, :host_max do
+describe Net::IPv4Net, :last_host do
   it 'is of type Net::IPv4Addr' do
-    Net::IPv4Net.new('0.0.0.0/0').host_min.should be_an_instance_of(Net::IPv4Addr)
+    Net::IPv4Net.new('0.0.0.0/0').first_host.should be_an_instance_of(Net::IPv4Addr)
   end
 
   it 'calculates the correct values' do
-    Net::IPv4Net.new('192.168.0.0/29').host_max.should == 0xc0a80006
-    Net::IPv4Net.new('192.168.0.0/30').host_max.should == 0xc0a80002
-    Net::IPv4Net.new('192.168.0.0/31').host_max.should == 0xc0a80001
-    Net::IPv4Net.new('192.168.0.0/32').host_max.should == 0xc0a80000
+    Net::IPv4Net.new('192.168.0.0/29').last_host.should == 0xc0a80006
+    Net::IPv4Net.new('192.168.0.0/30').last_host.should == 0xc0a80002
+    Net::IPv4Net.new('192.168.0.0/31').last_host.should == 0xc0a80001
+    Net::IPv4Net.new('192.168.0.0/32').last_host.should == 0xc0a80000
   end
 end
 
