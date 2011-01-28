@@ -5,6 +5,7 @@ module Net
 
     attr_reader :prefix
     attr_reader :length
+    attr_reader :max_length
 
     # Explicitly set the prefix. If any host bits are set, they will be reset to zero
     #
@@ -139,6 +140,12 @@ module Net
       else
         false
       end
+    end
+
+    # Used for sorting, bigger network is greater than small network, for equal-size networks order by prefix value
+    #
+    def <=>(other)
+      self.length == other.length ? self.prefix <=> other.prefix : other.length <=> self.length
     end
 
     private

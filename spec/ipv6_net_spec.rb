@@ -423,3 +423,25 @@ describe Net::IPv6Net, :=== do
     (Net::IPv6Net.new('2a02:20::/32') === Net::IPv6Addr.new('2a02:ff::1')).should be_false
   end
 end
+
+describe Net::IPv6Net, :<=> do
+  it 'returns 0 if networks are equal' do
+    (Net::IPv6Net.new('2a02:20::/32') <=> Net::IPv6Net.new('2a02:20::/32')).should == 0
+  end
+
+  it 'returns -1 if networks have the same prefix length and prefix a < prefix b' do
+    (Net::IPv6Net.new('2a02:20::/32') <=> Net::IPv6Net.new('2a02:30::/32')).should == -1
+  end
+
+  it 'returns +1 if networks have the same prefix length and prefix a < prefix b' do
+    (Net::IPv6Net.new('2a02:20::/32') <=> Net::IPv6Net.new('2a02:10::/32')).should == 1
+  end
+
+  it 'returns -1 if network a is smaller than network b' do
+    (Net::IPv6Net.new('2a02:20::/32') <=> Net::IPv6Net.new('2a02:20::/31')).should == -1
+  end
+
+  it 'returns +1 if network a is bigger than network b' do
+    (Net::IPv6Net.new('2a02:20::/32') <=> Net::IPv6Net.new('2a02:20::/33')).should == 1
+  end
+end

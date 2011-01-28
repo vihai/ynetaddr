@@ -473,3 +473,25 @@ describe Net::IPv4Net, :=== do
     (Net::IPv4Net.new('192.168.0.0/24') === 1234).should be_false
   end
 end
+
+describe Net::IPv4Net, :<=> do
+  it 'returns 0 if networks are equal' do
+    (Net::IPv4Net.new('192.168.0.0/24') <=> Net::IPv4Net.new('192.168.0.0/24')).should == 0
+  end
+
+  it 'returns -1 if networks have the same prefix length and prefix a < prefix b' do
+    (Net::IPv4Net.new('192.168.0.0/24') <=> Net::IPv4Net.new('192.169.0.0/24')).should == -1
+  end
+
+  it 'returns +1 if networks have the same prefix length and prefix a < prefix b' do
+    (Net::IPv4Net.new('192.168.0.0/24') <=> Net::IPv4Net.new('192.167.0.0/24')).should == 1
+  end
+
+  it 'returns -1 if network a is smaller than network b' do
+    (Net::IPv4Net.new('192.168.0.0/24') <=> Net::IPv4Net.new('192.168.0.0/23')).should == -1
+  end
+
+  it 'returns +1 if network a is bigger than network b' do
+    (Net::IPv4Net.new('192.168.0.0/24') <=> Net::IPv4Net.new('192.168.0.0/25')).should == 1
+  end
+end
