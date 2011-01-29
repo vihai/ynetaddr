@@ -11,3 +11,5 @@ require 'net/ipv4_if_addr'
 require 'net/ipv6_addr'
 require 'net/ipv6_net'
 require 'net/ipv6_if_addr'
+
+require 'net/ip_tree'

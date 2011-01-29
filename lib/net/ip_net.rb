@@ -7,6 +7,18 @@ module Net
     attr_reader :length
     attr_reader :max_length
 
+    # Automatically instantiate the correct network depending on the parsed string
+    #
+    # @return [IPv4Net, IPv6Net] the instantiated network
+    #
+    def self.from_string(*args)
+      begin
+        IPv6Net.new(*args)
+      rescue ArgumentError
+        IPv4Net.new(*args)
+      end
+    end
+
     # Explicitly set the prefix. If any host bits are set, they will be reset to zero
     #
     # @param [Integer, IPAddr] p Integer host byte-order representation of the prefix
