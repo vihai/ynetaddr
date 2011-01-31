@@ -18,7 +18,7 @@ module Net
     # @param net [Net::IPNet, String] Root network. If a string is specified the address family will be deducted
     # @param used [Boolean]           used mainly internally when creating support nodes.
     #
-    def initialize(net = '::/0', used = true)
+    def initialize(net = '::/0', used = false)
 
       if net.respond_to?(:each)
         initialize(net.first, used)
@@ -104,9 +104,11 @@ module Net
     #
     def free_space(max_length = 32)
 
-      return [] if @network.length >= max_length
+      return [] if @network.length > max_length
+      return @network if !@l && !@r && !@used
 
       res = []
+
 
       if @l
         res += @l.free_space(max_length)
