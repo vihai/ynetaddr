@@ -105,7 +105,7 @@ module Net
     def free_space(max_length = 32)
 
       return [] if @network.length > max_length
-      return @network if !@l && !@r && !@used
+      return [@network] if !@l && !@r && !@used
 
       res = []
 
