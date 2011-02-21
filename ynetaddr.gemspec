@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ynetaddr}
-  s.version = "1.3.1"
+  s.version = "1.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Daniele Orlandi"]
-  s.date = %q{2011-01-31}
+  s.date = %q{2011-02-21}
   s.description = %q{Implements MAC address, IPv4/IPv6 addresses/networks/interfaces}
   s.email = %q{daniele@orlandi.com}
   s.extra_rdoc_files = [
