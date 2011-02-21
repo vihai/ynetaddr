@@ -8,12 +8,12 @@ describe IPTree, 'constructor' do
     IPTree.new('2a02:20:1:2::/64').network.should == IPv6Net.new('2a02:20:1:2::/64')
   end
 
-  it 'created node with specified network should be marked as used' do
-    IPTree.new('2a02:20:1:2::/64').used.should be_true
+  it 'created node with specified network should not be marked as used' do
+    IPTree.new('2a02:20:1:2::/64').used.should be_false
   end
 
   it 'initializes from array' do
-    IPTree.new(['0.0.0.0/0', '62.212.0.0/24', '10.0.0.0/24']).used.should be_true
+    IPTree.new(['0.0.0.0/0', '62.212.0.0/24', '10.0.0.0/24']).used.should be_false
   end
 end
 
@@ -25,7 +25,7 @@ describe IPTree, :add do
     net.add('2a02:20::/32')
     net.add('2a02:21::/32')
 
-    net.used.should be_true
+    net.used.should be_false
 
     net.l.network.should == '::/1'
     net.l.used.should be_false
@@ -184,7 +184,7 @@ end
 describe IPTree, :networks do
   it 'should return inserted networks' do
     net = IPTree.new(['::/0', '2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
-    net.networks.sort.should == [ '2a02:20::/32', '2a02:21::/32', '2a02:8000::/17', '2a02::/16', '::/0' ]
+    net.networks.sort.should == [ '2a02:20::/32', '2a02:21::/32', '2a02:8000::/17', '2a02::/16' ]
   end
 end
 
@@ -199,19 +199,29 @@ end
 describe IPTree, :free_space do
   it 'returns free space' do
     net = IPTree.new('::/0')
-    net.add([ '2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    net.add([ 'f000::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     net.free_space.sort.should ==
       ['2a02:22::/31', '2a02:24::/30', '2a02:28::/29', '2a02:30::/28', '2a02::/27', '2a02:40::/26', '2a02:80::/25',
        '2a02:100::/24', '2a02:200::/23', '2a02:400::/22', '2a02:800::/21', '2a02:1000::/20', '2a02:2000::/19', '2a02:4000::/18',
-       '2a02:8000::/18', '2a02:c000::/18', '2a03::/16', '2a00::/15', '2a04::/14', '2a08::/13', '2a10::/12', '2a20::/11',
-       '2a40::/10', '2a80::/9', '2b00::/8', '2800::/7', '2c00::/6', '2000::/5', '3000::/4', '::/3', '4000::/2', '8000::/1']
+       '2a03::/16', 'f001::/16', '2a00::/15', 'f002::/15', '2a04::/14', 'f004::/14', '2a08::/13', 'f008::/13', '2a10::/12',
+       'f010::/12', '2a20::/11', 'f020::/11', '2a40::/10', 'f040::/10', '2a80::/9', 'f080::/9', '2b00::/8', 'f100::/8',
+       '2800::/7', 'f200::/7', '2c00::/6', 'f400::/6', '2000::/5', 'f800::/5', '3000::/4', 'e000::/4', '::/3', 'c000::/3',
+       '4000::/2', '8000::/2']
   end
 end
 
 describe IPTree, :pick_free do
   it 'picks smallest free network' do
-    net = IPTree.new(['::/0', '2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
-    net.pick_free(64).should == '2a02:20::/64'
+    net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    net.pick_free(64).should == '2a02:22::/64'
+  end
+end
+
+describe IPTree, :pick_free do
+  it 'picks next smallest free network' do
+    net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    net.pick_free(64).should == '2a02:22::/64'
+    net.pick_free(64).should == '2a02:22:0:1::/64'
   end
 end
 
