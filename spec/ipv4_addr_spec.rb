@@ -215,12 +215,12 @@ end
 
 describe IPv4Addr, :succ do
   it 'returns a IPv4Addr' do
-    IPv4Addr.new('1.2.3.4').succ.should be_an_instance_of(IPv4Addr)
+    IPv4Addr.new('1.2.3.4').send(:succ).should be_an_instance_of(IPv4Addr)
   end
 
-  it 'calculates the correct values' do
-    IPv4Addr.new('1.2.3.4').succ.should == IPv4Addr.new('1.2.3.5')
-    IPv4Addr.new('192.168.255.255').succ.should == IPv4Addr.new('192.169.0.0')
+  it 'return successive IP address by adding 1' do
+    IPv4Addr.new('1.2.3.4').send(:succ).should == IPv4Addr.new('1.2.3.5')
+    IPv4Addr.new('192.168.255.255').send(:succ).should == IPv4Addr.new('192.169.0.0')
   end
 end
 

@@ -43,16 +43,6 @@ module Net
       end
     end
 
-    # Gets the successive value by finding next NIC value
-    # Raises BadArithmetic if the increment would change the OUI
-    #
-    # @return [MacAddr] new MacAddr with incremented NIC value
-    #
-    def succ
-      raise BadArithmetic if self.nic == 0xffffff
-      MacAddr.new(@addr + 1)
-    end
-
     # Returns true if the address is unicast
     #
     # @return [Boolean] true if the address is unicast
@@ -209,5 +199,18 @@ module Net
     def hash
       @addr
     end
+
+    protected
+
+    # Gets the successive value by finding next NIC value
+    # Raises BadArithmetic if the increment would change the OUI
+    #
+    # @return [MacAddr] new MacAddr with incremented NIC value
+    #
+    def succ
+      raise BadArithmetic if self.nic == 0xffffff
+      MacAddr.new(@addr + 1)
+    end
+
   end
 end

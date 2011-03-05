@@ -28,12 +28,6 @@ module Net
       net.include?(self)
     end
 
-    # @return [IPv6Addr] the "next" IPv6 address while enumerating hosts in a network, needed to be Comparable
-    #
-    def succ
-      self.class.new(@addr + 1)
-    end
-
     # Compare two IPv6 addresses. The address may be compared to another IPv6Addr object or a string representation of it
     #
     # @return [Boolean] true if the IP addresses match.
@@ -109,6 +103,15 @@ module Net
     def hash
       @addr
     end
+
+    protected
+
+    # @return [IPv6Addr] the "next" IPv6 address while enumerating hosts in a network, needed to be Comparable
+    #
+    def succ
+      self.class.new(@addr + 1)
+    end
+
   end
 
 end

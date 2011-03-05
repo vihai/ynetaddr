@@ -26,12 +26,12 @@ describe MacAddr, 'constructor' do
 end
 
 describe MacAddr, :succ do
-  it 'calculates successive' do
-    MacAddr.new('0012.3456.789a').succ.should == '0012.3456.789b'
+  it 'calculates successive address by adding 1 to the NIC ID' do
+    MacAddr.new('0012.3456.789a').send(:succ).should == '0012.3456.789b'
   end
 
   it 'raises an error in case of wrapping NIC ID' do
-    lambda { MacAddr.new('0012.34ff.ffff').succ }.should raise_error(MacAddr::BadArithmetic)
+    lambda { MacAddr.new('0012.34ff.ffff').send(:succ) }.should raise_error(MacAddr::BadArithmetic)
   end
 end
 
