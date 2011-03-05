@@ -3,6 +3,22 @@ module Net
 
   class IPAddr
 
+    # Automatically instantiate the correct network depending on the parsed string
+    #
+    # @return [IPv4Addr, IPv6Addr] the instantiated network
+    #
+    def self.new(*args)
+      if self == IPAddr
+        begin
+          IPv6Addr.new(*args)
+        rescue ArgumentError
+          IPv4Addr.new(*args)
+        end
+      else
+        super
+      end
+    end
+
     # @param [String, IPv4Net] net An IPv4Net or String representation of an IPv4 network
     # @return [Boolean] true if the IPv4 network includes this IP address
     #

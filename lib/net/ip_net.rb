@@ -11,11 +11,15 @@ module Net
     #
     # @return [IPv4Net, IPv6Net] the instantiated network
     #
-    def self.from_string(*args)
-      begin
-        IPv6Net.new(*args)
-      rescue ArgumentError
-        IPv4Net.new(*args)
+    def self.new(*args)
+      if self == IPNet
+        begin
+          IPv6Net.new(*args)
+        rescue ArgumentError
+          IPv4Net.new(*args)
+        end
+      else
+        super
       end
     end
 
