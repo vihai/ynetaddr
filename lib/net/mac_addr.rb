@@ -180,6 +180,14 @@ module Net
       ('%012x' % @addr).scan(/../).join('-')
     end
 
+    # @return [String] hexadecimal contiguous representation of the MAC-address
+    #
+    # Example: "00123456789a"
+    #
+    def to_s_plain
+     '%012x' % @addr
+    end
+
     # @return [String] the dash separated octet representation of the MAC-address
     #
     # Example: "00-12-34-56-78-9a"

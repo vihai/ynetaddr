@@ -153,6 +153,12 @@ describe MacAddr, :to_s_dash do
   end
 end
 
+describe MacAddr, :to_s_plain do
+  it 'outputs the MAC address in plain hexadecimal form' do
+    MacAddr.new('0012.3456.789a').to_s_plain.should == '00123456789a'
+  end
+end
+
 describe MacAddr, :to_oid do
   it 'outputs correctly' do
     MacAddr.new('0012.3456.789a').to_oid.should == '0.18.52.86.120.154'
