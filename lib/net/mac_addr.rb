@@ -104,6 +104,7 @@ module Net
     # @return [Boolean] true if the address matches
     #
     def ==(other)
+      return false if !other
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr == other.to_i
     end

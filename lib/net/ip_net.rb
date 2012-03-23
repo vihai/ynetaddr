@@ -97,6 +97,7 @@ module Net
     # @return [Boolean] true if both objects represent the same network
     #
     def ==(other)
+      return false if !other
       other = self.class.new(other) if !other.kind_of?(self.class)
       @prefix == other.prefix && @length == other.length
     end
@@ -151,11 +152,7 @@ module Net
     # Case comparison. If the object being matched is an IPv4/v6Addr return true if it is contained in the network
     #
     def ===(other)
-      if other.kind_of?(@address_class)
-        (other & mask) == @prefix
-      else
-        false
-      end
+      other.kind_of?(@address_class) && (other & mask) == @prefix
     end
 
     # Used for sorting, bigger network is greater than small network, for equal-size networks order by prefix value

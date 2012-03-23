@@ -42,6 +42,7 @@ module Net
     # @return [Boolean] true if both objects represent the same interface address
     #
     def ==(other)
+      return false if !other
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr == other.addr && @length == other.length
     end
