@@ -1,3 +1,5 @@
+require 'net/addr/version'
+
 require 'net/mac_addr'
 
 require 'net/ip_addr'
