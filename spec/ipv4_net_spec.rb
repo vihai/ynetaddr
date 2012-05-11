@@ -358,6 +358,19 @@ describe IPv4Net, :< do
     (IPv4Net.new('0.0.0.0/0') < IPv4Net.new('0.0.0.0/0')).should be_false
     (IPv4Net.new('255.255.255.255/32') < IPv4Net.new('0.0.0.0/0')).should be_true
   end
+
+  it 'compares correctly with Range' do
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.3.0'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.128'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') < (IPv4Addr.new('192.168.1.128')..IPv4Addr.new('192.168.2.255'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/32') < (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.0'))).should be_false
+    (IPv4Net.new('192.168.1.0/32') < (IPv4Addr.new('192.168.0.255')..IPv4Addr.new('192.168.1.1'))).should be_true
+  end
 end
 
 describe IPv4Net, :<= do
@@ -378,6 +391,19 @@ describe IPv4Net, :<= do
     (IPv4Net.new('0.0.0.0/0') <= IPv4Net.new('0.0.0.0/0')).should be_true
     (IPv4Net.new('255.255.255.255/32') <= IPv4Net.new('0.0.0.0/0')).should be_true
   end
+
+  it 'compares correctly with Range' do
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.1.255'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_true
+
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.3.0'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.128'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') <= (IPv4Addr.new('192.168.1.128')..IPv4Addr.new('192.168.2.255'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/32') <= (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.0'))).should be_true
+    (IPv4Net.new('192.168.1.0/32') <= (IPv4Addr.new('192.168.0.255')..IPv4Addr.new('192.168.1.1'))).should be_true
+  end
 end
 
 describe IPv4Net, :> do
@@ -397,6 +423,19 @@ describe IPv4Net, :> do
     (IPv4Net.new('0.0.0.0/0') > IPv4Net.new('0.0.0.0/0')).should be_false
     (IPv4Net.new('255.255.255.255/32') > IPv4Net.new('0.0.0.0/0')).should be_false
   end
+
+  it 'compares correctly with Range' do
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.1')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.128'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.1')..IPv4Addr.new('192.168.1.254'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.128')..IPv4Addr.new('192.168.1.255'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/32') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.0'))).should be_false
+    (IPv4Net.new('192.168.1.0/32') > (IPv4Addr.new('192.168.0.255')..IPv4Addr.new('192.168.1.1'))).should be_false
+  end
 end
 
 describe IPv4Net, :>= do
@@ -415,6 +454,19 @@ describe IPv4Net, :>= do
     (IPv4Net.new('0.0.0.0/1') >= IPv4Net.new('0.0.0.0/0')).should be_false
     (IPv4Net.new('0.0.0.0/0') >= IPv4Net.new('0.0.0.0/0')).should be_true
     (IPv4Net.new('255.255.255.255/32') >= IPv4Net.new('0.0.0.0/0')).should be_false
+  end
+
+  it 'compares correctly with Range' do
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.1')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.128'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.1')..IPv4Addr.new('192.168.1.254'))).should be_true
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.255'))).should be_false
+    (IPv4Net.new('192.168.1.0/24') > (IPv4Addr.new('192.168.1.128')..IPv4Addr.new('192.168.1.255'))).should be_false
+
+    (IPv4Net.new('192.168.1.0/32') > (IPv4Addr.new('192.168.1.0')..IPv4Addr.new('192.168.1.0'))).should be_false
+    (IPv4Net.new('192.168.1.0/32') > (IPv4Addr.new('192.168.0.255')..IPv4Addr.new('192.168.1.1'))).should be_false
   end
 end
 

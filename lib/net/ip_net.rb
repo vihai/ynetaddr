@@ -102,32 +102,48 @@ module Net
       @prefix == other.prefix && @length == other.length
     end
 
-    # @return [Boolean] true if specified network contains this network and does not coincide with it
+    # @return [Boolean] true if specified network or Range contains this network and does not coincide with it
     #
     def <(other)
-      other = self.class.new(other) unless other.kind_of?(self.class)
-      @length > other.length && ((@prefix & other.mask) == other.prefix)
+      if other.kind_of?(Range)
+        other.cover?(first_ip) && other.cover?(last_ip) && other.first != first_ip && other.last != last_ip
+      else
+        other = self.class.new(other) unless other.kind_of?(self.class)
+        @length > other.length && ((@prefix & other.mask) == other.prefix)
+      end
     end
 
-    # @return [Boolean] true if specified network is contained in this network and does not coincide with it
+    # @return [Boolean] true if specified network or Range is contained in this network and does not coincide with it
     #
     def >(other)
-      other = self.class.new(other) unless other.kind_of?(self.class)
-      @length < other.length && ((other.prefix & mask) == @prefix)
+      if other.kind_of?(Range)
+        include?(other.first) && include?(other.last) &&  other.first != first_ip && other.last != last_ip
+      else
+        other = self.class.new(other) unless other.kind_of?(self.class)
+        @length < other.length && ((other.prefix & mask) == @prefix)
+      end
     end
 
-    # @return [Boolean] true if specified network contains this network
+    # @return [Boolean] true if specified network or Range contains this network
     #
     def <=(other)
-      other = self.class.new(other) unless other.kind_of?(self.class)
-      @length >= other.length && ((@prefix & other.mask) == other.prefix)
+      if other.kind_of?(Range)
+        other.cover?(first_ip) && other.cover?(last_ip)
+      else
+        other = self.class.new(other) unless other.kind_of?(self.class)
+        @length >= other.length && ((@prefix & other.mask) == other.prefix)
+      end
     end
 
-    # @return [Boolean] true if specified network is contained in this netwok
+    # @return [Boolean] true if specified network or Range is contained in this netwok
     #
     def >=(other)
-      other = self.class.new(other) unless other.kind_of?(self.class)
-      @length <= other.length && ((other.prefix & mask) == @prefix)
+      if other.kind_of?(Range)
+        include?(other.first) && include?(other.last)
+      else
+        other = self.class.new(other) unless other.kind_of?(self.class)
+        @length <= other.length && ((other.prefix & mask) == @prefix)
+      end
     end
 
     # @return [Boolean] true if the other network overlaps with us

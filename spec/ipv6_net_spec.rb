@@ -291,6 +291,38 @@ describe IPv6Net, :< do
   it 'is true for networks bigger than us with different but contained prefix' do
     (IPv6Net.new('2a02:20::/32') < IPv6Net.new('2a02:21::/16')).should be_true
   end
+
+  it 'is false for Ranges way smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20::ceef'))).should be_false
+  end
+
+  it 'is false for Ranges slightly smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:20::1')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:fffe'))).should be_false
+  end
+
+  it 'is true for Ranges way bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:10::')..IPv6Addr.new('2a02:20:20:30::'))).should be_true
+  end
+
+  it 'is true for Ranges slightly bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:1f:ffff:ffff:ffff:ffff')..IPv6Addr.new('2a02:20:20:21::'))).should be_true
+  end
+
+  it 'is false if the Range\'s first IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:20::')..IPv6Addr.new('2a02:20:20:21::'))).should be_false
+  end
+
+  it 'is false if the Range\'s last IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:20::128')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:ffff'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the left' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:1f::beef')..IPv6Addr.new('2a02:20:20:20::beef'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the right' do
+    (IPv6Net.new('2a02:20:20:20::/64') < (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:21::beef'))).should be_false
+  end
 end
 
 describe IPv6Net, :<= do
@@ -316,6 +348,38 @@ describe IPv6Net, :<= do
 
   it 'is true for networks bigger than us with different but contained prefix' do
     (IPv6Net.new('2a02:20::/32') <= IPv6Net.new('2a02:21::/16')).should be_true
+  end
+
+  it 'is false for Ranges way smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20::ceef'))).should be_false
+  end
+
+  it 'is false for Ranges slightly smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:20::1')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:fffe'))).should be_false
+  end
+
+  it 'is true for Ranges way bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:10::')..IPv6Addr.new('2a02:20:20:30::'))).should be_true
+  end
+
+  it 'is true for Ranges slightly bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:1f:ffff:ffff:ffff:ffff')..IPv6Addr.new('2a02:20:20:21::'))).should be_true
+  end
+
+  it 'is true if the Range\'s first IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:20::')..IPv6Addr.new('2a02:20:20:21::'))).should be_true
+  end
+
+  it 'is true if the Range\'s last IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:1f::beef')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:ffff'))).should be_true
+  end
+
+  it 'is false if the Range partially overlaps on the left' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:1f::beef')..IPv6Addr.new('2a02:20:20:20::beef'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the right' do
+    (IPv6Net.new('2a02:20:20:20::/64') <= (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:21::beef'))).should be_false
   end
 end
 
@@ -344,6 +408,38 @@ describe IPv6Net, :> do
   it 'is false for networks bigger than us with different but contained prefix' do
     (IPv6Net.new('2a02:20::/32') > IPv6Net.new('2a02:21::/16')).should be_false
   end
+
+  it 'is true for Ranges way smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20::ceef'))).should be_true
+  end
+
+  it 'is true for Ranges slightly smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:20::1')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:fffe'))).should be_true
+  end
+
+  it 'is false for Ranges way bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:10::')..IPv6Addr.new('2a02:20:20:30::'))).should be_false
+  end
+
+  it 'is false for Ranges slightly bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:1f:ffff:ffff:ffff:ffff')..IPv6Addr.new('2a02:20:20:21::'))).should be_false
+  end
+
+  it 'is false if the Range\'s first IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:20::')..IPv6Addr.new('2a02:20:20:21::'))).should be_false
+  end
+
+  it 'is false if the Range\'s last IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:ffff'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the left' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:1f::beef')..IPv6Addr.new('2a02:20:20:20::beef'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the right' do
+    (IPv6Net.new('2a02:20:20:20::/64') > (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:21::beef'))).should be_false
+  end
 end
 
 describe IPv6Net, :>= do
@@ -370,6 +466,38 @@ describe IPv6Net, :>= do
 
   it 'is false for networks bigger than us with different but contained prefix' do
     (IPv6Net.new('2a02:20::/32') >= IPv6Net.new('2a02:21::/16')).should be_false
+  end
+
+  it 'is true for Ranges way smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20::ceef'))).should be_true
+  end
+
+  it 'is true for Ranges slightly smaller than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:20::1')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:fffe'))).should be_true
+  end
+
+  it 'is false for Ranges way bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:10::')..IPv6Addr.new('2a02:20:20:30::'))).should be_false
+  end
+
+  it 'is false for Ranges slightly bigger than the network' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:1f:ffff:ffff:ffff:ffff')..IPv6Addr.new('2a02:20:20:21::'))).should be_false
+  end
+
+  it 'is true if the Range\'s first IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:20::')..IPv6Addr.new('2a02:20:20:20::beef'))).should be_true
+  end
+
+  it 'is true if the Range\'s last IP is not strictly contained' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:20:ffff:ffff:ffff:ffff'))).should be_true
+  end
+
+  it 'is false if the Range partially overlaps on the left' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:1f::beef')..IPv6Addr.new('2a02:20:20:20::beef'))).should be_false
+  end
+
+  it 'is false if the Range partially overlaps on the right' do
+    (IPv6Net.new('2a02:20:20:20::/64') >= (IPv6Addr.new('2a02:20:20:20::beef')..IPv6Addr.new('2a02:20:20:21::beef'))).should be_false
   end
 end
 
