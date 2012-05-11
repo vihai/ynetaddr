@@ -172,12 +172,12 @@ describe IPTree, :add do
     net.add('2a02::/16')
     net.add('2a02:8000::/17')
     net.add([ '2a02:20::/32', '2a02:21::/32' ])
-    lambda { net.add('2a02:21::/32') }.should raise_error(ArgumentError)
+    lambda { net.add('2a02:21::/32') }.should raise_error(IPTree::NetworkAlreadyPresent)
   end
 
   it 'raises an error if a network outside the tree is added' do
     net = IPTree.new('2a02:20::/32')
-    lambda { net.add('8888::/32') }.should raise_error(ArgumentError)
+    lambda { net.add('8888::/32') }.should raise_error(IPTree::NetworkNotContained)
   end
 end
 

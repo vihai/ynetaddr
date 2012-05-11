@@ -44,6 +44,9 @@ module Net
       end
     end
 
+    class NetworkAlreadyPresent < StandardError ; end
+    class NetworkNotContained < StandardError ; end
+
     # Add a new network to the tree
     #
     # @param otehr [Net::IPNet, String] Network or array of networks to add
@@ -61,14 +64,14 @@ module Net
       other = @network.class.new(other) unless other.kind_of?(@network.class)
 
       if other == @network
-        raise ArgumentError, 'Network already present in tree' if @used
+        raise NetworkAlreadyPresent, 'Network already present in tree' if @used
 
         @used = true
         return
       end
 
       if !(other < @network)
-        raise ArgumentError, 'Net not contained'
+        raise NetworkNotContained, 'Net not contained'
       end
 
       if (other.prefix.to_i & (1 << (@network.max_length - (@network.length + 1))) == 0)
@@ -88,6 +91,8 @@ module Net
 
         @r.add(other)
       end
+
+      self
     end
 
     # Returns a list of networks in the tree
@@ -165,7 +170,7 @@ module Net
       s = ''
       s << @l.to_s(indent + (@used ? 2 : 0)) if @l
       s << @r.to_s(indent + (@used ? 2 : 0)) if @r
-      s = (' ' * indent) + @network.to_s + "\n" + s if @used
+      s = (' ' * indent) + @network.to_s + " *\n" + s if @used
       s
     end
   end
