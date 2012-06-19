@@ -115,7 +115,6 @@ module Net
 
       res = []
 
-
       if @l
         res += @l.free_space(max_length)
       else

@@ -215,9 +215,7 @@ describe IPTree, :pick_free do
     net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     net.pick_free(64).should == '2a02:22::/64'
   end
-end
 
-describe IPTree, :pick_free do
   it 'picks next smallest free network' do
     net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     net.pick_free(64).should == '2a02:22::/64'
