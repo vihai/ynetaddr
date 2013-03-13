@@ -107,11 +107,11 @@ module Net
 
     # Return a list of biggest contiguous subnets not used
     #
-    def free_space(max_length = 32)
+    def free_space(max_length = 128)
 
-      return [] if @network.length > max_length
       return [] if @used
       return [@network] if !@l && !@r
+      return [] if @network.length >= max_length
 
       res = []
 
