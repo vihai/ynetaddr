@@ -177,6 +177,11 @@ module Net
       self.length == other.length ? self.prefix <=> other.prefix : other.length <=> self.length
     end
 
+    # @return [IPNet] the next contiguius network
+    def succ
+      self.class.new({ :prefix => @prefix + (1 << (@max_length - @length)), :length => @length })
+    end
+
     private
 
     def cliplen(l)
