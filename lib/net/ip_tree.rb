@@ -136,16 +136,25 @@ module Net
 
     # Pick the smallest suitable free subnet
     #
-    def pick_free(length)
-      net = free_space(length).sort.first
+    def pick_free(length, range = nil)
+      fs = free_space(length)
 
-      if net
-        net = @network.class.new(:prefix => net.prefix, :length => length)
-        add(net)
-        net
-      else
-        nil
+      fs.select! { |x| x.first_ip <= range.last && x.last_ip >= range.first } if range
+      fs.sort!
+
+      return nil if fs.empty?
+      return @network.class.new(:prefix => fs.first.prefix, :length => length) if !range
+
+      fs.each do |freenet|
+        net = @network.class.new(:prefix => freenet.prefix > range.first ? freenet.prefix : range.first,
+                                 :length => length)
+
+        net = net.succ if net.first_ip < range.first
+
+        return net if net.last_ip <= range.last
       end
+
+      nil
     end
 
     def find(net)

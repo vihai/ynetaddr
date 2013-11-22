@@ -221,14 +221,36 @@ end
 
 describe IPTree, :pick_free do
   it 'picks smallest free network' do
-    net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
-    net.pick_free(64).should == '2a02:22::/64'
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    tree.pick_free(64).should == '2a02:22::/64'
   end
 
   it 'picks next smallest free network' do
-    net = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
-    net.pick_free(64).should == '2a02:22::/64'
-    net.pick_free(64).should == '2a02:22:0:1::/64'
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    free = tree.pick_free(64)
+    free.should == '2a02:22::/64'
+    tree.add(free)
+    tree.pick_free(64).should == '2a02:22:0:1::/64'
+  end
+
+  it 'considers range specifications (with range overlapping busy net at the left)' do
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    tree.pick_free(64, '2a02:7ff0::'..'2a02:8010::').should == '2a02:7ff0::/64'
+  end
+
+  it 'considers range specifications (with range overlapping busy net at the right)' do
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    tree.pick_free(64, '2a02:21:fff0::'..'2a02:22:10::').should == '2a02:22::/64'
+  end
+
+  it 'considers range specifications (with range including busy net)' do
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    tree.pick_free(64, '2a02:1f::'..'2a02:23::').should == '2a02:22::/64'
+  end
+
+  it 'considers range specifications (with range withing busy net)' do
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    tree.pick_free(64, '2a02:20:10::'..'2a02:20:11::').should be_nil
   end
 end
 
