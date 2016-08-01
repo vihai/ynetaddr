@@ -1,6 +1,8 @@
 
 module Net
 
+  class ClassUndetermined < StandardError ; end
+
   # IPv4 Network class
   #
   class IPv4Net < IPNet
@@ -99,7 +101,7 @@ module Net
       elsif self < '0.0.0.0/1'
         :a
       else
-        raise 'Network spans multiple classes'
+        raise ClassUndetermined, 'Network spans multiple classes'
       end
     end
 

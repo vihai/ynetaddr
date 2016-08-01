@@ -39,7 +39,7 @@ module Net
     # @return [Integer] the actual length set
     #
     def length=(l)
-      raise 'Invalid prefix length' if l < 0 || l > @max_length
+      raise ArgumentError, 'Invalid prefix length' if l < 0 || l > @max_length
 
       @length = l
       @prefix = @prefix & mask

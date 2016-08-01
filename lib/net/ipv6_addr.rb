@@ -1,6 +1,9 @@
 
 module Net
 
+  class NotMulticastAddress < StandardError ; end
+  class NotMulticastSolicitedAddress < StandardError ; end
+
   # IPv6 Address class
   #
   class IPv6Addr < IPAddr
@@ -223,14 +226,14 @@ module Net
     # @return [Integer] the host-id part of a multicast solicited-node address (See RFC4291 Sec 2.7.1)
     #
     def multicast_solicited_node_id
-      raise 'Not a multicast solicited node address' if !multicast_solicited_node?
+      raise NotMulticastSolicitedAddress, 'Not a multicast solicited node address' if !multicast_solicited_node?
       @addr & 0xffffff
     end
 
     # @return [Boolean] true if the address is a source-specific multicast address (See RFC4291 Sec 2.7.1)
     #
     def multicast_source_specific?
-      raise 'Not a multicast address' if !multicast?
+      raise NotMulticastAddress, 'Not a multicast address' if !multicast?
       (@addr & 0xfff0ffffffffffffffffffff00000000) == 0xff300000000000000000000000000000
     end
 
