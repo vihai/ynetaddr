@@ -46,11 +46,19 @@ module Net
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr == other.addr && @length == other.length
     end
+    alias eql? ==
+    alias === ==
 
     # @return [String] a string representation of the interface address in the form a.b.c.d/nn
     #
     def to_s
       "#{address.to_s}/#{@length}"
+    end
+
+    # @return [Integer] a hash value to use an IF address as a key
+    #
+    def hash
+      @addr * @length
     end
 
     # @return [Hash] a Hash with :addr and :length keys respectively containing the Integer representation of interface's
