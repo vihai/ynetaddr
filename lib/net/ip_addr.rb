@@ -19,8 +19,8 @@ module Net
       end
     end
 
-    # @param [String, IPv4Net] net An IPv4Net or String representation of an IPv4 network
-    # @return [Boolean] true if the IPv4 network includes this IP address
+    # @param [String, IPNet] net An IPNet or String representation of an IP network
+    # @return [Boolean] true if the IP network includes this IP address
     #
     def included_in?(net)
       net = @net_class.new(net) if !net.kind_of?(@net_class)
@@ -28,7 +28,7 @@ module Net
       net.include?(self)
     end
 
-    # Compare two IPv6 addresses. The address may be compared to another IPv6Addr object or a string representation of it
+    # Compare two IP addresses. The address may be compared to another IPAddr object or a string representation of it
     #
     # @return [Boolean] true if the IP addresses match.
     #
@@ -41,21 +41,21 @@ module Net
     alias eql? ==
     alias === ==
 
-    # Compare two IPv6 addresses. This is used just to implement hosts enumeration since there is no real ordering
+    # Compare two IP addresses. This is used just to implement hosts enumeration since there is no real ordering
     #
     def <=>(other)
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr <=> other.to_i
     end
 
-    # Sum n to the host part and return a new IPv6Addr. Note that there is no check that the produced IP address is valid
+    # Sum n to the host part and return a new IPAddr. Note that there is no check that the produced IP address is valid
     # and in the same network.
     #
     def +(n)
       self.class.new(@addr + n)
     end
 
-    # Subtract n to the host part and return a new IPv6Addr. Note that there is no check that the produced IP address is valid
+    # Subtract n to the host part and return a new IPAddr. Note that there is no check that the produced IP address is valid
     # and in the same network.
     #
     def -(n)
@@ -107,7 +107,7 @@ module Net
 
     protected
 
-    # @return [IPv6Addr] the "next" IPv6 address while enumerating hosts in a network, needed to be Comparable
+    # @return [IPAddr] the "next" IP address while enumerating hosts in a network, needed to be Comparable
     #
     def succ
       self.class.new(@addr + 1)
