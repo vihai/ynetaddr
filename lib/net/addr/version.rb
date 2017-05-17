@@ -1,5 +1,13 @@
+#
+# Copyright (C) 2014-2017, Daniele Orlandi
+#
+# Author:: Daniele Orlandi <daniele@orlandi.com>
+#
+# License:: You can redistribute it and/or modify it under the terms of the LICENSE file.
+#
+
 module Net
 module Addr
-  VERSION = '1.8.3'
+  VERSION = '1.9.0'
 end
 end
