@@ -58,7 +58,7 @@ module Net
     # @return [Integer] a hash value to use an IF address as a key
     #
     def hash
-      @addr * @length
+      @addr.to_i * @length
     end
 
     # @return [Hash] a Hash with :addr and :length keys respectively containing the Integer representation of interface's
