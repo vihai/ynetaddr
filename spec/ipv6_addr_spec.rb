@@ -4,6 +4,10 @@ require 'ynetaddr'
 module Net
 
 describe IPv6Addr, 'constructor' do
+  it 'accepts Integer format' do
+    expect(IPv6Addr.new(0x2a021234abcd00009999ffffa90bbbbb).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
+  end
+
   it 'accepts [hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh] format' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
   end
@@ -21,6 +25,15 @@ describe IPv6Addr, 'constructor' do
     expect(IPv6Addr.new('[::]').to_i).to eq(0x00000000000000000000000000000000)
     expect(IPv6Addr.new('[::1]').to_i).to eq(0x00000000000000000000000000000001)
     expect(IPv6Addr.new('[1::]').to_i).to eq(0x00010000000000000000000000000000)
+  end
+
+  it 'accepts hash[:addr]' do
+    expect(IPv6Addr.new(addr: '[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
+    expect(IPv6Addr.new(addr: 0x2a021234abcd00009999ffffa90bbbbb).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
+  end
+
+  it 'accepts hash[:binary]' do
+    expect(IPv6Addr.new(binary: 'AEIO1234567890XY').to_i).to eq(0x4145494f313233343536373839305859)
   end
 
   it 'rejects invalid addresses' do

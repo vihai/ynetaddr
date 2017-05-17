@@ -16,6 +16,15 @@ describe IPv4Addr, 'constructor' do
     expect(IPv4Addr.new(0x01020304).to_i).to eq(0x01020304)
   end
 
+  it 'accepts hash[:addr]' do
+    expect(IPv4Addr.new(addr: '1.2.0.255').to_i).to eq(0x010200ff)
+    expect(IPv4Addr.new(addr: 0x01020304).to_i).to eq(0x01020304)
+  end
+
+  it 'accepts hash[:binary]' do
+    expect(IPv4Addr.new(binary: 'AEIO').to_i).to eq(0x4145494f)
+  end
+
 #  it 'accept d.d.d format' do
 #    expect(IPv4Addr.new('1.2.65530').to_i).to eq(16908543)
 #  end

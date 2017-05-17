@@ -27,8 +27,18 @@ module Net
         @addr = addr.to_ipv4addr.to_i
       elsif addr.kind_of?(Integer)
         @addr = addr
+      elsif addr.kind_of?(Hash)
+        @addr = if addr[:addr]
+          initialize(addr[:addr])
+        elsif addr[:binary]
+          @addr = addr[:binary].unpack('N').first
+        else
+          raise ArgumentError, 'missing address'
+        end
+
       elsif addr.respond_to?(:to_s)
         addr = addr.to_s
+
         # Remove square brackets
         addr = $1 if addr =~ /^\[(.*)\]$/i
 
