@@ -28,10 +28,7 @@ module Net
       @address_class = IPv6Addr
       @net_class = IPv6Net
 
-      if addr.kind_of?(IPv6IfAddr)
-        @addr = addr.addr
-        @length = addr.length
-      elsif addr.respond_to?(:to_ipv6ifaddr)
+      if addr.respond_to?(:to_ipv6ifaddr)
         @addr = addr.to_ipv6ifaddr.addr
         @length = addr.to_ipv6ifaddr.length
       elsif addr.kind_of?(Hash)

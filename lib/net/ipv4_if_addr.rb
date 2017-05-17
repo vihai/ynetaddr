@@ -30,10 +30,7 @@ module Net
 
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
-      if addr.kind_of?(IPv4IfAddr)
-        @addr = addr.addr
-        @length = addr.length
-      elsif addr.respond_to?(:to_ipv4ifaddr)
+      if addr.respond_to?(:to_ipv4ifaddr)
         @addr = addr.to_ipv4ifaddr.addr
         @length = addr.to_ipv4ifaddr.length
       elsif addr.kind_of?(Hash)
