@@ -87,16 +87,11 @@ describe IPv4Addr, 'constructor' do
 
 end
 
-describe IPv4Addr, :ntoh do
-# TODO
-end
-
-describe IPv4Addr, :hton do
-# TODO
-end
-
-describe IPv4Addr, :new_ntoh do
-# TODO
+describe IPv4Addr, :to_binary do
+  it 'returns a binary string representation of the IP address' do
+    expect(IPv4Addr.new('11.22.33.44').to_binary).to eq(
+      "\x0b\x16\x21\x2c".force_encoding(Encoding::ASCII_8BIT))
+  end
 end
 
 describe IPv4Addr, :reverse do

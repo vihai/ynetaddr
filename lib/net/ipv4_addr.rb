@@ -62,22 +62,10 @@ module Net
       end
     end
 
-    # Converts a network byte-ordering Integer representation of an IP address in a host byte-ordering one
+    # @return [String] a network-byte-ordered representation of the IP address
     #
-    def self.ntoh(naddr)
-      naddr.unpack('C4').join('.')
-    end
-
-    # @return [Integer] a network-byte-ordered Integer representation of the IP address
-    #
-    def hton
+    def to_binary
       [@addr].pack('N')
-    end
-
-    # Instantiate a new IPv4Addr from a network-byte-ordered integer
-    #
-    def self.new_ntoh(naddr)
-      return IPv4Addr.new(ntoh(naddr))
     end
 
     # @return [String] the reverse-DNS name associated to the IP address

@@ -48,8 +48,11 @@ describe IPv6Addr, 'constructor' do
   end
 end
 
-describe IPv6Addr, :hton do
-# TODO
+describe IPv6Addr, :to_binary do
+  it 'returns a binary string representation of the IP address' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_binary).to eq(
+      "*\x02\x124\xAB\xCD\x00\x00\x99\x99\xFF\xFF\xA9\v\xBB\xBB".force_encoding(Encoding::ASCII_8BIT))
+  end
 end
 
 describe IPv6Addr, :reverse do

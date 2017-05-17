@@ -88,9 +88,9 @@ module Net
       end
     end
 
-    # @return [Integer] a network-byte-ordered Integer representation of the IP address
+    # @return [String] a network-byte-ordered representation of the IP address
     #
-    def hton
+    def to_binary
       (0..7).map { |i| (@addr >> (112 - 16 * i)) & 0xffff }.pack('n8')
     end
 
