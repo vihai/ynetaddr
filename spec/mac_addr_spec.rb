@@ -39,6 +39,27 @@ describe 'constructor' do
 
     expect(b).to eq(a)
   end
+
+  it 'takes a Hash with addr: as usual representation' do
+    expect(MacAddr.new(addr: '0012.3456.789a').to_i).to eq(0x00123456789a)
+    expect(MacAddr.new(addr: '00:12:34:56:78:9a').to_i).to eq(0x00123456789a)
+    expect(MacAddr.new(addr: 0x00123456789a).to_i).to eq(0x00123456789a)
+    expect { MacAddr.new(addr: '0012.3456.fbar') }.to raise_error(ArgumentError)
+
+    a = MacAddr.new(addr: '0012.3456.fbaa')
+    b = MacAddr.new(addr: a)
+
+    expect(b).to eq(a)
+  end
+
+  it 'takes a Hash with binary: key with binary representation' do
+    expect(MacAddr.new(binary: "\x00\x11\x22\x33\x44\x55").to_i).to eq(0x001122334455)
+  end
+
+  it 'raises a ArgumentError if binary representation is not exactly 6 octets' do
+    expect { MacAddr.new(binary: "\x00\x11\x22\x33\x44") }.to raise_error(ArgumentError)
+    expect { MacAddr.new(binary: "\x00\x11\x22\x33\x44\x55\x66") }.to raise_error(ArgumentError)
+  end
 end
 
 describe :succ do

@@ -33,6 +33,16 @@ module Net
         @addr = addr.to_macaddr.instance_variable_get(:@addr)
       elsif addr.kind_of?(Integer)
         @addr = addr
+      elsif addr.kind_of?(Hash)
+        @addr = if addr[:addr]
+          initialize(addr[:addr])
+        elsif addr[:binary]
+          raise ArgumentError, "Size not equal to 6 octets" if addr[:binary].length != 6
+
+          @addr = addr[:binary].rjust(8, "\x00").unpack('Q>')[0]
+        else
+          raise ArgumentError, 'missing address'
+        end
       elsif addr.respond_to?(:to_s)
 
         addr = addr.to_s.downcase
