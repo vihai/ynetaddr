@@ -10,7 +10,9 @@ require 'ynetaddr'
 
 module Net
 
-describe MacAddr, 'constructor' do
+describe MacAddr do
+
+describe 'constructor' do
   it 'accepts hhhh.hhhh.hhhh format' do
     expect(MacAddr.new('0012.3456.789a').to_i).to eq(0x00123456789a)
   end
@@ -30,9 +32,16 @@ describe MacAddr, 'constructor' do
   it 'reject invalid address with alphanumeric chars' do
     expect { MacAddr.new('0012.3456.fbar') }.to raise_error(ArgumentError)
   end
+
+  it 'takes another MacAddr as input' do
+    a = MacAddr.new('0012.3456.fbaa')
+    b = MacAddr.new(a)
+
+    expect(b).to eq(a)
+  end
 end
 
-describe MacAddr, :succ do
+describe :succ do
   it 'calculates successive address by adding 1 to the NIC ID' do
     expect(MacAddr.new('0012.3456.789a').succ).to eq('0012.3456.789b')
   end
@@ -42,7 +51,7 @@ describe MacAddr, :succ do
   end
 end
 
-describe MacAddr, :next do
+describe :next do
   it 'calculates nextessive address by adding 1 to the NIC ID' do
     expect(MacAddr.new('0012.3456.789a').next).to eq('0012.3456.789b')
   end
@@ -52,7 +61,7 @@ describe MacAddr, :next do
   end
 end
 
-describe MacAddr, :unicast? do
+describe :unicast? do
   it 'returns true if MacAddress is unicast' do
     expect(MacAddr.new('0012.3456.789a').unicast?).to be_truthy
   end
@@ -66,7 +75,7 @@ describe MacAddr, :unicast? do
   end
 end
 
-describe MacAddr, :multicast? do
+describe :multicast? do
   it 'returns false if MacAddress is unicast' do
     expect(MacAddr.new('0012.3456.789a').multicast?).to be_falsey
   end
@@ -80,7 +89,7 @@ describe MacAddr, :multicast? do
   end
 end
 
-describe MacAddr, :broadcast? do
+describe :broadcast? do
   it 'returns false if MacAddress is unicast' do
     expect(MacAddr.new('0012.3456.789a').broadcast?).to be_falsey
   end
@@ -94,7 +103,7 @@ describe MacAddr, :broadcast? do
   end
 end
 
-describe MacAddr, :locally_administered? do
+describe :locally_administered? do
   it 'returns true if MacAddress is locally administered' do
     expect(MacAddr.new('0000.3456.789a').locally_administered?).to be_truthy
   end
@@ -104,7 +113,7 @@ describe MacAddr, :locally_administered? do
   end
 end
 
-describe MacAddr, :globally_unique? do
+describe :globally_unique? do
   it 'returns true if MacAddress is globally unique' do
     expect(MacAddr.new('f200.3456.789a').globally_unique?).to be_truthy
   end
@@ -114,13 +123,13 @@ describe MacAddr, :globally_unique? do
   end
 end
 
-describe MacAddr, :oui do
+describe :oui do
   it 'extracts correct OUI' do
     expect(MacAddr.new('7423.4567.89ab').oui).to eq(0x742345)
   end
 end
 
-describe MacAddr, :<=> do
+describe :<=> do
   it 'correctly compares' do
     expect((MacAddr.new('7423.4567.89ab') <=> '7423.4567.89ab')).to eq(0)
     expect((MacAddr.new('7423.4567.89ab') <=> '7423.4567.89aa')).to eq(1)
@@ -128,7 +137,7 @@ describe MacAddr, :<=> do
   end
 end
 
-describe MacAddr, :+ do
+describe :+ do
   it 'returns of type MacAddr' do
     expect((MacAddr.new('0012.3456.789a') + 1)).to be_an_instance_of(MacAddr)
   end
@@ -140,7 +149,7 @@ describe MacAddr, :+ do
   end
 end
 
-describe MacAddr, :- do
+describe :- do
   it 'returns of type MacAddr' do
     expect((MacAddr.new('0012.3456.789a') - 1)).to be_an_instance_of(MacAddr)
   end
@@ -152,40 +161,42 @@ describe MacAddr, :- do
   end
 end
 
-describe MacAddr, :to_s do
+describe :to_s do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').to_s).to eq('00:12:34:56:78:9a')
   end
 end
 
-describe MacAddr, :to_s_cisco do
+describe :to_s_cisco do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').to_s_cisco).to eq('0012.3456.789a')
   end
 end
 
-describe MacAddr, :to_s_dash do
+describe :to_s_dash do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').to_s_dash).to eq('00-12-34-56-78-9a')
   end
 end
 
-describe MacAddr, :to_s_plain do
+describe :to_s_plain do
   it 'outputs the MAC address in plain hexadecimal form' do
     expect(MacAddr.new('0012.3456.789a').to_s_plain).to eq('00123456789a')
   end
 end
 
-describe MacAddr, :to_oid do
+describe :to_oid do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').to_oid).to eq('0.18.52.86.120.154')
   end
 end
 
-describe MacAddr, :hash do
+describe :hash do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').hash).to eq(0x00123456789a)
   end
+end
+
 end
 
 end
