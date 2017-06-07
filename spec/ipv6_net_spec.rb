@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv6Net, 'constructor' do
+describe IPv6Net do
+
+describe 'constructor' do
   it 'accepts hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh/l format' do
     expect(IPv6Net.new('2a02:20:1:2::/64').prefix).to eq(0x2a020020000100020000000000000000)
     expect(IPv6Net.new('2a02:20:1:2::/64').length).to eq(64)
@@ -30,7 +32,7 @@ describe IPv6Net, 'constructor' do
   end
 end
 
-describe IPv6Net, :mask_hex do
+describe :mask_hex do
   it 'is correctly calculated' do
     expect(IPv6Net.new('::/0').mask_hex).to eq('0000:0000:0000:0000:0000:0000:0000:0000')
     expect(IPv6Net.new('2a00::/8').mask_hex).to eq('ff00:0000:0000:0000:0000:0000:0000:0000')
@@ -40,7 +42,7 @@ describe IPv6Net, :mask_hex do
   end
 end
 
-describe IPv6Net, :wildcard_hex do
+describe :wildcard_hex do
   it 'is correctly calculated' do
     expect(IPv6Net.new('::/0').wildcard_hex).to eq('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
     expect(IPv6Net.new('2a00::/8').wildcard_hex).to eq('00ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
@@ -50,7 +52,7 @@ describe IPv6Net, :wildcard_hex do
   end
 end
 
-describe IPv6Net, :prefix_hex do
+describe :prefix_hex do
   it 'is correctly calculated' do
     expect(IPv6Net.new('::/0').prefix_hex).to eq('::')
     expect(IPv6Net.new('2a00::/8').prefix_hex).to eq('2a00::')
@@ -60,7 +62,7 @@ describe IPv6Net, :prefix_hex do
   end
 end
 
-describe IPv6Net, :unicast? do
+describe :unicast? do
   it 'return false for multicast range' do
     expect(IPv6Net.new('f000::/4').unicast?).to be_falsey
     expect(IPv6Net.new('ff00::/8').unicast?).to be_falsey
@@ -73,7 +75,7 @@ describe IPv6Net, :unicast? do
   end
 end
 
-describe IPv6Net, :multicast? do
+describe :multicast? do
   it 'returns true if network wholly multicast' do
     expect(IPv6Net.new('ff00::/8').multicast?).to be_truthy
     expect(IPv6Net.new('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/32').multicast?).to be_truthy
@@ -90,13 +92,13 @@ describe IPv6Net, :multicast? do
   end
 end
 
-describe IPv6Net, :new_pb_multicast do
+describe :new_pb_multicast do
   it 'produces correct address' do
     expect(IPv6Net.new('2a02:20:1:2::5/64').new_pb_multicast(:global, 0x1234)).to eq('ff3e:40:2a02:20:1:2:0:1234')
   end
 end
 
-describe IPv6Net, :reverse do
+describe :reverse do
   it 'calculates the correct values' do
     expect(IPv6Net.new('::/0').reverse).to eq('.ip6.arpa')
     expect(IPv6Net.new('2a02:20:1:2::/64').reverse).to eq('2.0.0.0.1.0.0.0.0.2.0.0.2.0.a.2.ip6.arpa')
@@ -108,7 +110,7 @@ end
 
 # parent class methods
 
-describe IPv6Net, :prefix= do
+describe :prefix= do
   it 'returns prefix' do
     expect((IPv6Net.new('2a02:20::/32').prefix = '2a02:30::')).to eq('2a02:30::')
   end
@@ -126,7 +128,7 @@ describe IPv6Net, :prefix= do
   end
 end
 
-describe IPv6Net, :length= do
+describe :length= do
   it 'returns length' do
     expect((IPv6Net.new('2a02:20::/32').length = 16)).to eq(16)
   end
@@ -143,7 +145,7 @@ describe IPv6Net, :length= do
   end
 end
 
-describe IPv6Net, :mask do
+describe :mask do
   it 'is correctly calculated' do
     expect(IPv6Net.new('::/0').mask).to eq(0x00000000000000000000000000000000)
     expect(IPv6Net.new('2a00::/8').mask).to eq(0xff000000000000000000000000000000)
@@ -153,7 +155,7 @@ describe IPv6Net, :mask do
   end
 end
 
-describe IPv6Net, :wildcard do
+describe :wildcard do
   it 'is correctly calculated' do
     expect(IPv6Net.new('::/0').wildcard).to eq(0xffffffffffffffffffffffffffffffff)
     expect(IPv6Net.new('2a00::/8').wildcard).to eq(0x00ffffffffffffffffffffffffffffff)
@@ -163,7 +165,7 @@ describe IPv6Net, :wildcard do
   end
 end
 
-describe IPv6Net, :addresses do
+describe :addresses do
   it 'produces a range' do
     expect(IPv6Net.new('2a02:20:1:2::/64').addresses).to be_kind_of(Range)
   end
@@ -181,7 +183,7 @@ describe IPv6Net, :addresses do
   end
 end
 
-describe IPv6Net, :first_ip do
+describe :first_ip do
   it 'calculates the correct values' do
     expect(IPv6Net.new('2a02:20:1:2::/64').first_ip).to eq(0x2a020020000100020000000000000000)
     expect(IPv6Net.new('2a02:20:1:2::0/127').first_ip).to eq(0x2a020020000100020000000000000000)
@@ -189,7 +191,7 @@ describe IPv6Net, :first_ip do
   end
 end
 
-describe IPv6Net, :last_ip do
+describe :last_ip do
   it 'calculates the correct values' do
     expect(IPv6Net.new('2a02:20:1:2::/64').last_ip).to eq(0x2a02002000010002ffffffffffffffff)
     expect(IPv6Net.new('2a02:20:1:2::0/127').last_ip).to eq(0x2a020020000100020000000000000001)
@@ -197,7 +199,7 @@ describe IPv6Net, :last_ip do
   end
 end
 
-describe IPv6Net, :hosts do
+describe :hosts do
   it 'produces a range' do
     expect(IPv6Net.new('2a02:20:1:2::/64').hosts).to be_kind_of(Range)
   end
@@ -215,7 +217,7 @@ describe IPv6Net, :hosts do
   end
 end
 
-describe IPv6Net, :first_host do
+describe :first_host do
   it 'calculates the correct values' do
     expect(IPv6Net.new('2a02:20:1:2::/64').first_host).to eq(0x2a020020000100020000000000000000)
     expect(IPv6Net.new('2a02:20:1:2::0/127').first_host).to eq(0x2a020020000100020000000000000000)
@@ -223,7 +225,7 @@ describe IPv6Net, :first_host do
   end
 end
 
-describe IPv6Net, :last_host do
+describe :last_host do
   it 'calculates the correct values' do
     expect(IPv6Net.new('2a02:20:1:2::/64').last_host).to eq(0x2a02002000010002ffffffffffffffff)
     expect(IPv6Net.new('2a02:20:1:2::0/127').last_host).to eq(0x2a020020000100020000000000000001)
@@ -231,7 +233,7 @@ describe IPv6Net, :last_host do
   end
 end
 
-describe IPv6Net, :include? do
+describe :include? do
   it 'matches correctly' do
     expect((IPv6Net.new('2a02:20::1/32').include?('2a02:19::0'))).to be_falsey
     expect((IPv6Net.new('2a02:20::1/32').include?('2a02:20::0'))).to be_truthy
@@ -240,7 +242,7 @@ describe IPv6Net, :include? do
   end
 end
 
-describe IPv6Net, :to_s do
+describe :to_s do
   it 'produces correct output' do
     expect(IPv6Net.new('::/0').to_s).to eq('::/0')
     expect(IPv6Net.new('2a00::/8').to_s).to eq('2a00::/8')
@@ -251,13 +253,13 @@ describe IPv6Net, :to_s do
   end
 end
 
-describe IPv6Net, 'to_hash' do
+describe 'to_hash' do
   it 'produces correct output' do
     expect(IPv6Net.new('2a02:20::/128').to_hash).to eq({ :prefix => '2a02:20::', :length => 128 })
   end
 end
 
-describe IPv6Net, :== do
+describe :== do
   it 'return true if networks are equal' do
     expect(IPv6Net.new('2a02:20::/32') == '2a02:20::/32').to be_truthy
   end
@@ -271,7 +273,7 @@ describe IPv6Net, :== do
   end
 end
 
-describe IPv6Net, :< do
+describe :< do
   it 'is false for smaller networks' do
     expect(IPv6Net.new('2a02:20::/32') < IPv6Net.new('2a02:20::/33')).to be_falsey
   end
@@ -325,7 +327,7 @@ describe IPv6Net, :< do
   end
 end
 
-describe IPv6Net, :<= do
+describe :<= do
   it 'is false for smaller networks' do
     expect(IPv6Net.new('2a02:20::/32') <= IPv6Net.new('2a02:20::/33')).to be_falsey
   end
@@ -383,7 +385,7 @@ describe IPv6Net, :<= do
   end
 end
 
-describe IPv6Net, :> do
+describe :> do
   it 'is false for smaller non-overlapping networks' do
     expect(IPv6Net.new('2a02:20::/32') > IPv6Net.new('2a02:30::/33')).to be_falsey
   end
@@ -442,7 +444,7 @@ describe IPv6Net, :> do
   end
 end
 
-describe IPv6Net, :>= do
+describe :>= do
   it 'is false for smaller non-overlapping networks' do
     expect(IPv6Net.new('2a02:20::/32') >= IPv6Net.new('2a02:30::/33')).to be_falsey
   end
@@ -501,7 +503,7 @@ describe IPv6Net, :>= do
   end
 end
 
-describe IPv6Net, :overlaps? do
+describe :overlaps? do
   it 'is false for smaller non-overlapping networks' do
     expect(IPv6Net.new('2a02:20::/32').overlaps?('2a02:30::/33')).to be_falsey
   end
@@ -527,20 +529,20 @@ describe IPv6Net, :overlaps? do
   end
 end
 
-describe IPv6Net, :>> do
+describe :>> do
   it 'operates correctly' do
     expect(IPv6Net.new('2a02:20::/32') >> 1).to eq('2a02:20::/33')
   end
 end
 
-describe IPv6Net, :<< do
+describe :<< do
   it 'operates correctly' do
     expect(IPv6Net.new('2a02:20::/32') << 1).to eq('2a02:20::/31')
     expect(IPv6Net.new('2a02:21::/32') << 1).to eq('2a02:20::/31')
   end
 end
 
-describe IPv6Net, :=== do
+describe :=== do
   it 'returns true if other is an IPv6 address and is contained in this network' do
     expect(IPv6Net.new('2a02:20::/32') === IPv6Addr.new('2a02:20::1')).to be_truthy
   end
@@ -554,7 +556,7 @@ describe IPv6Net, :=== do
   end
 end
 
-describe IPv6Net, :<=> do
+describe :<=> do
   it 'returns 0 if networks are equal' do
     expect(IPv6Net.new('2a02:20::/32') <=> IPv6Net.new('2a02:20::/32')).to eq(0)
   end
@@ -574,6 +576,7 @@ describe IPv6Net, :<=> do
   it 'returns +1 if network a is bigger than network b' do
     expect(IPv6Net.new('2a02:20::/32') <=> IPv6Net.new('2a02:20::/33')).to eq(1)
   end
+end
 end
 
 end

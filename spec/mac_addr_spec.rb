@@ -27,11 +27,21 @@ end
 
 describe MacAddr, :succ do
   it 'calculates successive address by adding 1 to the NIC ID' do
-    expect(MacAddr.new('0012.3456.789a').send(:succ)).to eq('0012.3456.789b')
+    expect(MacAddr.new('0012.3456.789a').succ).to eq('0012.3456.789b')
   end
 
   it 'raises an error in case of wrapping NIC ID' do
-    expect { MacAddr.new('0012.34ff.ffff').send(:succ) }.to raise_error(MacAddr::BadArithmetic)
+    expect { MacAddr.new('0012.34ff.ffff').succ }.to raise_error(MacAddr::BadArithmetic)
+  end
+end
+
+describe MacAddr, :next do
+  it 'calculates nextessive address by adding 1 to the NIC ID' do
+    expect(MacAddr.new('0012.3456.789a').next).to eq('0012.3456.789b')
+  end
+
+  it 'raises an error in case of wrapping NIC ID' do
+    expect { MacAddr.new('0012.34ff.ffff').next }.to raise_error(MacAddr::BadArithmetic)
   end
 end
 

@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv4Addr, 'constructor' do
+describe IPv4Addr do
+
+describe 'constructor' do
   it 'accepts d.d.d.d format' do
     expect(IPv4Addr.new('1.2.0.255').to_i).to eq(0x010200ff)
   end
@@ -87,20 +89,20 @@ describe IPv4Addr, 'constructor' do
 
 end
 
-describe IPv4Addr, :to_binary do
+describe :to_binary do
   it 'returns a binary string representation of the IP address' do
     expect(IPv4Addr.new('11.22.33.44').to_binary).to eq(
       "\x0b\x16\x21\x2c".force_encoding(Encoding::ASCII_8BIT))
   end
 end
 
-describe IPv4Addr, :reverse do
+describe :reverse do
   it 'produces reverse mapping name' do
     expect(IPv4Addr.new('1.200.3.255').reverse).to eq('255.3.200.1.in-addr.arpa')
   end
 end
 
-describe IPv4Addr, :is_rfc1918? do
+describe :is_rfc1918? do
   it 'returns true for RF1918 addresses' do
     expect(IPv4Addr.new('10.0.0.0').is_rfc1918?).to be_truthy
     expect(IPv4Addr.new('10.1.2.3').is_rfc1918?).to be_truthy
@@ -124,7 +126,7 @@ describe IPv4Addr, :is_rfc1918? do
   end
 end
 
-describe IPv4Addr, :ipclass do
+describe :ipclass do
   it 'returns the correct class' do
     expect(IPv4Addr.new('0.0.0.0').ipclass).to eq(:a)
     expect(IPv4Addr.new('10.0.0.0').ipclass).to eq(:a)
@@ -144,7 +146,7 @@ describe IPv4Addr, :ipclass do
   end
 end
 
-describe IPv4Addr, :unicast? do
+describe :unicast? do
   it 'returns true if the address is unicast' do
     expect(IPv4Addr.new('0.0.0.0').unicast?).to eq(true)
     expect(IPv4Addr.new('10.0.0.0').unicast?).to eq(true)
@@ -167,7 +169,7 @@ describe IPv4Addr, :unicast? do
   end
 end
 
-describe IPv4Addr, :multicast? do
+describe :multicast? do
   it 'returns true if the address is multicast' do
     expect(IPv4Addr.new('224.0.0.0').multicast?).to eq(true)
     expect(IPv4Addr.new('224.1.2.3').multicast?).to eq(true)
@@ -190,13 +192,13 @@ describe IPv4Addr, :multicast? do
   end
 end
 
-describe IPv4Addr, :to_s do
+describe :to_s do
   it 'produces correct output for addresses starting with 0' do
     expect(IPv4Addr.new('0.0.0.0').to_s).to eq('0.0.0.0')
   end
 end
 
-describe IPv4Addr, :to_s_bracketed do
+describe :to_s_bracketed do
   it 'produces bracketed output' do
     expect(IPv4Addr.new('1.2.3.4').to_s_bracketed).to eq('[1.2.3.4]')
   end
@@ -205,7 +207,7 @@ end
 
 # Parent-class methods
 
-describe IPv4Addr, :included_in? do
+describe :included_in? do
   it 'calculates the correct values' do
     expect(IPv4Addr.new('1.2.3.4').included_in?(IPv4Net.new('0.0.0.0/0'))).to be_truthy
     expect(IPv4Addr.new('0.0.0.0').included_in?(IPv4Net.new('0.0.0.0/0'))).to be_truthy
@@ -217,7 +219,7 @@ describe IPv4Addr, :included_in? do
   end
 end
 
-describe IPv4Addr, :succ do
+describe :succ do
   it 'returns a IPv4Addr' do
     expect(IPv4Addr.new('1.2.3.4').succ).to be_an_instance_of(IPv4Addr)
   end
@@ -228,7 +230,7 @@ describe IPv4Addr, :succ do
   end
 end
 
-describe IPv4Addr, :next do
+describe :next do
   it 'returns a IPv4Addr' do
     expect(IPv4Addr.new('1.2.3.4').next).to be_an_instance_of(IPv4Addr)
   end
@@ -239,7 +241,7 @@ describe IPv4Addr, :next do
   end
 end
 
-describe IPv4Addr, :== do
+describe :== do
   it 'return true for equal addresses' do
     expect((IPv4Addr.new('1.2.3.4') == IPv4Addr.new('1.2.3.4'))).to be_truthy
     expect((IPv4Addr.new('0.0.0.0') == IPv4Addr.new('0.0.0.0'))).to be_truthy
@@ -256,7 +258,7 @@ describe IPv4Addr, :== do
   end
 end
 
-describe IPv4Addr, '!=' do
+describe '!=' do
   it 'returns true for different adddresses' do
     expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('255.255.255.255'))).to be_truthy
     expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('1.2.3.5'))).to be_truthy
@@ -273,7 +275,7 @@ describe IPv4Addr, '!=' do
   end
 end
 
-describe IPv4Addr, :<=> do
+describe :<=> do
   it 'returns a kind of Integer' do
     expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.4'))).to be_a_kind_of(Integer)
   end
@@ -287,7 +289,7 @@ describe IPv4Addr, :<=> do
   end
 end
 
-describe IPv4Addr, :+ do
+describe :+ do
   it 'returns of type IPv4Addr' do
     expect((IPv4Addr.new('1.2.3.4') + 1)).to be_an_instance_of(IPv4Addr)
   end
@@ -299,7 +301,7 @@ describe IPv4Addr, :+ do
   end
 end
 
-describe IPv4Addr, :- do
+describe :- do
   it 'returns of type IPv4Addr' do
     expect((IPv4Addr.new('1.2.3.4') - 1)).to be_an_instance_of(IPv4Addr)
   end
@@ -311,7 +313,7 @@ describe IPv4Addr, :- do
   end
 end
 
-describe IPv4Addr, :| do
+describe :| do
   it 'returns of type IPv4Addr' do
     expect((IPv4Addr.new(0x00000000) | 0x0000ffff)).to be_an_instance_of(IPv4Addr)
   end
@@ -321,7 +323,7 @@ describe IPv4Addr, :| do
   end
 end
 
-describe IPv4Addr, :& do
+describe :& do
   it 'returns of type IPv4Addr' do
     expect((IPv4Addr.new(0x0f0f0f0f) & 0x0000ffff)).to be_an_instance_of(IPv4Addr)
   end
@@ -331,7 +333,7 @@ describe IPv4Addr, :& do
   end
 end
 
-describe IPv4Addr, :mask do
+describe :mask do
   it 'returns of type IPv4Addr' do
     expect((IPv4Addr.new(0x0f0f0f0f).mask(0xffff0000))).to be_an_instance_of(IPv4Addr)
   end
@@ -341,7 +343,7 @@ describe IPv4Addr, :mask do
   end
 end
 
-describe IPv4Addr, :mask! do
+describe :mask! do
   it 'returns self' do
     a = IPv4Addr.new('1.2.3.4')
     expect(a.mask!(0xffff0000)).to be_equal(a)
@@ -355,7 +357,7 @@ describe IPv4Addr, :mask! do
   end
 end
 
-describe IPv4Addr, :to_i do
+describe :to_i do
   it 'returns a kind of Integer' do
     expect(IPv4Addr.new('1.2.3.4').to_i).to be_a_kind_of(Integer)
   end
@@ -365,7 +367,7 @@ describe IPv4Addr, :to_i do
   end
 end
 
-describe IPv4Addr, :hash do
+describe :hash do
   it 'returns a kind of Integer' do
     expect(IPv4Addr.new('1.2.3.4').hash).to be_a_kind_of(Integer)
   end
@@ -373,6 +375,7 @@ describe IPv4Addr, :hash do
   it 'produces a hash' do
     expect(IPv4Addr.new(0x0f0f0f0f).to_i).to eq(0x0f0f0f0f)
   end
+end
 end
 
 end

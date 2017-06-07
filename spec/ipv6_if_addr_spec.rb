@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv6IfAddr, 'constructor' do
+describe IPv6IfAddr do
+
+describe 'constructor' do
   it 'accepts hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh/l format' do
     expect(IPv6IfAddr.new('2a02:20:1:2:3:4:5:6/64').addr).to eq(0x2a020020000100020003000400050006)
     expect(IPv6IfAddr.new('2a02:20:1:2:3:4:5:6/64').length).to eq(64)
@@ -30,7 +32,7 @@ describe IPv6IfAddr, 'constructor' do
   end
 end
 
-describe IPv6IfAddr, :mask_hex do
+describe :mask_hex do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').mask_hex).to eq('0000:0000:0000:0000:0000:0000:0000:0000')
     expect(IPv6IfAddr.new('2a::1/8').mask_hex).to eq('ff00:0000:0000:0000:0000:0000:0000:0000')
@@ -40,7 +42,7 @@ describe IPv6IfAddr, :mask_hex do
   end
 end
 
-describe IPv6IfAddr, :wildcard_hex do
+describe :wildcard_hex do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').wildcard_hex).to eq('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
     expect(IPv6IfAddr.new('2a::1/8').wildcard_hex).to eq('00ff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
@@ -52,7 +54,7 @@ end
 
 # parent class methods
 
-describe IPv6IfAddr, :network do
+describe :network do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').network).to eq('::/0')
     expect(IPv6IfAddr.new('2a::1/8').network).to eq('2a::/8')
@@ -63,7 +65,7 @@ describe IPv6IfAddr, :network do
   end
 end
 
-describe IPv6IfAddr, :mask do
+describe :mask do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').mask).to eq(0x00000000000000000000000000000000)
     expect(IPv6IfAddr.new('2a::1/8').mask).to eq(0xff000000000000000000000000000000)
@@ -73,7 +75,7 @@ describe IPv6IfAddr, :mask do
   end
 end
 
-describe IPv6IfAddr, :wildcard do
+describe :wildcard do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').wildcard).to eq(0xffffffffffffffffffffffffffffffff)
     expect(IPv6IfAddr.new('2a::1/8').wildcard).to eq(0x00ffffffffffffffffffffffffffffff)
@@ -84,7 +86,7 @@ describe IPv6IfAddr, :wildcard do
 end
 
 
-describe IPv6IfAddr, :address do
+describe :address do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').address).to eq('::1')
     expect(IPv6IfAddr.new('2a::1/8').address).to eq('2a::1')
@@ -94,7 +96,7 @@ describe IPv6IfAddr, :address do
   end
 end
 
-describe IPv6IfAddr, :nic_id do
+describe :nic_id do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::1/0').nic_id).to eq(1)
     expect(IPv6IfAddr.new('2a::1/8').nic_id).to eq(0x002a0000000000000000000000000001)
@@ -104,7 +106,7 @@ describe IPv6IfAddr, :nic_id do
   end
 end
 
-describe IPv6IfAddr, :include? do
+describe :include? do
   it 'matches correctly' do
     expect(IPv6IfAddr.new('2a02:20::1/32').include?('2a02:19::0')).to be_falsey
     expect(IPv6IfAddr.new('2a02:20::1/32').include?('2a02:20::0')).to be_truthy
@@ -113,7 +115,7 @@ describe IPv6IfAddr, :include? do
   end
 end
 
-describe IPv6IfAddr, :== do
+describe :== do
   it 'return true if interface addresses are equal' do
     expect(IPv6IfAddr.new('2a02:20::1/32') == '2a02:20::1/32').to be_truthy
   end
@@ -127,7 +129,7 @@ describe IPv6IfAddr, :== do
   end
 end
 
-describe IPv6IfAddr, :to_s do
+describe :to_s do
   it 'produces correct output' do
     expect(IPv6IfAddr.new('::1/0').to_s).to eq('::1/0')
     expect(IPv6IfAddr.new('2a::1/8').to_s).to eq('2a::1/8')
@@ -137,10 +139,12 @@ describe IPv6IfAddr, :to_s do
   end
 end
 
-describe IPv6IfAddr, :to_hash do
+describe :to_hash do
   it 'is correctly calculated' do
     expect(IPv6IfAddr.new('::5/32')).to eq({ :addr => 0x5, :length => 32 })
   end
+end
+
 end
 
 end

@@ -2,8 +2,9 @@
 require 'ynetaddr'
 
 module Net
+describe IPv4Net do
 
-describe IPv4Net, 'constructor' do
+describe 'constructor' do
   it 'accepts d.d.d.d/l format' do
     expect(IPv4Net.new('192.168.0.0/24').prefix).to eq(0xC0A80000)
     expect(IPv4Net.new('192.168.0.0/24').length).to eq(24)
@@ -30,7 +31,7 @@ describe IPv4Net, 'constructor' do
   end
 end
 
-describe IPv4Net, :mask_dotquad do
+describe :mask_dotquad do
   it 'is correctly calculated' do
     expect(IPv4Net.new('0.0.0.0/0').mask_dotquad).to eq('0.0.0.0')
     expect(IPv4Net.new('10.255.255.0/8').mask_dotquad).to eq('255.0.0.0')
@@ -39,7 +40,7 @@ describe IPv4Net, :mask_dotquad do
   end
 end
 
-describe IPv4Net, :wildcard_dotquad do
+describe :wildcard_dotquad do
   it 'is correctly calculated' do
     expect(IPv4Net.new('0.0.0.0/0').wildcard_dotquad).to eq('255.255.255.255')
     expect(IPv4Net.new('10.255.255.0/8').wildcard_dotquad).to eq('0.255.255.255')
@@ -48,7 +49,7 @@ describe IPv4Net, :wildcard_dotquad do
   end
 end
 
-describe IPv4Net, :prefix_dotquad do
+describe :prefix_dotquad do
   it 'calculates the correct value' do
     expect(IPv4Net.new('192.168.0.0/29').prefix_dotquad).to eq('192.168.0.0')
     expect(IPv4Net.new('192.168.0.0/30').prefix_dotquad).to eq('192.168.0.0')
@@ -57,7 +58,7 @@ describe IPv4Net, :prefix_dotquad do
   end
 end
 
-describe IPv4Net, :ipclass do
+describe :ipclass do
   it 'is correctly calculated' do
     expect(IPv4Net.new('10.0.0.0/8').ipclass).to eq(:a)
     expect(IPv4Net.new('172.16.0.0/12').ipclass).to eq(:b)
@@ -71,7 +72,7 @@ describe IPv4Net, :ipclass do
   end
 end
 
-describe IPv4Net, :unicast? do
+describe :unicast? do
   it 'is correctly calculated' do
     expect(IPv4Net.new('10.0.0.0/8').unicast?).to be_truthy
     expect(IPv4Net.new('172.16.0.0/12').unicast?).to be_truthy
@@ -81,7 +82,7 @@ describe IPv4Net, :unicast? do
   end
 end
 
-describe IPv4Net, :multicast? do
+describe :multicast? do
   it 'is correctly calculated' do
     expect(IPv4Net.new('10.0.0.0/8').multicast?).to be_falsey
     expect(IPv4Net.new('172.16.0.0/12').multicast?).to be_falsey
@@ -91,7 +92,7 @@ describe IPv4Net, :multicast? do
   end
 end
 
-describe IPv4Net, :broadcast do
+describe :broadcast do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').broadcast).to be_an_instance_of(IPv4Addr)
   end
@@ -104,7 +105,7 @@ describe IPv4Net, :broadcast do
   end
 end
 
-describe IPv4Net, :reverse do
+describe :reverse do
   it 'calculates the correct values' do
     expect(IPv4Net.new('0.0.0.0/0').reverse).to eq('.in-addr.arpa')
     expect(IPv4Net.new('10.0.0.0/8').reverse).to eq('10.in-addr.arpa')
@@ -115,7 +116,7 @@ describe IPv4Net, :reverse do
   end
 end
 
-describe IPv4Net, 'is_rfc1918?' do
+describe 'is_rfc1918?' do
   it 'calculates the correct values' do
     expect(IPv4Net.new('0.0.0.0/0').is_rfc1918?).to be_falsey
     expect(IPv4Net.new('1.0.0.0/8').is_rfc1918?).to be_falsey
@@ -132,7 +133,7 @@ end
 
 # parent class methods
 
-describe IPv4Net, :prefix= do
+describe :prefix= do
   it 'returns prefix' do
     expect((IPv4Net.new('192.168.0.0/16').prefix = '192.167.0.0')).to eq('192.167.0.0')
   end
@@ -150,7 +151,7 @@ describe IPv4Net, :prefix= do
   end
 end
 
-describe IPv4Net, :length= do
+describe :length= do
   it 'returns length' do
     expect((IPv4Net.new('192.168.0.0/24').length = 16)).to eq(16)
   end
@@ -167,7 +168,7 @@ describe IPv4Net, :length= do
   end
 end
 
-describe IPv4Net, :mask do
+describe :mask do
   it 'is kind of Integer' do
     expect(IPv4Net.new('0.0.0.0/0').mask).to be_an_kind_of(Integer)
   end
@@ -180,7 +181,7 @@ describe IPv4Net, :mask do
   end
 end
 
-describe IPv4Net, :wildcard do
+describe :wildcard do
   it 'is kind of Integer' do
     expect(IPv4Net.new('0.0.0.0/0').wildcard).to be_an_kind_of(Integer)
   end
@@ -193,7 +194,7 @@ describe IPv4Net, :wildcard do
   end
 end
 
-describe IPv4Net, :addresses do
+describe :addresses do
   it 'produces a range' do
     expect(IPv4Net.new('10.0.0.0/8').addresses).to be_kind_of(Range)
   end
@@ -210,7 +211,7 @@ describe IPv4Net, :addresses do
   end
 end
 
-describe IPv4Net, :first_ip do
+describe :first_ip do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').first_ip).to be_an_instance_of(IPv4Addr)
   end
@@ -223,7 +224,7 @@ describe IPv4Net, :first_ip do
   end
 end
 
-describe IPv4Net, :last_ip do
+describe :last_ip do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').first_ip).to be_an_instance_of(IPv4Addr)
   end
@@ -236,7 +237,7 @@ describe IPv4Net, :last_ip do
   end
 end
 
-describe IPv4Net, :hosts do
+describe :hosts do
   it 'produces a range' do
     expect(IPv4Net.new('10.0.0.0/8').hosts).to be_kind_of(Range)
   end
@@ -253,7 +254,7 @@ describe IPv4Net, :hosts do
   end
 end
 
-describe IPv4Net, :first_host do
+describe :first_host do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').first_host).to be_an_instance_of(IPv4Addr)
   end
@@ -266,7 +267,7 @@ describe IPv4Net, :first_host do
   end
 end
 
-describe IPv4Net, :last_host do
+describe :last_host do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').first_host).to be_an_instance_of(IPv4Addr)
   end
@@ -279,7 +280,7 @@ describe IPv4Net, :last_host do
   end
 end
 
-describe IPv4Net, :network do
+describe :network do
   it 'is of type IPv4Addr' do
     expect(IPv4Net.new('0.0.0.0/0').network).to be_an_instance_of(IPv4Addr)
   end
@@ -293,7 +294,7 @@ describe IPv4Net, :network do
   end
 end
 
-describe IPv4Net, :include? do
+describe :include? do
   it 'calculates the correct values' do
     expect(IPv4Net.new('0.0.0.0/0').include?(IPv4Addr.new('1.2.3.4'))).to be_truthy
     expect(IPv4Net.new('0.0.0.0/0').include?(IPv4Addr.new('0.0.0.0'))).to be_truthy
@@ -305,7 +306,7 @@ describe IPv4Net, :include? do
   end
 end
 
-describe IPv4Net, :to_s do
+describe :to_s do
   it 'produces correct output' do
     expect(IPv4Net.new('0.0.0.0/0').to_s).to eq('0.0.0.0/0')
     expect(IPv4Net.new('10.0.0.0/8').to_s).to eq('10.0.0.0/8')
@@ -314,7 +315,7 @@ describe IPv4Net, :to_s do
   end
 end
 
-describe IPv4Net, :to_hash do
+describe :to_hash do
   it 'produces correct output' do
     expect(IPv4Net.new('0.0.0.0/0').to_hash).to eq({ :prefix => 0x00000000, :length => 0 })
     expect(IPv4Net.new('10.0.0.0/8').to_hash).to eq({ :prefix => 0x0a000000, :length => 8 })
@@ -323,7 +324,7 @@ describe IPv4Net, :to_hash do
   end
 end
 
-describe IPv4Net, :== do
+describe :== do
   it 'matches equal networks' do
     expect((IPv4Net.new('0.0.0.0/0') == IPv4Net.new('0.0.0.0/0'))).to be_truthy
     expect((IPv4Net.new('0.0.0.0/0') == IPv4Net.new('4.0.0.0/0'))).to be_truthy
@@ -340,7 +341,7 @@ describe IPv4Net, :== do
   end
 end
 
-describe IPv4Net, :< do
+describe :< do
   it 'compares correctly' do
     expect((IPv4Net.new('192.168.0.0/24') < IPv4Net.new('192.168.1.0/24'))).to be_falsey
     expect((IPv4Net.new('192.168.0.0/24') < IPv4Net.new('5.5.5.5/0'))).to be_truthy
@@ -373,7 +374,7 @@ describe IPv4Net, :< do
   end
 end
 
-describe IPv4Net, :<= do
+describe :<= do
   it 'compares correctly' do
     expect((IPv4Net.new('192.168.0.0/24') <= IPv4Net.new('192.168.1.0/24'))).to be_falsey
     expect((IPv4Net.new('192.168.0.0/24') <= IPv4Net.new('5.5.5.5/0'))).to be_truthy
@@ -406,7 +407,7 @@ describe IPv4Net, :<= do
   end
 end
 
-describe IPv4Net, :> do
+describe :> do
   it 'compares correctly' do
     expect((IPv4Net.new('192.168.0.0/24') > IPv4Net.new('192.168.1.0/24'))).to be_falsey
     expect((IPv4Net.new('192.168.0.0/24') > IPv4Net.new('5.5.5.5/0'))).to be_falsey
@@ -438,7 +439,7 @@ describe IPv4Net, :> do
   end
 end
 
-describe IPv4Net, :>= do
+describe :>= do
   it 'compares correctly' do
     expect((IPv4Net.new('192.168.0.0/24') >= IPv4Net.new('192.168.1.0/24'))).to be_falsey
     expect((IPv4Net.new('192.168.0.0/24') >= IPv4Net.new('5.5.5.5/0'))).to be_falsey
@@ -470,7 +471,7 @@ describe IPv4Net, :>= do
   end
 end
 
-describe IPv4Net, :overlaps? do
+describe :overlaps? do
   it 'is false for smaller non-overlapping networks' do
     expect((IPv4Net.new('192.168.0.0/16').overlaps?('10.1.1.1/24'))).to be_falsey
   end
@@ -496,7 +497,7 @@ describe IPv4Net, :overlaps? do
   end
 end
 
-describe IPv4Net, :>> do
+describe :>> do
   it 'operates correctly' do
     expect((IPv4Net.new('192.168.0.0/24') >> 1)).to eq(IPv4Net.new('192.168.0.0/25'))
     expect((IPv4Net.new('192.168.0.0/24') >> 2)).to eq(IPv4Net.new('192.168.0.0/26'))
@@ -505,7 +506,7 @@ describe IPv4Net, :>> do
   end
 end
 
-describe IPv4Net, :<< do
+describe :<< do
   it 'operates correctly' do
     expect((IPv4Net.new('192.168.0.0/24') << 1)).to eq(IPv4Net.new('192.168.0.0/23'))
     expect((IPv4Net.new('192.168.0.0/24') << 2)).to eq(IPv4Net.new('192.168.0.0/22'))
@@ -514,7 +515,7 @@ describe IPv4Net, :<< do
   end
 end
 
-describe IPv4Net, :=== do
+describe :=== do
   it 'returns true if other is an IPv4 address and is contained in this network' do
     expect((IPv4Net.new('192.168.0.0/24') === IPv4Addr.new('192.168.0.254'))).to be_truthy
   end
@@ -528,7 +529,7 @@ describe IPv4Net, :=== do
   end
 end
 
-describe IPv4Net, :<=> do
+describe :<=> do
   it 'returns 0 if networks are equal' do
     expect((IPv4Net.new('192.168.0.0/24') <=> IPv4Net.new('192.168.0.0/24'))).to eq(0)
   end
@@ -548,6 +549,7 @@ describe IPv4Net, :<=> do
   it 'returns +1 if network a is bigger than network b' do
     expect((IPv4Net.new('192.168.0.0/24') <=> IPv4Net.new('192.168.0.0/25'))).to eq(1)
   end
+end
 end
 
 end

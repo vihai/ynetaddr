@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv6Addr, 'constructor' do
+describe IPv6Addr do
+
+describe 'constructor' do
   it 'accepts Integer format' do
     expect(IPv6Addr.new(0x2a021234abcd00009999ffffa90bbbbb).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
   end
@@ -48,21 +50,21 @@ describe IPv6Addr, 'constructor' do
   end
 end
 
-describe IPv6Addr, :to_binary do
+describe :to_binary do
   it 'returns a binary string representation of the IP address' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_binary).to eq(
       "*\x02\x124\xAB\xCD\x00\x00\x99\x99\xFF\xFF\xA9\v\xBB\xBB".force_encoding(Encoding::ASCII_8BIT))
   end
 end
 
-describe IPv6Addr, :reverse do
+describe :reverse do
   it 'produces correct output' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').reverse).to eq(
       'b.b.b.b.b.0.9.a.f.f.f.f.9.9.9.9.0.0.0.0.d.c.b.a.4.3.2.1.2.0.a.2.ip6.arpa')
   end
 end
 
-describe IPv6Addr, :unicast? do
+describe :unicast? do
   it 'has correct result' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').unicast?).to be_truthy
     expect(IPv6Addr.new('[::0]').unicast?).to be_falsey
@@ -71,7 +73,7 @@ describe IPv6Addr, :unicast? do
   end
 end
 
-describe IPv6Addr, :new_multicast do
+describe :new_multicast do
   it 'produces an IPv6Addr' do
     expect(IPv6Addr.new_multicast(:global, false, false, false, 0)).to be_an_instance_of(IPv6Addr)
   end
@@ -94,7 +96,7 @@ describe IPv6Addr, :new_multicast do
   end
 end
 
-describe IPv6Addr, :multicast? do
+describe :multicast? do
   it 'matches correctly' do
     expect(IPv6Addr.new('::').multicast?).to be_falsey
     expect(IPv6Addr.new('::1').multicast?).to be_falsey
@@ -105,35 +107,35 @@ describe IPv6Addr, :multicast? do
   end
 end
 
-describe IPv6Addr, :multicast_transient? do
+describe :multicast_transient? do
   it 'matches correctly' do
     expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_transient?).to be_falsey
     expect(IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_transient?).to be_truthy
   end
 end
 
-describe IPv6Addr, :multicast_well_known? do
+describe :multicast_well_known? do
   it 'matches correctly' do
     expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_well_known?).to be_truthy
     expect(IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_well_known?).to be_falsey
   end
 end
 
-describe IPv6Addr, :multicast_prefix_based? do
+describe :multicast_prefix_based? do
   it 'matches correctly' do
     expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_prefix_based?).to be_falsey
     expect(IPv6Addr.new_multicast(:global, false, true, false, 0).multicast_prefix_based?).to be_truthy
   end
 end
 
-describe IPv6Addr, :multicast_embedded_rp? do
+describe :multicast_embedded_rp? do
   it 'matches correctly' do
     expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_embedded_rp?).to be_falsey
     expect(IPv6Addr.new_multicast(:global, false, false, true, 0).multicast_embedded_rp?).to be_truthy
   end
 end
 
-describe IPv6Addr, :multicast_embedded_rp do
+describe :multicast_embedded_rp do
   it 'produces correct result' do
     expect(IPv6Addr.new('FF7e:b40:2001:DB8:BEEF:FEED::1234').multicast_embedded_rp).to eq('2001:DB8:BEEF:FEED::b')
     expect(IPv6Addr.new('FF7e:b20:2001:DB8::1234').multicast_embedded_rp).to eq('2001:DB8::b')
@@ -142,7 +144,7 @@ describe IPv6Addr, :multicast_embedded_rp do
   end
 end
 
-describe IPv6Addr, 'multicast_scope' do
+describe 'multicast_scope' do
   it 'calculates correct value' do
     expect(IPv6Addr.new('ff00:1234:5678:9abc:def0:1234:5678:9abc').multicast_scope).to eq(:reserved)
     expect(IPv6Addr.new('ff01:1234:5678:9abc:def0:1234:5678:9abc').multicast_scope).to eq(:interface_local)
@@ -167,7 +169,7 @@ describe IPv6Addr, 'multicast_scope' do
   end
 end
 
-describe IPv6Addr, :multicast_all_nodes? do
+describe :multicast_all_nodes? do
   it 'matches correctly' do
     expect(IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_all_nodes?).to be_truthy
     expect(IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_all_nodes?).to be_truthy
@@ -179,7 +181,7 @@ describe IPv6Addr, :multicast_all_nodes? do
   end
 end
 
-describe IPv6Addr, :multicast_all_routers? do
+describe :multicast_all_routers? do
   it 'matches correctly' do
     expect(IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_all_routers?).to be_falsey
     expect(IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_all_routers?).to be_falsey
@@ -191,7 +193,7 @@ describe IPv6Addr, :multicast_all_routers? do
   end
 end
 
-describe IPv6Addr, :multicast_solicited_node? do
+describe :multicast_solicited_node? do
   it 'matches correctly' do
     expect(IPv6Addr.new('ff01:0:0:0:0:0:0:1').multicast_solicited_node?).to be_falsey
     expect(IPv6Addr.new('ff02:0:0:0:0:0:0:1').multicast_solicited_node?).to be_falsey
@@ -205,7 +207,7 @@ describe IPv6Addr, :multicast_solicited_node? do
   end
 end
 
-describe IPv6Addr, :multicast_solicited_node_id do
+describe :multicast_solicited_node_id do
   it 'return correct node id' do
     expect(IPv6Addr.new('ff02::1:ff12:3456').multicast_solicited_node_id).to eq(0x123456)
   end
@@ -215,14 +217,14 @@ describe IPv6Addr, :multicast_solicited_node_id do
   end
 end
 
-describe IPv6Addr, :multicast_source_specific? do
+describe :multicast_source_specific? do
   it 'matches correctly' do
     expect(IPv6Addr.new('ff0e0000000000000000000012345678').multicast_source_specific?).to be_falsey
     expect(IPv6Addr.new('ff3e0000000000000000000012345678').multicast_source_specific?).to be_truthy
   end
 end
 
-describe IPv6Addr, :to_s do
+describe :to_s do
   it 'outputs in RFC5952 canonical format' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').to_s).to eq('2a02:1234:abcd:0:9999:ffff:a90b:bbbb')
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_s).to eq('2a02:1234:abcd:0:9999:ffff:a90b:bbbb')
@@ -242,7 +244,7 @@ end
 
 # Parent-class methods
 
-describe IPv6Addr, :included_in? do
+describe :included_in? do
   it 'matches correctly' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').included_in?('2a02::/16')).to be_truthy
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').included_in?('::/0')).to be_truthy
@@ -250,7 +252,7 @@ describe IPv6Addr, :included_in? do
   end
 end
 
-describe IPv6Addr, :succ do
+describe :succ do
   it 'returns a IPv6Addr' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').succ).to be_an_instance_of(IPv6Addr)
   end
@@ -260,7 +262,7 @@ describe IPv6Addr, :succ do
   end
 end
 
-describe IPv6Addr, :next do
+describe :next do
   it 'returns a IPv6Addr' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').next).to be_an_instance_of(IPv6Addr)
   end
@@ -270,7 +272,7 @@ describe IPv6Addr, :next do
   end
 end
 
-describe IPv6Addr, :== do
+describe :== do
   it 'autconverts string other' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
       '[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to be_truthy
@@ -287,7 +289,7 @@ describe IPv6Addr, :== do
   end
 end
 
-describe IPv6Addr, :<=> do
+describe :<=> do
   it 'returns a kind of Integer' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') <=>
       IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).to be_a_kind_of(Integer)
@@ -303,7 +305,7 @@ describe IPv6Addr, :<=> do
   end
 end
 
-describe IPv6Addr, :+ do
+describe :+ do
   it 'returns of type IPv6Addr' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') + 1).to be_an_instance_of(IPv6Addr)
   end
@@ -314,7 +316,7 @@ describe IPv6Addr, :+ do
   end
 end
 
-describe IPv6Addr, :- do
+describe :- do
   it 'returns of type IPv6Addr' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - 1).to be_an_instance_of(IPv6Addr)
   end
@@ -325,7 +327,7 @@ describe IPv6Addr, :- do
   end
 end
 
-describe IPv6Addr, :| do
+describe :| do
   it 'returns of type IPv6Addr' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') | 0x0000ffff).to be_an_instance_of(IPv6Addr)
   end
@@ -335,7 +337,7 @@ describe IPv6Addr, :| do
   end
 end
 
-describe IPv6Addr, :& do
+describe :& do
   it 'returns of type IPv6Addr' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') & 0x0000ffff).to be_an_instance_of(IPv6Addr)
   end
@@ -345,7 +347,7 @@ describe IPv6Addr, :& do
   end
 end
 
-describe IPv6Addr, :mask do
+describe :mask do
   it 'returns of type IPv6Addr' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').mask(0x0000ffff)).to be_an_instance_of(IPv6Addr)
   end
@@ -355,7 +357,7 @@ describe IPv6Addr, :mask do
   end
 end
 
-describe IPv6Addr, :mask! do
+describe :mask! do
   it 'returns self' do
     a = IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')
     expect(a.mask!(0xffff0000)).to be_equal(a)
@@ -369,7 +371,7 @@ describe IPv6Addr, :mask! do
   end
 end
 
-describe IPv6Addr, :to_i do
+describe :to_i do
   it 'returns a kind of Integer' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_i).to be_a_kind_of(Integer)
   end
@@ -382,7 +384,7 @@ describe IPv6Addr, :to_i do
   end
 end
 
-describe IPv6Addr, :hash do
+describe :hash do
   it 'returns a kind of Integer' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').hash).to be_a_kind_of(Integer)
   end
@@ -390,6 +392,7 @@ describe IPv6Addr, :hash do
   it 'produces a hash' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').hash).to eq(0x2a021234abcd00009999ffffa90bbbbb)
   end
+end
 end
 
 end

@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv4IfAddr, 'constructor' do
+describe IPv4IfAddr do
+
+describe 'constructor' do
   it 'accepts d.d.d.d/l format' do
     expect(IPv4IfAddr.new('192.168.0.1/24').addr).to eq(0xC0A80001)
     expect(IPv4IfAddr.new('192.168.0.1/24').length).to eq(24)
@@ -34,7 +36,7 @@ describe IPv4IfAddr, 'constructor' do
   end
 end
 
-describe IPv4IfAddr, :mask_dotquad do
+describe :mask_dotquad do
   it 'is correctly calculated' do
     expect(IPv4IfAddr.new('0.0.0.1/0').mask_dotquad).to eq('0.0.0.0')
     expect(IPv4IfAddr.new('10.255.255.1/8').mask_dotquad).to eq('255.0.0.0')
@@ -43,7 +45,7 @@ describe IPv4IfAddr, :mask_dotquad do
   end
 end
 
-describe IPv4IfAddr, :wildcard_dotquad do
+describe :wildcard_dotquad do
   it 'is correctly calculated' do
     expect(IPv4IfAddr.new('0.0.0.1/0').wildcard_dotquad).to eq('255.255.255.255')
     expect(IPv4IfAddr.new('10.255.255.1/8').wildcard_dotquad).to eq('0.255.255.255')
@@ -52,7 +54,7 @@ describe IPv4IfAddr, :wildcard_dotquad do
   end
 end
 
-describe IPv4IfAddr, :ipclass do
+describe :ipclass do
   it 'is correctly calculated' do
     expect(IPv4IfAddr.new('10.0.0.1/8').ipclass).to eq(:a)
     expect(IPv4IfAddr.new('172.16.0.1/12').ipclass).to eq(:b)
@@ -62,7 +64,7 @@ describe IPv4IfAddr, :ipclass do
   end
 end
 
-describe IPv4IfAddr, :is_rfc1918? do
+describe :is_rfc1918? do
   it 'calculates the correct values' do
     expect(IPv4IfAddr.new('0.0.0.1/0').is_rfc1918?).to be_falsey
     expect(IPv4IfAddr.new('1.0.0.1/8').is_rfc1918?).to be_falsey
@@ -79,7 +81,7 @@ end
 
 # parent class methods
 
-describe IPv4IfAddr, :network do
+describe :network do
 
   it 'is of type IPv4Net' do
     expect(IPv4IfAddr.new('0.0.0.1/0').network).to be_an_instance_of(IPv4Net)
@@ -101,7 +103,7 @@ describe IPv4IfAddr, :network do
   end
 end
 
-describe IPv4IfAddr, :mask do
+describe :mask do
   it 'is a kind of Integer' do
     expect(IPv4IfAddr.new('0.0.0.1/0').mask).to be_a_kind_of(Integer)
   end
@@ -114,7 +116,7 @@ describe IPv4IfAddr, :mask do
   end
 end
 
-describe IPv4IfAddr, :wildcard do
+describe :wildcard do
   it 'is a kind of Integer' do
     expect(IPv4IfAddr.new('0.0.0.1/0').wildcard).to be_a_kind_of(Integer)
   end
@@ -127,7 +129,7 @@ describe IPv4IfAddr, :wildcard do
   end
 end
 
-describe IPv4IfAddr, :address do
+describe :address do
   it 'is of type IPv4Addr' do
     expect(IPv4IfAddr.new('0.0.0.1/0').address).to be_an_instance_of(IPv4Addr)
   end
@@ -148,7 +150,7 @@ describe IPv4IfAddr, :address do
   end
 end
 
-describe IPv4IfAddr, :nic_id do
+describe :nic_id do
   it 'is kind of Integer' do
     expect(IPv4IfAddr.new('0.0.0.1/0').nic_id).to be_a_kind_of(Integer)
   end
@@ -169,7 +171,7 @@ describe IPv4IfAddr, :nic_id do
   end
 end
 
-describe IPv4IfAddr, :include? do
+describe :include? do
   it 'is correctly calculated' do
     expect(IPv4IfAddr.new('0.0.0.1/0').include?(IPv4Addr.new('1.2.3.4'))).to be_truthy
     expect(IPv4IfAddr.new('0.0.0.1/0').include?(IPv4Addr.new('0.0.0.0'))).to be_truthy
@@ -181,7 +183,7 @@ describe IPv4IfAddr, :include? do
   end
 end
 
-describe IPv4IfAddr, :== do
+describe :== do
   it 'matches equal interface addresses' do
     expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('0.0.0.1/0'))).to be_truthy
     expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('4.0.0.1/0'))).to be_falsey
@@ -191,7 +193,7 @@ describe IPv4IfAddr, :== do
   end
 end
 
-describe IPv4IfAddr, :to_s do
+describe :to_s do
   it 'produces correct output' do
     expect(IPv4IfAddr.new('0.0.0.1/0').to_s).to eq('0.0.0.1/0')
     expect(IPv4IfAddr.new('10.0.0.1/8').to_s).to eq('10.0.0.1/8')
@@ -200,13 +202,15 @@ describe IPv4IfAddr, :to_s do
   end
 end
 
-describe IPv4IfAddr, :to_hash do
+describe :to_hash do
   it 'produces correct output' do
     expect(IPv4IfAddr.new('0.0.0.1/0').to_hash).to eq({ :addr => 0x00000001, :length => 0 })
     expect(IPv4IfAddr.new('10.0.0.1/8').to_hash).to eq({ :addr => 0x0a000001, :length => 8 })
     expect(IPv4IfAddr.new('192.168.255.254/24').to_hash).to eq({ :addr => 0xc0a8fffe, :length => 24 })
     expect(IPv4IfAddr.new('192.168.255.255/32').to_hash).to eq({ :addr => 0xc0a8ffff, :length => 32 })
   end
+end
+
 end
 
 end

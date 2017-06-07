@@ -3,7 +3,9 @@ require 'ynetaddr'
 
 module Net
 
-describe IPTree, 'constructor' do
+describe IPTree do
+
+describe 'constructor' do
   it 'creates a new tree with specified network' do
     expect(IPTree.new('2a02:20:1:2::/64').network).to eq(IPv6Net.new('2a02:20:1:2::/64'))
   end
@@ -17,7 +19,7 @@ describe IPTree, 'constructor' do
   end
 end
 
-describe IPTree, :add do
+describe :add do
   it 'adds specified networks and produces correct tree' do
     net = IPTree.new('::/0')
     net.add('2a02::/16')
@@ -181,14 +183,14 @@ describe IPTree, :add do
   end
 end
 
-describe IPTree, :networks do
+describe :networks do
   it 'should return inserted networks' do
     net = IPTree.new(['::/0', '2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     expect(net.networks.sort).to eq([ '2a02:20::/32', '2a02:21::/32', '2a02:8000::/17', '2a02::/16' ])
   end
 end
 
-describe IPTree, :find do
+describe :find do
   it 'returns the found network' do
     net = IPTree.new(['::/0', '2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     expect(net.find('2a02::/16')).to be_a(IPTree)
@@ -196,7 +198,7 @@ describe IPTree, :find do
   end
 end
 
-describe IPTree, :free_space do
+describe :free_space do
   it 'returns free space' do
     net = IPTree.new('::/0')
     net.add([ 'f000::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
@@ -219,7 +221,7 @@ describe IPTree, :free_space do
   end
 end
 
-describe IPTree, :pick_free do
+describe :pick_free do
   it 'picks smallest free network' do
     tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     expect(tree.pick_free(64)).to eq('2a02:22::/64')
@@ -252,6 +254,8 @@ describe IPTree, :pick_free do
     tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
     expect(tree.pick_free(64, '2a02:20:10::'..'2a02:20:11::')).to be_nil
   end
+end
+
 end
 
 end
