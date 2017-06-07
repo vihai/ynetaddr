@@ -161,6 +161,12 @@ describe :- do
   end
 end
 
+describe :to_binary do
+  it 'converts to binary representation' do
+    expect(MacAddr.new('0012.3456.789a').to_binary).to eq("\x00\x12\x34\x56\x78\x9a".force_encoding(Encoding::ASCII_8BIT))
+  end
+end
+
 describe :to_s do
   it 'outputs correctly' do
     expect(MacAddr.new('0012.3456.789a').to_s).to eq('00:12:34:56:78:9a')
