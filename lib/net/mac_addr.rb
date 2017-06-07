@@ -120,6 +120,8 @@ module Net
     alias === ==
 
     def <=>(other)
+      return nil if other.nil?
+
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr <=> other.to_i
     end
@@ -208,8 +210,6 @@ module Net
       @addr
     end
 
-    protected
-
     # Gets the successive value by finding next NIC value
     # Raises BadArithmetic if the increment would change the OUI
     #
@@ -219,6 +219,7 @@ module Net
       raise BadArithmetic if self.nic == 0xffffff
       MacAddr.new(@addr + 1)
     end
+    alias next succ
 
   end
 end
