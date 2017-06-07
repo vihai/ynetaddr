@@ -252,11 +252,21 @@ end
 
 describe IPv6Addr, :succ do
   it 'returns a IPv6Addr' do
-    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').send(:succ)).to be_an_instance_of(IPv6Addr)
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').succ).to be_an_instance_of(IPv6Addr)
   end
 
-  it 'computes proper value' do
-    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').send(:succ)).to eq('2a02:1234:abcd:0000:9999:ffff:a90b:bbbc')
+  it 'returns the successive IP address' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').succ).to eq('2a02:1234:abcd:0000:9999:ffff:a90b:bbbc')
+  end
+end
+
+describe IPv6Addr, :next do
+  it 'returns a IPv6Addr' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').next).to be_an_instance_of(IPv6Addr)
+  end
+
+  it 'returns the successive IP address' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').next).to eq('2a02:1234:abcd:0000:9999:ffff:a90b:bbbc')
   end
 end
 

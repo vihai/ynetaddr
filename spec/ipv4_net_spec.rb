@@ -199,13 +199,13 @@ describe IPv4Net, :addresses do
   end
 
   it 'produces the correct range' do
-    expect(IPv4Net.new('192.168.0.0/29').addresses).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/29').addresses).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.7'))
-    expect(IPv4Net.new('192.168.0.0/30').addresses).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/30').addresses).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.3'))
-    expect(IPv4Net.new('192.168.0.0/31').addresses).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/31').addresses).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.1'))
-    expect(IPv4Net.new('192.168.0.0/32').addresses).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/32').addresses).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.0'))
   end
 end
@@ -242,13 +242,13 @@ describe IPv4Net, :hosts do
   end
 
   it 'produces the correct range' do
-    expect(IPv4Net.new('192.168.0.0/29').hosts).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/29').hosts).to eq(
       IPv4Addr.new('192.168.0.1')..IPv4Addr.new('192.168.0.6'))
-    expect(IPv4Net.new('192.168.0.0/30').hosts).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/30').hosts).to eq(
       IPv4Addr.new('192.168.0.1')..IPv4Addr.new('192.168.0.2'))
-    expect(IPv4Net.new('192.168.0.0/31').hosts).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/31').hosts).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.1'))
-    expect(IPv4Net.new('192.168.0.0/32').hosts).to be_eql(
+    expect(IPv4Net.new('192.168.0.0/32').hosts).to eq(
       IPv4Addr.new('192.168.0.0')..IPv4Addr.new('192.168.0.0'))
   end
 end

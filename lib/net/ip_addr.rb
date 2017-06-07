@@ -10,6 +10,8 @@ module Net
 
   class IPAddr
 
+    include Comparable
+
     # Automatically instantiate the correct network depending on the parsed string
     #
     # @return [IPv4Addr, IPv6Addr] the instantiated network
@@ -35,22 +37,11 @@ module Net
       net.include?(self)
     end
 
-    # Compare two IP addresses. The address may be compared to another IPAddr object or a string representation of it
-    #
-    # @return [Boolean] true if the IP addresses match.
-    #
-    def ==(other)
-      return false if !other
-      other = self.class.new(other) if !other.kind_of?(self.class)
-      @addr == other.to_i
-    end
-
-    alias eql? ==
-    alias === ==
-
     # Compare two IP addresses. This is used just to implement hosts enumeration since there is no real ordering
     #
     def <=>(other)
+      return nil if other.nil?
+
       other = self.class.new(other) if !other.kind_of?(self.class)
       @addr <=> other.to_i
     end
@@ -112,14 +103,12 @@ module Net
       @addr
     end
 
-    protected
-
-    # @return [IPAddr] the "next" IP address while enumerating hosts in a network, needed to be Comparable
+    # @return [IPAddr] the "next" IP address while enumerating hosts in a network, needed for Range enumeration
     #
     def succ
       self.class.new(@addr + 1)
     end
-
+    alias next succ
   end
 
 end

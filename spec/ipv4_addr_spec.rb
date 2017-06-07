@@ -219,12 +219,23 @@ end
 
 describe IPv4Addr, :succ do
   it 'returns a IPv4Addr' do
-    expect(IPv4Addr.new('1.2.3.4').send(:succ)).to be_an_instance_of(IPv4Addr)
+    expect(IPv4Addr.new('1.2.3.4').succ).to be_an_instance_of(IPv4Addr)
   end
 
   it 'return successive IP address by adding 1' do
-    expect(IPv4Addr.new('1.2.3.4').send(:succ)).to eq(IPv4Addr.new('1.2.3.5'))
-    expect(IPv4Addr.new('192.168.255.255').send(:succ)).to eq(IPv4Addr.new('192.169.0.0'))
+    expect(IPv4Addr.new('1.2.3.4').succ).to eq(IPv4Addr.new('1.2.3.5'))
+    expect(IPv4Addr.new('192.168.255.255').succ).to eq(IPv4Addr.new('192.169.0.0'))
+  end
+end
+
+describe IPv4Addr, :next do
+  it 'returns a IPv4Addr' do
+    expect(IPv4Addr.new('1.2.3.4').next).to be_an_instance_of(IPv4Addr)
+  end
+
+  it 'return successive IP address by adding 1' do
+    expect(IPv4Addr.new('1.2.3.4').next).to eq(IPv4Addr.new('1.2.3.5'))
+    expect(IPv4Addr.new('192.168.255.255').next).to eq(IPv4Addr.new('192.169.0.0'))
   end
 end
 

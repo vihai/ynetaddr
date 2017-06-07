@@ -169,13 +169,13 @@ describe IPv6Net, :addresses do
   end
 
   it 'produces the correct range' do
-    expect(IPv6Net.new('2a02:20:1:2::/64').addresses).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::/64').addresses).to eq(
       IPv6Addr.new('2a02:20:1:2::0')..
       IPv6Addr.new('2a02:20:1:2:ffff:ffff:ffff:ffff'))
-    expect(IPv6Net.new('2a02:20:1:2::1/127').addresses).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::1/127').addresses).to eq(
       IPv6Addr.new('2a02:20:1:2::0')..
       IPv6Addr.new('2a02:20:1:2::1'))
-    expect(IPv6Net.new('2a02:20:1:2::1/128').addresses).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::1/128').addresses).to eq(
       IPv6Addr.new('2a02:20:1:2::1')..
       IPv6Addr.new('2a02:20:1:2::1'))
   end
@@ -203,13 +203,13 @@ describe IPv6Net, :hosts do
   end
 
   it 'produces the correct range' do
-    expect(IPv6Net.new('2a02:20:1:2::/64').hosts).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::/64').hosts).to eq(
       IPv6Addr.new('2a02:20:1:2::0')..
       IPv6Addr.new('2a02:20:1:2:ffff:ffff:ffff:ffff'))
-    expect(IPv6Net.new('2a02:20:1:2::1/127').hosts).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::1/127').hosts).to eq(
       IPv6Addr.new('2a02:20:1:2::0')..
       IPv6Addr.new('2a02:20:1:2::1'))
-    expect(IPv6Net.new('2a02:20:1:2::1/128').hosts).to be_eql(
+    expect(IPv6Net.new('2a02:20:1:2::1/128').hosts).to eq(
       IPv6Addr.new('2a02:20:1:2::1')..
       IPv6Addr.new('2a02:20:1:2::1'))
   end

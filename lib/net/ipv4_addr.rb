@@ -12,8 +12,6 @@ module Net
   #
   class IPv4Addr < IPAddr
 
-    include Comparable
-
     # Instantiates a new IPv4 address object
     #
     # @param addr Any supported IPv4 representation to initialize from:

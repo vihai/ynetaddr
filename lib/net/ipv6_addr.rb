@@ -15,8 +15,6 @@ module Net
   #
   class IPv6Addr < IPAddr
 
-    include Comparable
-
     SCOPE_SYMBOLS = {
        :interface_local     => 0x1,
        :link_local          => 0x2,
