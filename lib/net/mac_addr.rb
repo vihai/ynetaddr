@@ -156,6 +156,12 @@ module Net
       @addr
     end
 
+    # @return [String] a network-byte-ordered representation of the IP address
+    #
+    def to_binary
+      [@addr].pack('Q>')[2..-1]
+    end
+
     # @return [String] the colon separated octet representation of the MAC-address
     #
     # Example: "00:12:34:56:78:9a"
