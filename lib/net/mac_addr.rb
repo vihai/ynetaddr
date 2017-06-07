@@ -30,7 +30,7 @@ module Net
     def initialize(addr = '0000:0000:0000')
 
       if addr.respond_to?(:to_macaddr)
-        @addr = addr.to_macaddr.raw_addr
+        @addr = addr.to_macaddr.instance_variable_get(:@addr)
       elsif addr.kind_of?(Integer)
         @addr = addr
       elsif addr.respond_to?(:to_s)
