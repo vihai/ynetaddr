@@ -557,6 +557,31 @@ describe :<=> do
     expect((IPv4Net.new('192.168.0.0/24') <=> IPv4Net.new('192.168.0.0/25'))).to eq(1)
   end
 end
+
+describe :+ do
+  it 'returns of type IPv4Addr' do
+    expect((IPv4Net.new('1.2.3.0/24') + 1)).to be_an_instance_of(IPv4Addr)
+  end
+
+  it 'sums correctly' do
+    expect((IPv4Net.new('1.2.3.0/24') + 1)).to eq(IPv4Addr.new('1.2.3.1'))
+    expect((IPv4Net.new('1.2.3.0/24') + (-1))).to eq(IPv4Addr.new('1.2.2.255'))
+    expect((IPv4Net.new('1.2.3.0/24') + 10)).to eq(IPv4Addr.new('1.2.3.10'))
+  end
+end
+
+describe :- do
+  it 'returns of type IPv4Addr' do
+    expect((IPv4Net.new('1.2.3.0/24') - 1)).to be_an_instance_of(IPv4Addr)
+  end
+
+  it 'subtracts correctly' do
+    expect((IPv4Net.new('1.2.3.0/24') - 1)).to eq(IPv4Addr.new('1.2.2.255'))
+    expect((IPv4Net.new('1.2.3.0/24') - (-1))).to eq(IPv4Addr.new('1.2.3.1'))
+    expect((IPv4Net.new('1.2.3.0/24') - 10)).to eq(IPv4Addr.new('1.2.2.246'))
+  end
+end
+
 end
 
 end

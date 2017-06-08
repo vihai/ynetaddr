@@ -584,6 +584,29 @@ describe :<=> do
     expect(IPv6Net.new('2a02:20::/32') <=> IPv6Net.new('2a02:20::/33')).to eq(1)
   end
 end
+
+describe :+ do
+  it 'returns of type IPv6Addr' do
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to be_an_instance_of(IPv6Addr)
+  end
+
+  it 'sums correctly' do
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to eq('2a02:1234:abcd:0000::1')
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + (-1)).to eq('2a02:1234:abcc:ffff:ffff:ffff:ffff:ffff')
+  end
+end
+
+describe :- do
+  it 'returns of type IPv6Addr' do
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') - 1).to be_an_instance_of(IPv6Addr)
+  end
+
+  it 'subtracts correctly' do
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') - 1).to eq('2a02:1234:abcc:ffff:ffff:ffff:ffff:ffff')
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') - (-1)).to eq('2a02:1234:abcd:0000::1')
+  end
+end
+
 end
 
 end

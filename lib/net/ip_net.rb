@@ -184,6 +184,20 @@ module Net
       self.length == other.length ? self.prefix <=> other.prefix : other.length <=> self.length
     end
 
+    # Sum n to the host part and return a new IPAddr. Note that there is no check that the produced IP address is valid
+    # and in the same network.
+    #
+    def +(n)
+      @address_class.new(@prefix + n)
+    end
+
+    # Subtract n to the host part and return a new IPAddr. Note that there is no check that the produced IP address is valid
+    # and in the same network.
+    #
+    def -(n)
+      @address_class.new(@prefix - n)
+    end
+
     # @return [IPNet] the next contiguous network
     def succ
       self.class.new({ :prefix => @prefix + (1 << (@max_length - @length)), :length => @length })
