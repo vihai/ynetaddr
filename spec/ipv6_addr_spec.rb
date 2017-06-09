@@ -328,9 +328,15 @@ describe :- do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - 1).to be_an_instance_of(IPv6Addr)
   end
 
-  it 'subtracts correctly' do
+  it 'subtracts Fixnum from address' do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - 1).to eq('2a02:1234:abcd:0000:9999:ffff:a90b:bbba')
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - (-1)).to eq('2a02:1234:abcd:0000:9999:ffff:a90b:bbbc')
+  end
+
+  it 'subtracts IPv6Addr giving the distance' do
+    expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbb9')).to eq(2)
+    expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')).to eq(0)
+    expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb') - IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbd')).to eq(-2)
   end
 end
 

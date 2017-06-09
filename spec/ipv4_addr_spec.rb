@@ -313,10 +313,16 @@ describe :- do
     expect((IPv4Addr.new('1.2.3.4') - 1)).to be_an_instance_of(IPv4Addr)
   end
 
-  it 'subtracts correctly' do
+  it 'subtracts Fixnum from address' do
     expect((IPv4Addr.new('1.2.3.4') - 1)).to eq(IPv4Addr.new('1.2.3.3'))
     expect((IPv4Addr.new('1.2.3.4') - (-1))).to eq(IPv4Addr.new('1.2.3.5'))
     expect((IPv4Addr.new('1.2.3.4') - 10)).to eq(IPv4Addr.new('1.2.2.250'))
+  end
+
+  it 'subtracts IPv4Addr from address' do
+    expect(IPv4Addr.new('1.2.3.4') - IPv4Addr.new('1.2.3.2')).to eq(2)
+    expect(IPv4Addr.new('1.2.3.4') - IPv4Addr.new('1.2.3.4')).to eq(0)
+    expect(IPv4Addr.new('1.2.3.4') - IPv4Addr.new('1.2.3.6')).to eq(-2)
   end
 end
 
