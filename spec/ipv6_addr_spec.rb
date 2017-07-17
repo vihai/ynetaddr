@@ -296,6 +296,23 @@ describe :== do
   end
 end
 
+describe :eql? do
+  it 'autconverts string other' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').eql?(
+      '[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).to be_truthy
+  end
+
+  it 'return true for equal addresses' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').eql?(
+      IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]'))).to be_truthy
+  end
+
+  it 'return false for different adddresses' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').eql?(
+      IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbc]'))).to be_falsey
+  end
+end
+
 describe :<=> do
   it 'returns a kind of Integer' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') <=>

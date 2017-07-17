@@ -213,6 +213,8 @@ module Net
       @addr
     end
 
+    alias eql? ==
+
     # Gets the successive value by finding next NIC value
     # Raises BadArithmetic if the increment would change the OUI
     #

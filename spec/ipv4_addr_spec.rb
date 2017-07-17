@@ -250,49 +250,66 @@ end
 
 describe :== do
   it 'return true for equal addresses' do
-    expect((IPv4Addr.new('1.2.3.4') == IPv4Addr.new('1.2.3.4'))).to be_truthy
-    expect((IPv4Addr.new('0.0.0.0') == IPv4Addr.new('0.0.0.0'))).to be_truthy
-    expect((IPv4Addr.new('0.0.0.1') == IPv4Addr.new('0.0.0.1'))).to be_truthy
-    expect((IPv4Addr.new('255.255.255.255') == IPv4Addr.new('255.255.255.255'))).to be_truthy
+    expect(IPv4Addr.new('1.2.3.4') == IPv4Addr.new('1.2.3.4')).to be_truthy
+    expect(IPv4Addr.new('0.0.0.0') == IPv4Addr.new('0.0.0.0')).to be_truthy
+    expect(IPv4Addr.new('0.0.0.1') == IPv4Addr.new('0.0.0.1')).to be_truthy
+    expect(IPv4Addr.new('255.255.255.255') == IPv4Addr.new('255.255.255.255')).to be_truthy
   end
 
   it 'return false for different adddresses' do
-    expect((IPv4Addr.new('1.2.3.4') == IPv4Addr.new('0.0.0.0'))).to be_falsey
-    expect((IPv4Addr.new('1.2.3.4') == IPv4Addr.new('255.255.255.255'))).to be_falsey
-    expect((IPv4Addr.new('1.2.3.4') == IPv4Addr.new('1.2.3.5'))).to be_falsey
-    expect((IPv4Addr.new('0.0.0.0') == IPv4Addr.new('255.255.255.255'))).to be_falsey
-    expect((IPv4Addr.new('255.255.255.255') == IPv4Addr.new('0.0.0.0'))).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4') == IPv4Addr.new('0.0.0.0')).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4') == IPv4Addr.new('255.255.255.255')).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4') == IPv4Addr.new('1.2.3.5')).to be_falsey
+    expect(IPv4Addr.new('0.0.0.0') == IPv4Addr.new('255.255.255.255')).to be_falsey
+    expect(IPv4Addr.new('255.255.255.255') == IPv4Addr.new('0.0.0.0')).to be_falsey
+  end
+end
+
+describe :eql? do
+  it 'return true for equal addresses' do
+    expect(IPv4Addr.new('1.2.3.4').eql?(IPv4Addr.new('1.2.3.4'))).to be_truthy
+    expect(IPv4Addr.new('0.0.0.0').eql?(IPv4Addr.new('0.0.0.0'))).to be_truthy
+    expect(IPv4Addr.new('0.0.0.1').eql?(IPv4Addr.new('0.0.0.1'))).to be_truthy
+    expect(IPv4Addr.new('255.255.255.255').eql?(IPv4Addr.new('255.255.255.255'))).to be_truthy
+  end
+
+  it 'return false for different adddresses' do
+    expect(IPv4Addr.new('1.2.3.4').eql?(IPv4Addr.new('0.0.0.0'))).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4').eql?(IPv4Addr.new('255.255.255.255'))).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4').eql?(IPv4Addr.new('1.2.3.5'))).to be_falsey
+    expect(IPv4Addr.new('0.0.0.0').eql?(IPv4Addr.new('255.255.255.255'))).to be_falsey
+    expect(IPv4Addr.new('255.255.255.255').eql?(IPv4Addr.new('0.0.0.0'))).to be_falsey
   end
 end
 
 describe '!=' do
   it 'returns true for different adddresses' do
-    expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('255.255.255.255'))).to be_truthy
-    expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('1.2.3.5'))).to be_truthy
-    expect((IPv4Addr.new('0.0.0.0') != IPv4Addr.new('255.255.255.255'))).to be_truthy
-    expect((IPv4Addr.new('255.255.255.255') != IPv4Addr.new('0.0.0.0'))).to be_truthy
+    expect(IPv4Addr.new('1.2.3.4') != IPv4Addr.new('255.255.255.255')).to be_truthy
+    expect(IPv4Addr.new('1.2.3.4') != IPv4Addr.new('1.2.3.5')).to be_truthy
+    expect(IPv4Addr.new('0.0.0.0') != IPv4Addr.new('255.255.255.255')).to be_truthy
+    expect(IPv4Addr.new('255.255.255.255') != IPv4Addr.new('0.0.0.0')).to be_truthy
   end
 
   it 'returns false for equal addresses' do
-    expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('1.2.3.4'))).to be_falsey
-    expect((IPv4Addr.new('0.0.0.0') != IPv4Addr.new('0.0.0.0'))).to be_falsey
-    expect((IPv4Addr.new('0.0.0.1') != IPv4Addr.new('0.0.0.1'))).to be_falsey
-    expect((IPv4Addr.new('255.255.255.255') != IPv4Addr.new('255.255.255.255'))).to be_falsey
+    expect(IPv4Addr.new('1.2.3.4') != IPv4Addr.new('1.2.3.4')).to be_falsey
+    expect(IPv4Addr.new('0.0.0.0') != IPv4Addr.new('0.0.0.0')).to be_falsey
+    expect(IPv4Addr.new('0.0.0.1') != IPv4Addr.new('0.0.0.1')).to be_falsey
+    expect(IPv4Addr.new('255.255.255.255') != IPv4Addr.new('255.255.255.255')).to be_falsey
     expect((IPv4Addr.new('1.2.3.4') != IPv4Addr.new('0.0.0.0'))).to be_truthy
   end
 end
 
 describe :<=> do
   it 'returns a kind of Integer' do
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.4'))).to be_a_kind_of(Integer)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.4')).to be_a_kind_of(Integer)
   end
 
   it 'compares correctly' do
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.4'))).to eq(0)
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.5'))).to eq(-1)
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.3'))).to eq(1)
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('0.0.0.0'))).to eq(1)
-    expect((IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('255.255.255.255'))).to eq(-1)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.4')).to eq(0)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.5')).to eq(-1)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('1.2.3.3')).to eq(1)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('0.0.0.0')).to eq(1)
+    expect(IPv4Addr.new('1.2.3.4') <=> IPv4Addr.new('255.255.255.255')).to eq(-1)
   end
 end
 
@@ -302,9 +319,9 @@ describe :+ do
   end
 
   it 'sums correctly' do
-    expect((IPv4Addr.new('1.2.3.4') + 1)).to eq(IPv4Addr.new('1.2.3.5'))
-    expect((IPv4Addr.new('1.2.3.4') + (-1))).to eq(IPv4Addr.new('1.2.3.3'))
-    expect((IPv4Addr.new('1.2.3.4') + 10)).to eq(IPv4Addr.new('1.2.3.14'))
+    expect(IPv4Addr.new('1.2.3.4') + 1).to eq(IPv4Addr.new('1.2.3.5'))
+    expect(IPv4Addr.new('1.2.3.4') + (-1)).to eq(IPv4Addr.new('1.2.3.3'))
+    expect(IPv4Addr.new('1.2.3.4') + 10).to eq(IPv4Addr.new('1.2.3.14'))
   end
 end
 

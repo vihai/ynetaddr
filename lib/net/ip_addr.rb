@@ -108,6 +108,8 @@ module Net
       @addr
     end
 
+    alias eql? ==
+
     # @return [IPAddr] the "next" IP address while enumerating hosts in a network, needed for Range enumeration
     #
     def succ

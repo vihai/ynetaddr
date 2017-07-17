@@ -150,35 +150,51 @@ describe :oui do
   end
 end
 
+describe :== do
+  it 'correctly compares' do
+    expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89ab').to be_truthy
+    expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89aa').to be_falsey
+    expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89ac').to be_falsey
+  end
+end
+
+describe :eql? do
+  it 'correctly compares' do
+    expect(MacAddr.new('7423.4567.89ab').eql?('7423.4567.89ab')).to be_truthy
+    expect(MacAddr.new('7423.4567.89ab').eql?('7423.4567.89aa')).to be_falsey
+    expect(MacAddr.new('7423.4567.89ab').eql?('7423.4567.89ac')).to be_falsey
+  end
+end
+
 describe :<=> do
   it 'correctly compares' do
-    expect((MacAddr.new('7423.4567.89ab') <=> '7423.4567.89ab')).to eq(0)
-    expect((MacAddr.new('7423.4567.89ab') <=> '7423.4567.89aa')).to eq(1)
-    expect((MacAddr.new('7423.4567.89ab') <=> '7423.4567.89ac')).to eq(-1)
+    expect(MacAddr.new('7423.4567.89ab') <=> '7423.4567.89ab').to eq(0)
+    expect(MacAddr.new('7423.4567.89ab') <=> '7423.4567.89aa').to eq(1)
+    expect(MacAddr.new('7423.4567.89ab') <=> '7423.4567.89ac').to eq(-1)
   end
 end
 
 describe :+ do
   it 'returns of type MacAddr' do
-    expect((MacAddr.new('0012.3456.789a') + 1)).to be_an_instance_of(MacAddr)
+    expect(MacAddr.new('0012.3456.789a') + 1).to be_an_instance_of(MacAddr)
   end
 
   it 'sums correctly' do
-    expect((MacAddr.new('0012.3456.789a') + 1)).to eq(MacAddr.new('0012.3456.789b'))
-    expect((MacAddr.new('0012.3456.789a') + (-1))).to eq(MacAddr.new('0012.3456.7899'))
-    expect((MacAddr.new('0012.3456.789a') + 10)).to eq(MacAddr.new('0012.3456.78a4'))
+    expect(MacAddr.new('0012.3456.789a') + 1).to eq(MacAddr.new('0012.3456.789b'))
+    expect(MacAddr.new('0012.3456.789a') + (-1)).to eq(MacAddr.new('0012.3456.7899'))
+    expect(MacAddr.new('0012.3456.789a') + 10).to eq(MacAddr.new('0012.3456.78a4'))
   end
 end
 
 describe :- do
   it 'returns of type MacAddr' do
-    expect((MacAddr.new('0012.3456.789a') - 1)).to be_an_instance_of(MacAddr)
+    expect(MacAddr.new('0012.3456.789a') - 1).to be_an_instance_of(MacAddr)
   end
 
   it 'subtracts correctly' do
-    expect((MacAddr.new('0012.3456.789a') - 1)).to eq(MacAddr.new('0012.3456.7899'))
-    expect((MacAddr.new('0012.3456.789a') - (-1))).to eq(MacAddr.new('0012.3456.789b'))
-    expect((MacAddr.new('0012.3456.789a') - 10)).to eq(MacAddr.new('0012.3456.7890'))
+    expect(MacAddr.new('0012.3456.789a') - 1).to eq(MacAddr.new('0012.3456.7899'))
+    expect(MacAddr.new('0012.3456.789a') - (-1)).to eq(MacAddr.new('0012.3456.789b'))
+    expect(MacAddr.new('0012.3456.789a') - 10).to eq(MacAddr.new('0012.3456.7890'))
   end
 end
 
