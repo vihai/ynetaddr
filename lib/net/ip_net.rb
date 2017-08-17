@@ -204,6 +204,12 @@ module Net
     end
     alias next succ
 
+    # Returns a viable JSON representation
+    #
+    def as_json
+      to_s
+    end
+
     private
 
     def cliplen(l)

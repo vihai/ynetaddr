@@ -116,6 +116,12 @@ module Net
       self.class.new(@addr + 1)
     end
     alias next succ
+
+    # Returns a viable JSON representation
+    #
+    def as_json
+      to_s
+    end
   end
 
 end

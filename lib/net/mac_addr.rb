@@ -56,7 +56,7 @@ module Net
         # From hex to Fixnum/Bignum
         @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
       else
-        raise "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{addr}"
       end
     end
 
@@ -207,7 +207,7 @@ module Net
       "#<%MacAddr:#{to_s}>"
     end
 
-    # @return [Integer] a hash of the valued to be used as key in hashes
+    # @return [Integer] a hash of the value to be used as key in hashes
     #
     def hash
       @addr
@@ -226,5 +226,10 @@ module Net
     end
     alias next succ
 
+    # Returns a viable JSON representation
+    #
+    def as_json
+      to_s
+    end
   end
 end

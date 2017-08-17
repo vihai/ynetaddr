@@ -81,6 +81,11 @@ module Net
       "#<%#{self.class.to_s}:#{to_s}>"
     end
 
+    # Returns a viable JSON representation
+    #
+    def as_json
+      to_s
+    end
   end
 
 end
