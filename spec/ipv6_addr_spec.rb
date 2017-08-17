@@ -428,6 +428,13 @@ describe :hash do
     expect(IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb').hash).to eq(0x2a021234abcd00009999ffffa90bbbbb)
   end
 end
+
+describe :as_json do
+  it 'returns a representation for to_json' do
+    expect(IPv6Addr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb').as_json).to eq('2a02:1234:abcd:0:9999:ffff:a90b:bbbb')
+  end
+end
+
 end
 
 end

@@ -582,6 +582,12 @@ describe :- do
   end
 end
 
+describe :as_json do
+  it 'returns a representation for to_json' do
+    expect(IPv4Net.new('1.2.3.0/24').as_json).to eq('1.2.3.0/24')
+  end
+end
+
 end
 
 end

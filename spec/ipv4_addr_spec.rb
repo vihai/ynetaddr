@@ -412,6 +412,13 @@ describe :hash do
     expect(IPv4Addr.new(0x0f0f0f0f).to_i).to eq(0x0f0f0f0f)
   end
 end
+
+describe :as_json do
+  it 'returns a representation for to_json' do
+    expect(IPv4Addr.new('1.2.3.4').as_json).to eq('1.2.3.4')
+  end
+end
+
 end
 
 end

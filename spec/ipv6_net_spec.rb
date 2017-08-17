@@ -607,6 +607,12 @@ describe :- do
   end
 end
 
+describe :as_json do
+  it 'returns a representation for to_json' do
+    expect(IPv6Net.new('2a02:1234:abcd::/64').as_json).to eq('2a02:1234:abcd::/64')
+  end
+end
+
 end
 
 end
