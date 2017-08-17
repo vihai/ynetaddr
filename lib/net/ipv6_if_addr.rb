@@ -56,7 +56,7 @@ module Net
 
         raise ArgumentError, 'Network address specified' if @length < @max_length - 1 && @addr == network.prefix
       else
-        raise "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{addr}"
       end
     end
 

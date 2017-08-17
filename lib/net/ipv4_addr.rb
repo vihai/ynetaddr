@@ -36,6 +36,8 @@ module Net
         @addr = if addr[:addr]
           initialize(addr[:addr])
         elsif addr[:binary]
+          raise ArgumentError, "Size not equal to 4 octets" if addr[:binary].length != 4
+
           @addr = addr[:binary].unpack('N').first
         else
           raise ArgumentError, 'missing address'
@@ -56,7 +58,7 @@ module Net
                     raise ArgumentError, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
                   c.to_i }.pack('C*').unpack('N').first
       else
-        raise "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{addr}"
       end
     end
 

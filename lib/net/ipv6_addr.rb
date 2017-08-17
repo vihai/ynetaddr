@@ -49,6 +49,8 @@ module Net
         @addr = if addr[:addr]
           initialize(addr[:addr])
         elsif addr[:binary]
+          raise ArgumentError, "Size not equal to 16 octets" if addr[:binary].length != 16
+
           @addr = addr[:binary].unpack('N4').inject(0) { |i, x| (i << 32) + x }
         else
           raise ArgumentError, 'missing address'
@@ -82,7 +84,7 @@ module Net
           @addr = addr.split(':').inject(0) { |i, s| i << 16 | s.hex }
         end
       else
-        raise "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{addr}"
       end
     end
 

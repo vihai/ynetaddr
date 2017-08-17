@@ -59,7 +59,7 @@ module Net
         raise ArgumentError, 'Network address specified' if @length < 31 && @addr == network.prefix
         raise ArgumentError, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
       else
-        raise "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{addr}"
       end
     end
 
