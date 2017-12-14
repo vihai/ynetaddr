@@ -206,7 +206,7 @@ module Net
 
     # Returns a viable JSON representation
     #
-    def as_json
+    def as_json(*args)
       to_s
     end
 
