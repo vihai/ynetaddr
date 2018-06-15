@@ -57,7 +57,7 @@ module Net
     # and in the same network.
     #
     def -(n)
-      if n.kind_of?(Fixnum)
+      if n.kind_of?(Integer)
         self.class.new(@addr - n)
       else
         n = self.class.new(n) if !n.kind_of?(self.class)
