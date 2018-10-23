@@ -10,7 +10,7 @@ require 'ynetaddr'
 
 module Net
 
-describe IPNet do
+RSpec.describe IPNet do
 
 describe :new do
   it 'instantiate an IPv4Net when string is compatible with an IPv4 net' do

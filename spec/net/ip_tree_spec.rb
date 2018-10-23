@@ -10,7 +10,7 @@ require 'ynetaddr'
 
 module Net
 
-describe IPTree do
+RSpec.describe IPTree do
 
 describe 'constructor' do
   it 'creates a new tree with specified network' do

@@ -10,7 +10,7 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv4IfAddr do
+RSpec.describe IPv4IfAddr do
 
 describe 'constructor' do
   it 'accepts d.d.d.d/l format' do

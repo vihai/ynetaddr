@@ -10,7 +10,7 @@ require 'ynetaddr'
 
 module Net
 
-describe IPv6Net do
+RSpec.describe IPv6Net do
 
 describe 'constructor' do
   it 'accepts hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh/l format' do

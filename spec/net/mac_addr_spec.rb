@@ -10,7 +10,7 @@ require 'ynetaddr'
 
 module Net
 
-describe MacAddr do
+RSpec.describe MacAddr do
 
 describe 'constructor' do
   it 'accepts hhhh.hhhh.hhhh format' do
