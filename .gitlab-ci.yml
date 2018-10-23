@@ -1,0 +1,8 @@
+before_script:
+  - ruby -v
+  - which ruby
+
+rspec:
+  script:
+    - bundle install --path=/opt/cache/bundler
+    - bundle exec rspec
