@@ -1,8 +1,22 @@
 before_script:
   - ruby -v
   - which ruby
+  - bundle install --path=/opt/cache/bundler
 
-rspec:
+stages:
+  - test
+  - deploy
+
+rspec_job:
+  stage: test
   script:
-    - bundle install --path=/opt/cache/bundler
     - bundle exec rspec
+
+deploy_job:
+  stage: deploy
+  only:
+    - master
+  allow_failure: true
+  script:
+    - bundle exec rake build
+    - bundle exec gem inabox
