@@ -231,5 +231,11 @@ module Net
     def as_json(*args)
       to_s
     end
+
+    # Returns a viable representation for YAML
+    #
+    def to_yaml(*args)
+      to_s
+    end
   end
 end

@@ -210,6 +210,12 @@ module Net
       to_s
     end
 
+    # Returns a viable representation for YAML
+    #
+    def to_yaml(*args)
+      to_s
+    end
+
     private
 
     def cliplen(l)
