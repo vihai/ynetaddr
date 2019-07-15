@@ -218,9 +218,15 @@ describe :to_hash do
   end
 end
 
-describe :as_json do
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(IPv4IfAddr.new('10.0.0.1/8').as_json).to eq('10.0.0.1/8')
+    expect(IPv4IfAddr.new('10.0.0.1/8').to_json).to eq('"10.0.0.1/8"')
+  end
+end
+
+describe :to_yaml do
+  it 'returns a representation for to_yaml' do
+    expect(IPv4IfAddr.new('10.0.0.1/8').to_yaml).to eq("--- 10.0.0.1/8\n")
   end
 end
 

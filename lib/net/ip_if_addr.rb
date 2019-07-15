@@ -81,16 +81,11 @@ module Net
       "#<%#{self.class.to_s}:#{to_s}>"
     end
 
-    # Returns a viable JSON representation
+    # Returns a viable representation for encoders
     #
-    def as_json(*args)
-      to_s
-    end
-
-    # Returns a viable representation for YAML
-    #
-    def to_yaml(*args)
-      to_s
+    def encode_with(coder)
+      coder.scalar = to_s
+      coder.tag = nil
     end
   end
 

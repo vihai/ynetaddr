@@ -413,9 +413,17 @@ describe :hash do
   end
 end
 
-describe :as_json do
+require 'json'
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(IPv4Addr.new('1.2.3.4').as_json).to eq('1.2.3.4')
+    expect(IPv4Addr.new('1.2.3.4').to_json).to eq('"1.2.3.4"')
+  end
+end
+
+require 'yaml'
+describe :to_json do
+  it 'returns a representation for to_yaml' do
+    expect(IPv4Addr.new('1.2.3.4').to_yaml).to eq("--- 1.2.3.4\n")
   end
 end
 

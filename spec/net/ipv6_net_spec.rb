@@ -607,9 +607,15 @@ describe :- do
   end
 end
 
-describe :as_json do
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(IPv6Net.new('2a02:1234:abcd::/64').as_json).to eq('2a02:1234:abcd::/64')
+    expect(IPv6Net.new('2a02:1234:abcd::/64').to_json).to eq('"2a02:1234:abcd::/64"')
+  end
+end
+
+describe :to_yaml do
+  it 'returns a representation for to_yaml' do
+    expect(IPv6Net.new('2a02:1234:abcd::/64').to_yaml).to eq("--- 2a02:1234:abcd::/64\n")
   end
 end
 

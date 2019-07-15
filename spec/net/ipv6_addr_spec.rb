@@ -429,9 +429,15 @@ describe :hash do
   end
 end
 
-describe :as_json do
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(IPv6Addr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb').as_json).to eq('2a02:1234:abcd:0:9999:ffff:a90b:bbbb')
+    expect(IPv6Addr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb').to_json).to eq('"2a02:1234:abcd:0:9999:ffff:a90b:bbbb"')
+  end
+end
+
+describe :to_yaml do
+  it 'returns a representation for to_yaml' do
+    expect(IPv6Addr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb').to_yaml).to eq("--- 2a02:1234:abcd:0:9999:ffff:a90b:bbbb\n")
   end
 end
 

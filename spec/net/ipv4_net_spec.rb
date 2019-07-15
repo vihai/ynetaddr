@@ -583,9 +583,15 @@ describe :- do
   end
 end
 
-describe :as_json do
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(IPv4Net.new('1.2.3.0/24').as_json).to eq('1.2.3.0/24')
+    expect(IPv4Net.new('1.2.3.0/24').to_json).to eq('"1.2.3.0/24"')
+  end
+end
+
+describe :to_yaml do
+  it 'returns a representation for to_yaml' do
+    expect(IPv4Net.new('1.2.3.0/24').to_yaml).to eq("--- 1.2.3.0/24\n")
   end
 end
 

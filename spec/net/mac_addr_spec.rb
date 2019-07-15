@@ -240,9 +240,15 @@ describe :hash do
   end
 end
 
-describe :as_json do
+describe :to_json do
   it 'returns a representation for to_json' do
-    expect(MacAddr.new('0012.3456.789a').as_json).to eq('00:12:34:56:78:9a')
+    expect(MacAddr.new('0012.3456.789a').to_json).to eq('"00:12:34:56:78:9a"')
+  end
+end
+
+describe :to_yaml do
+  it 'returns a representation for to_yaml' do
+    expect(MacAddr.new('0012.3456.789a').to_yaml).to eq("--- 00:12:34:56:78:9a\n")
   end
 end
 
