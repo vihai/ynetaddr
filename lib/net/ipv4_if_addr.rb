@@ -42,7 +42,7 @@ module Net
         @length = addr.to_ipv4ifaddr.length
       elsif addr.kind_of?(Hash)
         @addr = IPv4Addr.new(addr[:addr])
-        @length = addr[:length]
+        @length = addr[:length] || IPv4Net.mask_to_length(IPv4Addr.new(addr[:mask]).to_i)
       elsif addr.kind_of?(Integer)
         @addr = IPv4Addr.new(addr)
         @length = 32
@@ -98,6 +98,5 @@ module Net
     def to_ipv4addr
       @addr
     end
-
   end
 end

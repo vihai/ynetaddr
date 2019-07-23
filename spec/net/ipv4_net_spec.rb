@@ -37,6 +37,16 @@ describe 'constructor' do
   it 'reject prefix without prefix' do
     expect { IPv4Net.new('/24') }.to raise_error(ArgumentError)
   end
+
+  it 'accepts a Hash with addr and mask keys with string addr and mask' do
+    expect(IPv4Net.new(prefix: '192.168.0.1', mask: '255.255.255.0').prefix).to eq(0xC0A80000)
+    expect(IPv4Net.new(prefix: '192.168.0.1', mask: '255.255.255.0').length).to eq(24)
+  end
+
+  it 'accepts a Hash with addr and mask keys with integer addr and mask' do
+    expect(IPv4Net.new(prefix: 0xC0A80001, mask: 0xffffff00).prefix).to eq(0xC0A80000)
+    expect(IPv4Net.new(prefix: 0xC0A80001, mask: 0xffffff00).length).to eq(24)
+  end
 end
 
 describe :mask_dotquad do
@@ -595,6 +605,81 @@ describe :to_yaml do
   end
 end
 
+describe :mask_to_length do
+  it 'converts mask to a length' do
+    expect(IPv4Net.mask_to_length(0xffffffff)).to eq(32)
+    expect(IPv4Net.mask_to_length(0xfffffffe)).to eq(31)
+    expect(IPv4Net.mask_to_length(0xfffffffc)).to eq(30)
+    expect(IPv4Net.mask_to_length(0xfffffff8)).to eq(29)
+    expect(IPv4Net.mask_to_length(0xfffffff0)).to eq(28)
+    expect(IPv4Net.mask_to_length(0xffffffe0)).to eq(27)
+    expect(IPv4Net.mask_to_length(0xffffffc0)).to eq(26)
+    expect(IPv4Net.mask_to_length(0xffffff80)).to eq(25)
+    expect(IPv4Net.mask_to_length(0xffffff00)).to eq(24)
+    expect(IPv4Net.mask_to_length(0xfffffe00)).to eq(23)
+    expect(IPv4Net.mask_to_length(0xfffffc00)).to eq(22)
+    expect(IPv4Net.mask_to_length(0xfffff800)).to eq(21)
+    expect(IPv4Net.mask_to_length(0xfffff000)).to eq(20)
+    expect(IPv4Net.mask_to_length(0xffffe000)).to eq(19)
+    expect(IPv4Net.mask_to_length(0xffffc000)).to eq(18)
+    expect(IPv4Net.mask_to_length(0xffff8000)).to eq(17)
+    expect(IPv4Net.mask_to_length(0xffff0000)).to eq(16)
+    expect(IPv4Net.mask_to_length(0xfffe0000)).to eq(15)
+    expect(IPv4Net.mask_to_length(0xfffc0000)).to eq(14)
+    expect(IPv4Net.mask_to_length(0xfff80000)).to eq(13)
+    expect(IPv4Net.mask_to_length(0xfff00000)).to eq(12)
+    expect(IPv4Net.mask_to_length(0xffe00000)).to eq(11)
+    expect(IPv4Net.mask_to_length(0xffc00000)).to eq(10)
+    expect(IPv4Net.mask_to_length(0xff800000)).to eq(9)
+    expect(IPv4Net.mask_to_length(0xff000000)).to eq(8)
+    expect(IPv4Net.mask_to_length(0xfe000000)).to eq(7)
+    expect(IPv4Net.mask_to_length(0xfc000000)).to eq(6)
+    expect(IPv4Net.mask_to_length(0xf8000000)).to eq(5)
+    expect(IPv4Net.mask_to_length(0xf0000000)).to eq(4)
+    expect(IPv4Net.mask_to_length(0xe0000000)).to eq(3)
+    expect(IPv4Net.mask_to_length(0xc0000000)).to eq(2)
+    expect(IPv4Net.mask_to_length(0x80000000)).to eq(1)
+    expect(IPv4Net.mask_to_length(0x00000000)).to eq(0)
+  end
 end
 
+describe :length_to_mask do
+  it 'converts mask to a length' do
+    expect(IPv4Net.length_to_mask(32)).to eq(0xffffffff)
+    expect(IPv4Net.length_to_mask(31)).to eq(0xfffffffe)
+    expect(IPv4Net.length_to_mask(30)).to eq(0xfffffffc)
+    expect(IPv4Net.length_to_mask(29)).to eq(0xfffffff8)
+    expect(IPv4Net.length_to_mask(28)).to eq(0xfffffff0)
+    expect(IPv4Net.length_to_mask(27)).to eq(0xffffffe0)
+    expect(IPv4Net.length_to_mask(26)).to eq(0xffffffc0)
+    expect(IPv4Net.length_to_mask(25)).to eq(0xffffff80)
+    expect(IPv4Net.length_to_mask(24)).to eq(0xffffff00)
+    expect(IPv4Net.length_to_mask(23)).to eq(0xfffffe00)
+    expect(IPv4Net.length_to_mask(22)).to eq(0xfffffc00)
+    expect(IPv4Net.length_to_mask(21)).to eq(0xfffff800)
+    expect(IPv4Net.length_to_mask(20)).to eq(0xfffff000)
+    expect(IPv4Net.length_to_mask(19)).to eq(0xffffe000)
+    expect(IPv4Net.length_to_mask(18)).to eq(0xffffc000)
+    expect(IPv4Net.length_to_mask(17)).to eq(0xffff8000)
+    expect(IPv4Net.length_to_mask(16)).to eq(0xffff0000)
+    expect(IPv4Net.length_to_mask(15)).to eq(0xfffe0000)
+    expect(IPv4Net.length_to_mask(14)).to eq(0xfffc0000)
+    expect(IPv4Net.length_to_mask(13)).to eq(0xfff80000)
+    expect(IPv4Net.length_to_mask(12)).to eq(0xfff00000)
+    expect(IPv4Net.length_to_mask(11)).to eq(0xffe00000)
+    expect(IPv4Net.length_to_mask(10)).to eq(0xffc00000)
+    expect(IPv4Net.length_to_mask(9)).to eq(0xff800000)
+    expect(IPv4Net.length_to_mask(8)).to eq(0xff000000)
+    expect(IPv4Net.length_to_mask(7)).to eq(0xfe000000)
+    expect(IPv4Net.length_to_mask(6)).to eq(0xfc000000)
+    expect(IPv4Net.length_to_mask(5)).to eq(0xf8000000)
+    expect(IPv4Net.length_to_mask(4)).to eq(0xf0000000)
+    expect(IPv4Net.length_to_mask(3)).to eq(0xe0000000)
+    expect(IPv4Net.length_to_mask(2)).to eq(0xc0000000)
+    expect(IPv4Net.length_to_mask(1)).to eq(0x80000000)
+    expect(IPv4Net.length_to_mask(0)).to eq(0x00000000)
+  end
+end
+
+end
 end

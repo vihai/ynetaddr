@@ -41,6 +41,21 @@ describe 'constructor' do
   it 'reject addr without addr' do
     expect { IPv4IfAddr.new('/24') }.to raise_error(ArgumentError)
   end
+
+  it 'accepts a Hash with addr and length keys' do
+    expect(IPv4IfAddr.new(addr: '192.168.0.1', length: 24).addr).to eq(0xC0A80001)
+    expect(IPv4IfAddr.new(addr: '192.168.0.1', length: 24).length).to eq(24)
+  end
+
+  it 'accepts a Hash with addr and mask keys with string addr and mask' do
+    expect(IPv4IfAddr.new(addr: '192.168.0.1', mask: '255.255.255.0').addr).to eq(0xC0A80001)
+    expect(IPv4IfAddr.new(addr: '192.168.0.1', mask: '255.255.255.0').length).to eq(24)
+  end
+
+  it 'accepts a Hash with addr and mask keys with integer addr and mask' do
+    expect(IPv4IfAddr.new(addr: 0xC0A80001, mask: 0xffffff00).addr).to eq(0xC0A80001)
+    expect(IPv4IfAddr.new(addr: 0xC0A80001, mask: 0xffffff00).length).to eq(24)
+  end
 end
 
 describe :mask_dotquad do
@@ -211,10 +226,10 @@ end
 
 describe :to_hash do
   it 'produces correct output' do
-    expect(IPv4IfAddr.new('0.0.0.1/0').to_hash).to eq({ :addr => 0x00000001, :length => 0 })
-    expect(IPv4IfAddr.new('10.0.0.1/8').to_hash).to eq({ :addr => 0x0a000001, :length => 8 })
-    expect(IPv4IfAddr.new('192.168.255.254/24').to_hash).to eq({ :addr => 0xc0a8fffe, :length => 24 })
-    expect(IPv4IfAddr.new('192.168.255.255/32').to_hash).to eq({ :addr => 0xc0a8ffff, :length => 32 })
+    expect(IPv4IfAddr.new('0.0.0.1/0').to_hash).to eq({ addr: 0x00000001, length: 0 })
+    expect(IPv4IfAddr.new('10.0.0.1/8').to_hash).to eq({ addr: 0x0a000001, length: 8 })
+    expect(IPv4IfAddr.new('192.168.255.254/24').to_hash).to eq({ addr: 0xc0a8fffe, length: 24 })
+    expect(IPv4IfAddr.new('192.168.255.255/32').to_hash).to eq({ addr: 0xc0a8ffff, length: 32 })
   end
 end
 
@@ -231,5 +246,4 @@ describe :to_yaml do
 end
 
 end
-
 end

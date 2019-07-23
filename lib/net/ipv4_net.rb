@@ -54,7 +54,7 @@ module Net
         @length = net.to_ipv4net.length
       elsif net.kind_of?(Hash)
         @prefix = IPv4Addr.new(net[:prefix])
-        @length = net[:length]
+        @length = net[:length] || IPv4Net.mask_to_length(IPv4Addr.new(net[:mask]).to_i)
       elsif net.kind_of?(Integer)
         @prefix = IPv4Addr.new(net)
         @length = 32
@@ -195,6 +195,24 @@ module Net
       else
         (@prefix | wildcard) - 1
       end
+    end
+
+    # @return [Integer] the mask length corresponding to a contiguous ones mask
+    #
+    def self.mask_to_length(mask)
+      len = 32.times do |i|
+        if mask == ((0xffffffff << (32 - i)) & 0xffffffff)
+          break i
+        end
+      end
+
+      len
+    end
+
+    # @return [Integer] the mask corresponding to a prefix length
+    #
+    def self.length_to_mask(len)
+      (0xffffffff << (32 - len)) & 0xffffffff
     end
   end
 end
