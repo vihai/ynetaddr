@@ -46,6 +46,7 @@ module Net
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       @fullmask = MASK
+      @length = 32
       @max_length = 32
       @address_class = IPv4Addr
 
@@ -53,8 +54,11 @@ module Net
         @prefix = IPv4Addr.new(net.to_ipv4net.prefix)
         @length = net.to_ipv4net.length
       elsif net.kind_of?(Hash)
-        @prefix = net[:prefix] ? IPv4Addr.new(net[:prefix]) : IPv4Addr.new(binary: net[:prefix_binary])
-        @length = net[:length] || IPv4Net.mask_to_length(IPv4Addr.new(net[:mask]).to_i)
+        @prefix = IPv4Addr.new(net[:prefix]) if net[:prefix]
+        @prefix = IPv4Addr.new(binary: net[:prefix_binary]) if net[:prefix_binary]
+
+        @length = net[:length] if net[:length]
+        @length = IPv4Net.mask_to_length(IPv4Addr.new(net[:mask]).to_i) if net[:mask]
       elsif net.kind_of?(Integer)
         @prefix = IPv4Addr.new(net)
         @length = 32
@@ -70,6 +74,9 @@ module Net
       else
         raise "Cannot initialize from #{net}"
       end
+
+      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
+      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
       @prefix.mask!(mask)
     end

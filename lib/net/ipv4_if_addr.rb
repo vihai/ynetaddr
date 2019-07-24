@@ -31,6 +31,7 @@ module Net
     def initialize(addr = '127.0.0.1/8')
 
       @fullmask = 0xffffffff
+      @length = 32
       @max_length = 32
       @address_class = IPv4Addr
       @net_class = IPv4Net
@@ -41,8 +42,11 @@ module Net
         @addr = addr.to_ipv4ifaddr.addr
         @length = addr.to_ipv4ifaddr.length
       elsif addr.kind_of?(Hash)
-        @addr = IPv4Addr.new(addr[:addr])
-        @length = addr[:length] || IPv4Net.mask_to_length(IPv4Addr.new(addr[:mask]).to_i)
+        @addr = IPv4Addr.new(addr[:addr]) if addr[:addr]
+        @addr = IPv4Addr.new(binary: addr[:addr_binary]) if addr[:addr_binary]
+
+        @length = addr[:length] if addr[:length]
+        @length = IPv4Net.mask_to_length(IPv4Addr.new(addr[:mask]).to_i) if addr[:mask]
       elsif addr.kind_of?(Integer)
         @addr = IPv4Addr.new(addr)
         @length = 32
@@ -61,6 +65,9 @@ module Net
       else
         raise ArgumentError, "Cannot initialize from #{addr}"
       end
+
+      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
+      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
     end
 
     # @return [String] the dotted-quad representation of the mask

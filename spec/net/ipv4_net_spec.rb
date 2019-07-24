@@ -52,6 +52,14 @@ describe 'constructor' do
     expect(IPv4Net.new(prefix_binary: 'AEIO', mask: 0xffffffff).prefix).to eq(0x4145494f)
     expect(IPv4Net.new(prefix_binary: 'AEIO', mask: 0xffffffff).length).to eq(32)
   end
+
+  it 'raises ArgumentError if length > 32' do
+    expect { IPv4Net.new(prefix: '192.168.0.1', length: 33) }.to raise_error(ArgumentError)
+  end
+
+  it 'raises ArgumentError if length < 0' do
+    expect { IPv4Net.new(prefix: '192.168.0.1', length: -1) }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_dotquad do

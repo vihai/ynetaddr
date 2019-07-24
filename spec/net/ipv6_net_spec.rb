@@ -42,6 +42,14 @@ describe 'constructor' do
     expect(IPv6Net.new(prefix_binary: 'AEIO1234567890XY', length: 128).prefix).to eq(0x4145494f313233343536373839305859)
     expect(IPv6Net.new(prefix_binary: 'AEIO1234567890XY', length: 128).length).to eq(128)
   end
+
+  it 'raises ArgumentError if length > 32' do
+    expect { IPv6Net.new(prefix: '2a02:20::', length: 129) }.to raise_error(ArgumentError)
+  end
+
+  it 'raises ArgumentError if length < 0' do
+    expect { IPv6Net.new(prefix: '2a02:20::', length: -1) }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_hex do

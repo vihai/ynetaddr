@@ -56,6 +56,20 @@ describe 'constructor' do
     expect(IPv4IfAddr.new(addr: 0xC0A80001, mask: 0xffffff00).addr).to eq(0xC0A80001)
     expect(IPv4IfAddr.new(addr: 0xC0A80001, mask: 0xffffff00).length).to eq(24)
   end
+
+
+  it 'accepts a Hash with addr and mask keys with integer addr and mask' do
+    expect(IPv4IfAddr.new(addr_binary: 'AEIO', mask: 0xffffffff).addr).to eq(0x4145494f)
+    expect(IPv4IfAddr.new(addr_binary: 'AEIO', mask: 0xffffffff).length).to eq(32)
+  end
+
+  it 'raises ArgumentError if length > 32' do
+    expect { IPv4IfAddr.new(addr: '192.168.0.1', length: 33) }.to raise_error(ArgumentError)
+  end
+
+  it 'raises ArgumentError if length < 0' do
+    expect { IPv4IfAddr.new(addr: '192.168.0.1', length: -1) }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_dotquad do

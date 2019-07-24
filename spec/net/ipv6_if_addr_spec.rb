@@ -37,6 +37,19 @@ describe 'constructor' do
   it 'reject addr without addr' do
     expect { IPv6IfAddr.new('/64') }.to raise_error(ArgumentError)
   end
+
+  it 'accepts a Hash with addr and mask keys with integer addr and length' do
+    expect(IPv6IfAddr.new(addr_binary: 'AEIO1234567890XY', length: 128).addr).to eq(0x4145494f313233343536373839305859)
+    expect(IPv6IfAddr.new(addr_binary: 'AEIO1234567890XY', length: 128).length).to eq(128)
+  end
+
+  it 'raises ArgumentError if length > 32' do
+    expect { IPv6IfAddr.new(addr: '2a02:20::', length: 129) }.to raise_error(ArgumentError)
+  end
+
+  it 'raises ArgumentError if length < 0' do
+    expect { IPv6IfAddr.new(addr: '2a02:20::', length: -1) }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_hex do

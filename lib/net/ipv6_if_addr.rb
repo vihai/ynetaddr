@@ -31,6 +31,7 @@ module Net
     def initialize(addr = '::1/128')
 
       @fullmask = 0xffffffffffffffffffffffffffffffff
+      @length = 128
       @max_length = 128
       @address_class = IPv6Addr
       @net_class = IPv6Net
@@ -39,7 +40,8 @@ module Net
         @addr = addr.to_ipv6ifaddr.addr
         @length = addr.to_ipv6ifaddr.length
       elsif addr.kind_of?(Hash)
-        @addr = IPv6Addr.new(addr[:addr])
+        @addr = IPv6Addr.new(addr[:addr]) if addr[:addr]
+        @addr = IPv6Addr.new(binary: addr[:addr_binary]) if addr[:addr_binary]
         @length = addr[:length]
       elsif addr.kind_of?(Integer)
         @addr = IPv6Addr.new(addr)
@@ -58,6 +60,9 @@ module Net
       else
         raise ArgumentError, "Cannot initialize from #{addr}"
       end
+
+      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
+      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
     end
 
     # @return [String] the 16-bit fields representation of the mask. No compression or padding zero removal is applied.

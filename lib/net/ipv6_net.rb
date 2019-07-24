@@ -30,6 +30,7 @@ module Net
     def initialize(net = '::/0')
 
       @fullmask = MASK
+      @length = 128
       @max_length = 128
       @address_class = IPv6Addr
 
@@ -37,7 +38,8 @@ module Net
         @prefix = IPv6Addr.new(net.to_ipv6net.prefix)
         @length = net.to_ipv6net.length
       elsif net.kind_of?(Hash)
-        @prefix = net[:prefix] ? IPv6Addr.new(net[:prefix]) : IPv6Addr.new(binary: net[:prefix_binary])
+        @prefix = IPv6Addr.new(net[:prefix]) if net[:prefix]
+        @prefix = IPv6Addr.new(binary: net[:prefix_binary]) if net[:prefix_binary]
         @length = net[:length]
       elsif net.kind_of?(Integer)
         @prefix = IPv6Addr.new(net)
@@ -54,6 +56,9 @@ module Net
       else
         raise "Cannot initialize from #{net}"
       end
+
+      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
+      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
       @prefix.mask!(mask)
     end
