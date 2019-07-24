@@ -53,7 +53,7 @@ module Net
         @prefix = IPv4Addr.new(net.to_ipv4net.prefix)
         @length = net.to_ipv4net.length
       elsif net.kind_of?(Hash)
-        @prefix = IPv4Addr.new(net[:prefix])
+        @prefix = net[:prefix] ? IPv4Addr.new(net[:prefix]) : IPv4Addr.new(binary: net[:prefix_binary])
         @length = net[:length] || IPv4Net.mask_to_length(IPv4Addr.new(net[:mask]).to_i)
       elsif net.kind_of?(Integer)
         @prefix = IPv4Addr.new(net)

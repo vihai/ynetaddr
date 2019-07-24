@@ -43,9 +43,14 @@ describe 'constructor' do
     expect(IPv4Net.new(prefix: '192.168.0.1', mask: '255.255.255.0').length).to eq(24)
   end
 
-  it 'accepts a Hash with addr and mask keys with integer addr and mask' do
+  it 'accepts a Hash with addr and mask keys with prefix_binary and mask' do
     expect(IPv4Net.new(prefix: 0xC0A80001, mask: 0xffffff00).prefix).to eq(0xC0A80000)
     expect(IPv4Net.new(prefix: 0xC0A80001, mask: 0xffffff00).length).to eq(24)
+  end
+
+  it 'accepts a Hash with addr and mask keys with integer addr and mask' do
+    expect(IPv4Net.new(prefix_binary: 'AEIO', mask: 0xffffffff).prefix).to eq(0x4145494f)
+    expect(IPv4Net.new(prefix_binary: 'AEIO', mask: 0xffffffff).length).to eq(32)
   end
 end
 

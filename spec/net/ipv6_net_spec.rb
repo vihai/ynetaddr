@@ -37,6 +37,11 @@ describe 'constructor' do
   it 'reject address without prefix' do
     expect { IPv6Net.new('/64') }.to raise_error(ArgumentError)
   end
+
+  it 'accepts a Hash with addr and mask keys with integer addr and length' do
+    expect(IPv6Net.new(prefix_binary: 'AEIO1234567890XY', length: 128).prefix).to eq(0x4145494f313233343536373839305859)
+    expect(IPv6Net.new(prefix_binary: 'AEIO1234567890XY', length: 128).length).to eq(128)
+  end
 end
 
 describe :mask_hex do
