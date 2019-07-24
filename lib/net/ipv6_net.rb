@@ -40,7 +40,7 @@ module Net
       elsif net.kind_of?(Hash)
         @prefix = IPv6Addr.new(net[:prefix]) if net[:prefix]
         @prefix = IPv6Addr.new(binary: net[:prefix_binary]) if net[:prefix_binary]
-        @length = net[:length]
+        @length = net[:length] if net[:length]
       elsif net.kind_of?(Integer)
         @prefix = IPv6Addr.new(net)
         @length = 128

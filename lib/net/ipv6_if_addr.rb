@@ -42,7 +42,7 @@ module Net
       elsif addr.kind_of?(Hash)
         @addr = IPv6Addr.new(addr[:addr]) if addr[:addr]
         @addr = IPv6Addr.new(binary: addr[:addr_binary]) if addr[:addr_binary]
-        @length = addr[:length]
+        @length = addr[:length] if addr[:length]
       elsif addr.kind_of?(Integer)
         @addr = IPv6Addr.new(addr)
         @length = 128
