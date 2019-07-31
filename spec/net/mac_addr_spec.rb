@@ -151,11 +151,19 @@ describe :oui do
 end
 
 describe :== do
-  it 'correctly compares' do
+  it 'returns true if the addresses match' do
     expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89ab').to be_truthy
+  end
+
+  it 'returns false if the addresses do not match' do
     expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89aa').to be_falsey
     expect(MacAddr.new('7423.4567.89ab') == '7423.4567.89ac').to be_falsey
   end
+
+  it 'returns false if comparing with nil' do
+    expect(MacAddr.new('7423.4567.89ab') == nil).to be_falsey
+  end
+
 end
 
 describe :eql? do
