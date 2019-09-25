@@ -22,5 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rspec_junit_formatter'
   s.add_development_dependency 'geminabox'
+  s.add_development_dependency 'json'
 
 end
