@@ -18,7 +18,7 @@ rspec_ubuntu_job:
     - disco
     - x86-64
   script:
-    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
   artifacts:
     paths:
       - rspec.xml
@@ -32,7 +32,7 @@ rspec_arm_job:
     - buster
     - arm
   script:
-    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
   artifacts:
     paths:
       - rspec.xml
@@ -46,7 +46,7 @@ rspec_alpine_job:
     - v3.11
     - x86-64
   script:
-    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
   artifacts:
     paths:
       - rspec.xml
