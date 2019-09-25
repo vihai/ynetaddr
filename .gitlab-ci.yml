@@ -1,22 +1,74 @@
-before_script:
-  - ruby -v
-  - which ruby
-  - bundle install --path=/opt/cache/bundler
-
 stages:
   - test
-  - deploy
+  - build
+  - publish
 
-rspec_job:
+default:
+  before_script:
+    - ruby -v
+    - bundle install --path=vendor/
+  cache:
+    paths:
+      - vendor/
+
+rspec_ubuntu_job:
   stage: test
+  tags:
+    - ubuntu
+    - disco
+    - x86-64
   script:
-    - bundle exec rspec
+    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+  artifacts:
+    paths:
+      - rspec.xml
+    reports:
+      junit: rspec.xml
 
-deploy_job:
-  stage: deploy
-  only:
-    - master
-  allow_failure: true
+rspec_arm_job:
+  stage: test
+  tags:
+    - debian
+    - buster
+    - arm
+  script:
+    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+  artifacts:
+    paths:
+      - rspec.xml
+    reports:
+      junit: rspec.xml
+
+rspec_alpine_job:
+  stage: test
+  tags:
+    - alpine
+    - v3.11
+    - x86-64
+  script:
+    - bundle exec rspec --format RspecJunitFormatter --out rspec.xml
+  artifacts:
+    paths:
+      - rspec.xml
+    reports:
+      junit: rspec.xml
+
+build_job:
+  stage: build
   script:
     - bundle exec rake build
+  artifacts:
+    paths:
+      - pkg/
+
+publish_job:
+  stage: publish
+  tags:
+    - publisher
+  only:
+    refs:
+      - master
+    changes:
+      - lib/**/version.rb
+  script:
     - bundle exec gem inabox
