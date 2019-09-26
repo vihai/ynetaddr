@@ -3,6 +3,9 @@ stages:
   - build
   - publish
 
+variables:
+  GIT_CLEAN_FLAGS: -ffdx -e vendor/
+
 default:
   before_script:
     - ruby -v
