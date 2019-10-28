@@ -74,4 +74,4 @@ publish_job:
     changes:
       - lib/**/version.rb
   script:
-    - bundle exec gem inabox
+    - gem inabox
