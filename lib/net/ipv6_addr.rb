@@ -37,26 +37,33 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(addr = '::1')
+    def initialize(arg = '::1')
 
       @net_class = IPv6Net
 
-      if addr.respond_to?(:to_ipv6addr)
-        @addr = addr.to_ipv6addr.to_i
-      elsif addr.kind_of?(Integer)
-        @addr = addr
-      elsif addr.kind_of?(Hash)
-        @addr = if addr[:addr]
-          initialize(addr[:addr])
-        elsif addr[:binary]
-          raise ArgumentError, "Size not equal to 16 octets" if addr[:binary].length != 16
+      if arg.respond_to?(:to_ipv6addr)
+        @addr = arg.to_ipv6addr.to_i
 
-          @addr = addr[:binary].unpack('N4').inject(0) { |i, x| (i << 32) + x }
+      elsif arg.kind_of?(Integer)
+        @addr = arg
+
+      elsif arg.kind_of?(Hash)
+        addr = arg.delete(:addr)
+        binary = arg.delete(:binary)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+
+        @addr = if addr
+          initialize(addr)
+        elsif binary
+          raise ArgumentError, "Size not equal to 16 octets" if binary.length != 16
+
+          @addr = binary.unpack('N4').inject(0) { |i, x| (i << 32) + x }
         else
           raise ArgumentError, 'missing address'
         end
-      elsif addr.respond_to?(:to_s)
-        addr = addr.to_s
+
+      elsif arg.respond_to?(:to_s)
+        addr = arg.to_s
         addr = $1 if addr =~ /^\[(.*)\]$/i
 
         case addr
@@ -84,7 +91,7 @@ module Net
           @addr = addr.split(':').inject(0) { |i, s| i << 16 | s.hex }
         end
       else
-        raise ArgumentError, "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{arg}"
       end
     end
 

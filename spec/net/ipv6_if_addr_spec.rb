@@ -50,6 +50,10 @@ describe 'constructor' do
   it 'raises ArgumentError if length < 0' do
     expect { IPv6IfAddr.new(addr: '2a02:20::', length: -1) }.to raise_error(ArgumentError)
   end
+
+  it 'raises an ArgumentError if invoked with unknown arguments' do
+    expect { IPv6IfAddr.new(foobar: 'baz') }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_hex do

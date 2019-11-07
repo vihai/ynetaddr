@@ -60,6 +60,10 @@ describe 'constructor' do
     expect { MacAddr.new(binary: "\x00\x11\x22\x33\x44") }.to raise_error(ArgumentError)
     expect { MacAddr.new(binary: "\x00\x11\x22\x33\x44\x55\x66") }.to raise_error(ArgumentError)
   end
+
+  it 'raises an ArgumentError if invoked with unknown arguments' do
+    expect { MacAddr.new(foobar: 'baz') }.to raise_error(ArgumentError)
+  end
 end
 
 describe :succ do

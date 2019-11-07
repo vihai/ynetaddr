@@ -60,6 +60,10 @@ describe 'constructor' do
     expect { IPv6Addr.new('2a02::4fg0') }.to raise_error(ArgumentError)
     expect { IPv6Addr.new('2a02::1/64') }.to raise_error(ArgumentError)
   end
+
+  it 'raises an ArgumentError if invoked with unknown arguments' do
+    expect { IPv6Addr.new(foobar: 'baz') }.to raise_error(ArgumentError)
+  end
 end
 
 describe :to_binary do

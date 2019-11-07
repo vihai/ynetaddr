@@ -27,25 +27,33 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(net = '::/0')
+    def initialize(arg = '::/0')
 
       @fullmask = MASK
       @length = 128
       @max_length = 128
       @address_class = IPv6Addr
 
-      if net.respond_to?(:to_ipv6net)
-        @prefix = IPv6Addr.new(net.to_ipv6net.prefix)
-        @length = net.to_ipv6net.length
-      elsif net.kind_of?(Hash)
-        @prefix = IPv6Addr.new(net[:prefix]) if net[:prefix]
-        @prefix = IPv6Addr.new(binary: net[:prefix_binary]) if net[:prefix_binary]
-        @length = net[:length] if net[:length]
-      elsif net.kind_of?(Integer)
-        @prefix = IPv6Addr.new(net)
+      if arg.respond_to?(:to_ipv6net)
+        @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)
+        @length = arg.to_ipv6net.length
+
+      elsif arg.kind_of?(Hash)
+        prefix = arg.delete(:prefix)
+        prefix_binary = arg.delete(:prefix_binary)
+        length = arg.delete(:length)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+
+        @prefix = IPv6Addr.new(prefix) if prefix
+        @prefix = IPv6Addr.new(binary: prefix_binary) if prefix_binary
+        @length = length if length
+
+      elsif arg.kind_of?(Integer)
+        @prefix = IPv6Addr.new(arg)
         @length = 128
-      elsif net.respond_to?(:to_s)
-        net = net.to_s
+
+      elsif arg.respond_to?(:to_s)
+        net = arg.to_s
 
         if net =~ /^(.+)\/(.+)$/
           @length = $2.to_i
@@ -54,7 +62,7 @@ module Net
           raise ArgumentError, 'Format not recognized'
         end
       else
-        raise "Cannot initialize from #{net}"
+        raise "Cannot initialize from #{arg}"
       end
 
       raise ArgumentError, "Length #{@length} less than zero" if @length < 0

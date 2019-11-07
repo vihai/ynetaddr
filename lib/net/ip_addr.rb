@@ -24,7 +24,7 @@ module Net
           IPv4Addr.new(*args)
         end
       else
-        super
+        super(*args)
       end
     end
 

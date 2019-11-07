@@ -42,7 +42,7 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(net = '127.0.0.1/8')
+    def initialize(arg = '127.0.0.1/8')
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       @fullmask = MASK
@@ -50,20 +50,29 @@ module Net
       @max_length = 32
       @address_class = IPv4Addr
 
-      if net.respond_to?(:to_ipv4net)
-        @prefix = IPv4Addr.new(net.to_ipv4net.prefix)
-        @length = net.to_ipv4net.length
-      elsif net.kind_of?(Hash)
-        @prefix = IPv4Addr.new(net[:prefix]) if net[:prefix]
-        @prefix = IPv4Addr.new(binary: net[:prefix_binary]) if net[:prefix_binary]
+      if arg.respond_to?(:to_ipv4net)
+        @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
+        @length = arg.to_ipv4net.length
 
-        @length = net[:length] if net[:length]
-        @length = IPv4Net.mask_to_length(IPv4Addr.new(net[:mask]).to_i) if net[:mask]
-      elsif net.kind_of?(Integer)
-        @prefix = IPv4Addr.new(net)
+      elsif arg.kind_of?(Hash)
+        prefix = arg.delete(:prefix)
+        prefix_binary = arg.delete(:prefix_binary)
+        length = arg.delete(:length)
+        maskp = arg.delete(:mask)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+
+        @prefix = IPv4Addr.new(prefix) if prefix
+        @prefix = IPv4Addr.new(binary: prefix_binary) if prefix_binary
+
+        @length = length if length
+        @length = IPv4Net.mask_to_length(IPv4Addr.new(maskp).to_i) if maskp
+
+      elsif arg.kind_of?(Integer)
+        @prefix = IPv4Addr.new(arg)
         @length = 32
-      elsif net.respond_to?(:to_s)
-        net = net.to_s
+
+      elsif arg.respond_to?(:to_s)
+        net = arg.to_s
 
         if net =~ /^(.+)\/(.+)$/
           @prefix = IPv4Addr.new($1)
@@ -72,7 +81,7 @@ module Net
           raise ArgumentError, 'Format not recognized'
         end
       else
-        raise "Cannot initialize from #{net}"
+        raise "Cannot initialize from #{arg}"
       end
 
       raise ArgumentError, "Length #{@length} less than zero" if @length < 0

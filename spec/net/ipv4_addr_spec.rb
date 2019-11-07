@@ -39,6 +39,9 @@ describe 'constructor' do
     expect { IPv4Addr.new(binary: 'AEI') }.to raise_error(ArgumentError)
   end
 
+  it 'raises an ArgumentError if invoked with unknown arguments' do
+    expect { IPv4Addr.new(foobar: 'baz') }.to raise_error(ArgumentError)
+  end
 
 #  it 'accept d.d.d format' do
 #    expect(IPv4Addr.new('1.2.65530').to_i).to eq(16908543)

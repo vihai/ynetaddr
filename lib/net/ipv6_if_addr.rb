@@ -28,7 +28,7 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(addr = '::1/128')
+    def initialize(arg = '::1/128')
 
       @fullmask = 0xffffffffffffffffffffffffffffffff
       @length = 128
@@ -36,18 +36,26 @@ module Net
       @address_class = IPv6Addr
       @net_class = IPv6Net
 
-      if addr.respond_to?(:to_ipv6ifaddr)
-        @addr = addr.to_ipv6ifaddr.addr
-        @length = addr.to_ipv6ifaddr.length
-      elsif addr.kind_of?(Hash)
-        @addr = IPv6Addr.new(addr[:addr]) if addr[:addr]
-        @addr = IPv6Addr.new(binary: addr[:addr_binary]) if addr[:addr_binary]
-        @length = addr[:length] if addr[:length]
-      elsif addr.kind_of?(Integer)
-        @addr = IPv6Addr.new(addr)
+      if arg.respond_to?(:to_ipv6ifaddr)
+        @addr = arg.to_ipv6ifaddr.addr
+        @length = arg.to_ipv6ifaddr.length
+
+      elsif arg.kind_of?(Hash)
+        addr = arg.delete(:addr)
+        addr_binary = arg.delete(:addr_binary)
+        length = arg.delete(:length)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+
+        @addr = IPv6Addr.new(addr) if addr
+        @addr = IPv6Addr.new(binary: addr_binary) if addr_binary
+        @length = length if length
+
+      elsif arg.kind_of?(Integer)
+        @addr = IPv6Addr.new(arg)
         @length = 128
-      elsif addr.respond_to?(:to_s)
-        addr = addr.to_s
+
+      elsif arg.respond_to?(:to_s)
+        addr = arg.to_s
 
         if addr =~ /^(.+)\/(.+)$/
           @addr = IPv6Addr.new($1)
@@ -58,7 +66,7 @@ module Net
 
         raise ArgumentError, 'Network address specified' if @length < @max_length - 1 && @addr == network.prefix
       else
-        raise ArgumentError, "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{arg}"
       end
 
       raise ArgumentError, "Length #{@length} less than zero" if @length < 0

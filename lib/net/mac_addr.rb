@@ -27,25 +27,29 @@ module Net
     #
     # Raises ArgumentError if the format is not supported
     #
-    def initialize(addr = '0000:0000:0000')
+    def initialize(arg = '0000:0000:0000')
 
-      if addr.respond_to?(:to_macaddr)
-        @addr = addr.to_macaddr.instance_variable_get(:@addr)
-      elsif addr.kind_of?(Integer)
-        @addr = addr
-      elsif addr.kind_of?(Hash)
-        @addr = if addr[:addr]
-          initialize(addr[:addr])
-        elsif addr[:binary]
-          raise ArgumentError, "Size not equal to 6 octets" if addr[:binary].length != 6
+      if arg.respond_to?(:to_macaddr)
+        @addr = arg.to_macaddr.instance_variable_get(:@addr)
+      elsif arg.kind_of?(Integer)
+        @addr = arg
+      elsif arg.kind_of?(Hash)
+        addr = arg.delete(:addr)
+        binary = arg.delete(:binary)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
 
-          @addr = addr[:binary].rjust(8, "\x00").unpack('Q>')[0]
+        @addr = if addr
+          initialize(addr)
+        elsif binary
+          raise ArgumentError, "Size not equal to 6 octets" if binary.length != 6
+
+          @addr = binary.rjust(8, "\x00").unpack('Q>')[0]
         else
           raise ArgumentError, 'missing address'
         end
-      elsif addr.respond_to?(:to_s)
+      elsif arg.respond_to?(:to_s)
 
-        addr = addr.to_s.downcase
+        addr = arg.to_s.downcase
 
         raise ArgumentError, 'Invalid characters found' if addr =~ /[^0-9a-z:.]/
 
@@ -56,7 +60,7 @@ module Net
         # From hex to Fixnum/Bignum
         @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
       else
-        raise ArgumentError, "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{arg}"
       end
     end
 

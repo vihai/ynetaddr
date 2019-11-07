@@ -28,7 +28,7 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(addr = '127.0.0.1/8')
+    def initialize(arg = '127.0.0.1/8')
 
       @fullmask = 0xffffffff
       @length = 32
@@ -38,22 +38,28 @@ module Net
 
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
-      if addr.respond_to?(:to_ipv4ifaddr)
-        @addr = addr.to_ipv4ifaddr.addr
-        @length = addr.to_ipv4ifaddr.length
-      elsif addr.kind_of?(Hash)
-        @addr = IPv4Addr.new(addr[:addr]) if addr[:addr]
-        @addr = IPv4Addr.new(binary: addr[:addr_binary]) if addr[:addr_binary]
+      if arg.respond_to?(:to_ipv4ifaddr)
+        @addr = arg.to_ipv4ifaddr.addr
+        @length = arg.to_ipv4ifaddr.length
+      elsif arg.kind_of?(Hash)
+        addr = arg.delete(:addr)
+        addr_binary = arg.delete(:addr_binary)
+        length = arg.delete(:length)
+        mask = arg.delete(:mask)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
 
-        @length = addr[:length] if addr[:length]
-        @length = IPv4Net.mask_to_length(IPv4Addr.new(addr[:mask]).to_i) if addr[:mask]
-      elsif addr.kind_of?(Integer)
-        @addr = IPv4Addr.new(addr)
+        @addr = IPv4Addr.new(addr) if addr
+        @addr = IPv4Addr.new(binary: addr_binary) if addr_binary
+
+        @length = length if length
+        @length = IPv4Net.mask_to_length(IPv4Addr.new(mask).to_i) if mask
+      elsif arg.kind_of?(Integer)
+        @addr = IPv4Addr.new(arg)
         @length = 32
-      elsif addr.respond_to?(:to_s)
-        addr = addr.to_s
+      elsif arg.respond_to?(:to_s)
+        addr = arg.to_s
 
-        if addr =~ /^(.+)\/(.+)$/
+        if arg =~ /^(.+)\/(.+)$/
           @addr = IPv4Addr.new($1)
           @length = $2.to_i
         else
@@ -63,7 +69,7 @@ module Net
         raise ArgumentError, 'Network address specified' if @length < 31 && @addr == network.prefix
         raise ArgumentError, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
       else
-        raise ArgumentError, "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{arg}"
       end
 
       raise ArgumentError, "Length #{@length} less than zero" if @length < 0

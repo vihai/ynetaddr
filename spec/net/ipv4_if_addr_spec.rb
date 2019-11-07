@@ -70,6 +70,10 @@ describe 'constructor' do
   it 'raises ArgumentError if length < 0' do
     expect { IPv4IfAddr.new(addr: '192.168.0.1', length: -1) }.to raise_error(ArgumentError)
   end
+
+  it 'raises an ArgumentError if invoked with unknown arguments' do
+    expect { IPv4IfAddr.new(foobar: 'baz') }.to raise_error(ArgumentError)
+  end
 end
 
 describe :mask_dotquad do

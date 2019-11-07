@@ -22,29 +22,35 @@ module Net
     #
     # Raises ArgumentError if the representation isn't valid
     #
-    def initialize(addr = '127.0.0.1')
+    def initialize(arg = '127.0.0.1')
 
       @net_class = IPv4Net
 
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
-      if addr.respond_to?(:to_ipv4addr)
-        @addr = addr.to_ipv4addr.to_i
-      elsif addr.kind_of?(Integer)
-        @addr = addr
-      elsif addr.kind_of?(Hash)
-        @addr = if addr[:addr]
-          initialize(addr[:addr])
-        elsif addr[:binary]
-          raise ArgumentError, "Size not equal to 4 octets" if addr[:binary].length != 4
+      if arg.respond_to?(:to_ipv4addr)
+        @addr = arg.to_ipv4addr.to_i
 
-          @addr = addr[:binary].unpack('N').first
+      elsif arg.kind_of?(Integer)
+        @addr = arg
+
+      elsif arg.kind_of?(Hash)
+        addr = arg.delete(:addr)
+        binary = arg.delete(:binary)
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+
+        @addr = if addr
+          initialize(addr)
+        elsif binary
+          raise ArgumentError, "Size not equal to 4 octets" if binary.length != 4
+
+          @addr = binary.unpack('N').first
         else
           raise ArgumentError, 'missing address'
         end
 
-      elsif addr.respond_to?(:to_s)
-        addr = addr.to_s
+      elsif arg.respond_to?(:to_s)
+        addr = arg.to_s
 
         # Remove square brackets
         addr = $1 if addr =~ /^\[(.*)\]$/i
@@ -58,7 +64,7 @@ module Net
                     raise ArgumentError, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
                   c.to_i }.pack('C*').unpack('N').first
       else
-        raise ArgumentError, "Cannot initialize from #{addr}"
+        raise ArgumentError, "Cannot initialize from #{arg}"
       end
     end
 
