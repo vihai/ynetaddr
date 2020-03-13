@@ -160,5 +160,13 @@ module Net
     def last_host
       @prefix | wildcard
     end
+
+    def ipv4?
+      false
+    end
+
+    def ipv6?
+      true
+    end
   end
 end

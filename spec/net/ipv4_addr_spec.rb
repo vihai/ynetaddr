@@ -430,6 +430,18 @@ describe :to_json do
   end
 end
 
+describe :ipv4? do
+  it 'returns true' do
+    expect(IPv4Addr.new('1.2.3.4').ipv4?).to be_truthy
+  end
+end
+
+describe :ipv6? do
+  it 'returns false' do
+    expect(IPv4Addr.new('1.2.3.4').ipv6?).to be_falsey
+  end
+end
+
 end
 
 end

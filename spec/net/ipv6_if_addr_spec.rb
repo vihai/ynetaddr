@@ -181,6 +181,18 @@ describe :to_yaml do
   end
 end
 
+describe :ipv4? do
+  it 'returns false' do
+    expect(IPv6IfAddr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb/64').ipv4?).to be_falsey
+  end
+end
+
+describe :ipv6? do
+  it 'returns true' do
+    expect(IPv6IfAddr.new('2a02:1234:abcd:0:9999:ffff:a90b:bbbb/64').ipv6?).to be_truthy
+  end
+end
+
 end
 
 end

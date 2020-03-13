@@ -111,5 +111,13 @@ module Net
     def to_ipv4addr
       @addr
     end
+
+    def ipv4?
+      true
+    end
+
+    def ipv6?
+      false
+    end
   end
 end

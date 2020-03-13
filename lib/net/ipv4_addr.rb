@@ -144,5 +144,13 @@ module Net
     def to_s_bracketed
       "[#{to_s}]"
     end
+
+    def ipv4?
+      true
+    end
+
+    def ipv6?
+      false
+    end
   end
 end

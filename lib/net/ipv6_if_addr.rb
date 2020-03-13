@@ -116,5 +116,12 @@ module Net
       IPv6Addr.new_multicast(scope, true, true, true, mc)
     end
 
+    def ipv4?
+      false
+    end
+
+    def ipv6?
+      true
+    end
   end
 end

@@ -230,5 +230,13 @@ module Net
     def self.length_to_mask(len)
       (0xffffffff << (32 - len)) & 0xffffffff
     end
+
+    def ipv4?
+      true
+    end
+
+    def ipv6?
+      false
+    end
   end
 end

@@ -291,6 +291,14 @@ module Net
       out.reverse.join(':')
     end
 
+    def ipv4?
+      false
+    end
+
+    def ipv6?
+      true
+    end
+
     protected
 
     # Find compressible 16-bit fields ranges
@@ -347,6 +355,5 @@ module Net
         compress = nil
       end
     end
-
   end
 end

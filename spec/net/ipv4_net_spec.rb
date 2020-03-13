@@ -698,5 +698,17 @@ describe :length_to_mask do
   end
 end
 
+describe :ipv4? do
+  it 'returns true' do
+    expect(IPv4Net.new('1.2.3.0/24').ipv4?).to be_truthy
+  end
+end
+
+describe :ipv6? do
+  it 'returns false' do
+    expect(IPv4Net.new('1.2.3.0/24').ipv6?).to be_falsey
+  end
+end
+
 end
 end
