@@ -6,72 +6,13 @@ stages:
 variables:
   GIT_CLEAN_FLAGS: -ffdx -e vendor/
 
-default:
-  before_script:
-    - ruby -v
-    - bundle install --path=vendor/
-  cache:
-    paths:
-      - vendor/
-
-rspec_ubuntu_job:
-  stage: test
-  tags:
-    - ubuntu
-    - latest
-    - x86-64
-  script:
-    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
-  artifacts:
-    paths:
-      - rspec.xml
-    reports:
-      junit: rspec.xml
-
-rspec_arm_job:
-  stage: test
-  tags:
-    - debian
-    - buster
-    - arm
-  script:
-    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
-  artifacts:
-    paths:
-      - rspec.xml
-    reports:
-      junit: rspec.xml
-
-rspec_alpine_job:
-  stage: test
-  tags:
-    - alpine
-    - v3.12
-    - x86-64
-  script:
-    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
-  artifacts:
-    paths:
-      - rspec.xml
-    reports:
-      junit: rspec.xml
-
-build_job:
-  stage: build
-  script:
-    - bundle exec rake build
-  artifacts:
-    paths:
-      - pkg/
-
-publish_job:
-  stage: publish
-  tags:
-    - publisher
-  only:
-    refs:
-      - master
-    changes:
-      - lib/**/version.rb
-  script:
-    - gem inabox
+include:
+  - project: 'sevio/gems-ci'
+    ref: master
+    file: 'default_testing.yml'
+  - project: 'sevio/gems-ci'
+    ref: master
+    file: 'default_build.yml'
+  - project: 'sevio/gems-ci'
+    ref: master
+    file: 'default_publish.yml'
