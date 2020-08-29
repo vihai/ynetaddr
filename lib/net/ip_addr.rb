@@ -108,6 +108,12 @@ module Net
       "\"#{to_s}\""
     end
 
+    # @return [String] a representation of the object for to_json
+    #
+    def as_json(*args)
+      to_s
+    end
+
     # @return [Integer] a hash value to use an IP address as a key
     #
     def hash

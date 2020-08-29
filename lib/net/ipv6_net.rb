@@ -38,6 +38,9 @@ module Net
         @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)
         @length = arg.to_ipv6net.length
 
+      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+        @prefix = IPv6Addr.new(arg.to_i)
+        @length = arg.prefix
       elsif arg.kind_of?(Hash)
         prefix = arg.delete(:prefix)
         prefix_binary = arg.delete(:prefix_binary)

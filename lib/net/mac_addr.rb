@@ -193,6 +193,12 @@ module Net
       "\"#{to_s}\""
     end
 
+    # @return [String] a representation of the address for to_json
+    #
+    def as_json(*args)
+      to_s
+    end
+
     # @return [String] hexadecimal contiguous representation of the MAC-address
     #
     # Example: "00123456789a"

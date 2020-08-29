@@ -40,6 +40,9 @@ module Net
         @addr = arg.to_ipv6ifaddr.addr
         @length = arg.to_ipv6ifaddr.length
 
+      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+        @addr = IPv6Addr.new(arg.to_i)
+        @length = arg.prefix
       elsif arg.kind_of?(Hash)
         addr = arg.delete(:addr)
         addr_binary = arg.delete(:addr_binary)

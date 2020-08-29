@@ -54,6 +54,9 @@ module Net
         @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
         @length = arg.to_ipv4net.length
 
+      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+        @prefix = IPv4Addr.new(arg.to_i)
+        @length = arg.prefix
       elsif arg.kind_of?(Hash)
         prefix = arg.delete(:prefix)
         prefix_binary = arg.delete(:prefix_binary)
