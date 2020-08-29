@@ -94,6 +94,12 @@ module Net
       "#{@prefix.to_s}/#{@length}"
     end
 
+    # @return [String] a JSON representation of the network address which is usually the result of #to_s
+    #
+    def to_json
+      "\"#{to_s}\""
+    end
+
     # @return [Hash] a Hash with :prefix and :length keys respectively containing the Integer representation of interface's
     #                address and network mask length
     #

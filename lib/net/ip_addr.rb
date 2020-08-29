@@ -102,6 +102,12 @@ module Net
       "#<%#{self.class.name}:#{to_s}>"
     end
 
+    # @return [String] a JSON representation of the IP address which is usually the result of #to_s
+    #
+    def to_json
+      "\"#{to_s}\""
+    end
+
     # @return [Integer] a hash value to use an IP address as a key
     #
     def hash

@@ -187,6 +187,12 @@ module Net
       ('%012x' % @addr).scan(/../).join('-')
     end
 
+    # @return [String] a JSON representation of the address which is usually the result of #to_s
+    #
+    def to_json
+      "\"#{to_s}\""
+    end
+
     # @return [String] hexadecimal contiguous representation of the MAC-address
     #
     # Example: "00123456789a"
