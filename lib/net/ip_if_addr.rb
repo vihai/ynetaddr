@@ -64,7 +64,7 @@ module Net
 
     # @return [String] a JSON representation of the interface address which is usually the result of #to_s
     #
-    def to_json
+    def to_json(*args)
       "\"#{to_s}\""
     end
 
