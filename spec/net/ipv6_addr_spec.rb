@@ -45,6 +45,11 @@ describe 'constructor' do
     expect(IPv6Addr.new(binary: 'AEIO1234567890XY').to_i).to eq(0x4145494f313233343536373839305859)
   end
 
+  require 'ipaddr'
+  it 'accepts ::IPAddr' do
+    expect(IPv4Addr.new(::IPAddr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
+  end
+
   it 'rejects a wrong size binary addr' do
     expect { IPv6Addr.new(binary: 'AEIO1234567890X') }.to raise_error(ArgumentError)
     expect { IPv6Addr.new(binary: 'AEIO1234567890XY>') }.to raise_error(ArgumentError)

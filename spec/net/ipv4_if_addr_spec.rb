@@ -18,6 +18,13 @@ describe 'constructor' do
     expect(IPv4IfAddr.new('192.168.0.1/24').length).to eq(24)
   end
 
+# IPAddr is buggy!!!!!!!!!
+#  require 'ipaddr'
+#  it 'accepts ::IPAddr' do
+#    expect(IPv4IfAddr.new(::IPAddr.new('1.2.3.4/255.255.255.0')).addr).to eq(0x01020300)
+#    expect(IPv4IfAddr.new(::IPAddr.new('1.2.3.4/255.255.255.0')).length).to eq(24)
+#  end
+
   it 'rejects network address' do
     expect { IPv4IfAddr.new('10.0.0.0/8') }.to raise_error(ArgumentError)
   end

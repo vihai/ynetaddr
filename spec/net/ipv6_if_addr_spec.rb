@@ -18,6 +18,13 @@ describe 'constructor' do
     expect(IPv6IfAddr.new('2a02:20:1:2:3:4:5:6/64').length).to eq(64)
   end
 
+# IPAddr is buggy!!!!!!!!!
+#  require 'ipaddr'
+#  it 'accepts ::IPAddr' do
+#    expect(IPv6IfAddr.new(::IPAddr.new('2a02:20:1:2:3:4:5:6/64')).addr.to_i).to eq(0x2a020020000100020003000400050006)
+#    expect(IPv6IfAddr.new(::IPAddr.new('2a02:20:1:2:3:4:5:6/64')).length).to eq(64)
+#  end
+
   it 'rejects network address' do
     expect { IPv6IfAddr.new('2a02:20::/64') }.to raise_error(ArgumentError)
   end
