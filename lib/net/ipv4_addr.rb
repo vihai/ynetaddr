@@ -20,7 +20,7 @@ module Net
     #             [a.b.c.d]
     #             a.b.c.d
     #
-    # Raises ArgumentError if the representation isn't valid
+    # Raises FormatNotRecognized if the representation isn't valid
     #
     def initialize(arg = '127.0.0.1')
 
@@ -39,16 +39,16 @@ module Net
       elsif arg.kind_of?(Hash)
         addr = arg.delete(:addr)
         binary = arg.delete(:binary)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+        raise FormatNotRecognized, "Unknown options #{arg.keys}" if arg.any?
 
         @addr = if addr
           initialize(addr)
         elsif binary
-          raise ArgumentError, "Size not equal to 4 octets" if binary.length != 4
+          raise FormatNotRecognized, "Size not equal to 4 octets" if binary.length != 4
 
           @addr = binary.unpack('N').first
         else
-          raise ArgumentError, 'missing address'
+          raise FormatNotRecognized, 'missing address'
         end
 
       elsif arg.respond_to?(:to_s)
@@ -59,14 +59,14 @@ module Net
 
         parts = addr.split('.')
 
-        raise ArgumentError, 'Empty address' if parts.empty?
+        raise FormatNotRecognized, 'Empty address' if parts.empty?
 
         @addr = parts.map { |c|
-                    raise ArgumentError, 'Invalid digit' unless c =~ /^\d+$/
-                    raise ArgumentError, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
+                    raise FormatNotRecognized, 'Invalid digit' unless c =~ /^\d+$/
+                    raise FormatNotRecognized, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
                   c.to_i }.pack('C*').unpack('N').first
       else
-        raise ArgumentError, "Cannot initialize from #{arg}"
+        raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
     end
 

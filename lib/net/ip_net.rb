@@ -22,7 +22,7 @@ module Net
       if self == IPNet
         begin
           IPv6Net.new(*args)
-        rescue ArgumentError
+        rescue FormatNotRecognized
           IPv4Net.new(*args)
         end
       else

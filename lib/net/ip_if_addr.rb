@@ -18,7 +18,7 @@ module Net
       if self == IPIfAddr
         begin
           IPv6IfAddr.new(*args)
-        rescue ArgumentError
+        rescue FormatNotRecognized
           IPv4IfAddr.new(*args)
         end
       else

@@ -20,7 +20,7 @@ module Net
       if self == IPAddr
         begin
           IPv6Addr.new(*args)
-        rescue ArgumentError
+        rescue FormatNotRecognized
           IPv4Addr.new(*args)
         end
       else

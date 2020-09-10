@@ -59,12 +59,12 @@ describe 'constructor' do
     expect(IPv4Net.new(prefix_binary: 'AEIO', mask: 0xffffffff).length).to eq(32)
   end
 
-  it 'raises ArgumentError if length > 32' do
-    expect { IPv4Net.new(prefix: '192.168.0.1', length: 33) }.to raise_error(ArgumentError)
+  it 'raises InvalidAddress if length > 32' do
+    expect { IPv4Net.new(prefix: '192.168.0.1', length: 33) }.to raise_error(InvalidAddress)
   end
 
-  it 'raises ArgumentError if length < 0' do
-    expect { IPv4Net.new(prefix: '192.168.0.1', length: -1) }.to raise_error(ArgumentError)
+  it 'raises InvalidAddress if length < 0' do
+    expect { IPv4Net.new(prefix: '192.168.0.1', length: -1) }.to raise_error(InvalidAddress)
   end
 
   it 'raises an ArgumentError if invoked with unknown arguments' do

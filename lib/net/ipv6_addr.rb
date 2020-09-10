@@ -35,7 +35,7 @@ module Net
     #             :: compression is supported
     #             upper and lower case hex digit are supported
     #
-    # Raises ArgumentError if the representation isn't valid
+    # Raises FormatNotRecognized if the representation isn't valid
     #
     def initialize(arg = '::1')
 
@@ -57,7 +57,7 @@ module Net
         @addr = if addr
           initialize(addr)
         elsif binary
-          raise ArgumentError, "Size not equal to 16 octets" if binary.length != 16
+          raise FormatNotRecognized, "Size not equal to 16 octets" if binary.length != 16
 
           @addr = binary.unpack('N4').inject(0) { |i, x| (i << 32) + x }
         else
@@ -76,11 +76,11 @@ module Net
         when /^::(\d+\.\d+\.\d+\.\d+)$/i
           @addr = IPv4Addr.new($1).to_i
         when /[^0-9a-f:]/i
-          raise ArgumentError, 'invalid character(s)'
+          raise FormatNotRecognized, 'invalid character(s)'
         when /::.*::/
-          raise ArgumentError, 'multiple zero compressions'
+          raise FormatNotRecognized, 'multiple zero compressions'
         when /:::/
-          raise ArgumentError, 'invalid format'
+          raise FormatNotRecognized, 'invalid format'
         when /^(.*)::(.*)$/
           addr, right = $1, $2
 
@@ -93,7 +93,7 @@ module Net
           @addr = addr.split(':').inject(0) { |i, s| i << 16 | s.hex }
         end
       else
-        raise ArgumentError, "Cannot initialize from #{arg}"
+        raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
     end
 

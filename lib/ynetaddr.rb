@@ -15,3 +15,8 @@ require 'net/ipv6_net'
 require 'net/ipv6_if_addr'
 
 require 'net/ip_tree'
+
+module Net
+  class FormatNotRecognized < ArgumentError ; end
+  class InvalidAddress < ArgumentError ; end
+end

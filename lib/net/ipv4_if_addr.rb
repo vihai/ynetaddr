@@ -26,7 +26,7 @@ module Net
     #             Valid string representations are:
     #             a.b.c.d/nn
     #
-    # Raises ArgumentError if the representation isn't valid
+    # Raises FormatNotRecognized if the representation isn't valid
     #
     def initialize(arg = '127.0.0.1/8')
 
@@ -66,17 +66,17 @@ module Net
           @addr = IPv4Addr.new($1)
           @length = $2.to_i
         else
-          raise ArgumentError, 'Format not recognized'
+          raise FormatNotRecognized, 'Format not recognized'
         end
 
-        raise ArgumentError, 'Network address specified' if @length < 31 && @addr == network.prefix
-        raise ArgumentError, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
+        raise InvalidAddress, 'Network address specified' if @length < 31 && @addr == network.prefix
+        raise InvalidAddress, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
       else
-        raise ArgumentError, "Cannot initialize from #{arg}"
+        raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
 
-      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
-      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
+      raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
+      raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
     end
 
     # @return [String] the dotted-quad representation of the mask

@@ -25,7 +25,7 @@ module Net
     #               Valid string representations are:
     #               * a.b.c.d/nn
     #
-    # Raises ArgumentError if the representation isn't valid
+    # Raises FormatNotRecognized if the representation isn't valid
     #
     def initialize(arg = '::/0')
 
@@ -62,14 +62,14 @@ module Net
           @length = $2.to_i
           @prefix = IPv6Addr.new($1)
         else
-          raise ArgumentError, 'Format not recognized'
+          raise FormatNotRecognized, 'Format not recognized'
         end
       else
         raise "Cannot initialize from #{arg}"
       end
 
-      raise ArgumentError, "Length #{@length} less than zero" if @length < 0
-      raise ArgumentError, "Length #{@length} greater than #{@max_length}" if @length > @max_length
+      raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
+      raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
       @prefix.mask!(mask)
     end
