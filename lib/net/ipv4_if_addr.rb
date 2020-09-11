@@ -62,7 +62,7 @@ module Net
       elsif arg.respond_to?(:to_s)
         addr = arg.to_s
 
-        if arg =~ /^(.+)\/(.+)$/
+        if addr =~ /^(.+)\/(.+)$/
           @addr = IPv4Addr.new($1)
           @length = $2.to_i
         else
