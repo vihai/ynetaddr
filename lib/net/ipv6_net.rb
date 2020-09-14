@@ -33,6 +33,7 @@ module Net
       @length = 128
       @max_length = 128
       @address_class = IPv6Addr
+      @if_address_class = IPv6IfAddr
 
       if arg.respond_to?(:to_ipv6net)
         @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)

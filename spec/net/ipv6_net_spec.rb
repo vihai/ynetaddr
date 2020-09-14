@@ -609,13 +609,13 @@ describe :<=> do
 end
 
 describe :+ do
-  it 'returns of type IPv6Addr' do
-    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to be_an_instance_of(IPv6Addr)
+  it 'returns of type IPv6IfAddr' do
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to be_an_instance_of(IPv6IfAddr)
   end
 
   it 'sums correctly' do
-    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to eq('2a02:1234:abcd:0000::1')
-    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + (-1)).to eq('2a02:1234:abcc:ffff:ffff:ffff:ffff:ffff')
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + 1).to eq('2a02:1234:abcd:0000::1/64')
+    expect(IPv6Net.new('2a02:1234:abcd:0000::/64') + (-1)).to eq('2a02:1234:abcc:ffff:ffff:ffff:ffff:ffff/64')
   end
 end
 

@@ -593,14 +593,21 @@ describe :<=> do
 end
 
 describe :+ do
-  it 'returns of type IPv4Addr' do
-    expect((IPv4Net.new('1.2.3.0/24') + 1)).to be_an_instance_of(IPv4Addr)
+  it 'returns of type IPv4IfAddr' do
+    expect((IPv4Net.new('1.2.3.0/24') + 1)).to be_an_instance_of(IPv4IfAddr)
   end
 
   it 'sums correctly' do
-    expect((IPv4Net.new('1.2.3.0/24') + 1)).to eq(IPv4Addr.new('1.2.3.1'))
-    expect((IPv4Net.new('1.2.3.0/24') + (-1))).to eq(IPv4Addr.new('1.2.2.255'))
-    expect((IPv4Net.new('1.2.3.0/24') + 10)).to eq(IPv4Addr.new('1.2.3.10'))
+    expect((IPv4Net.new('1.2.3.0/24') + 1)).to eq(IPv4IfAddr.new('1.2.3.1/24'))
+    expect((IPv4Net.new('1.2.3.0/24') + 10)).to eq(IPv4IfAddr.new('1.2.3.10/24'))
+  end
+
+  it 'raises an error if 0 is added, because it is the network address' do
+    expect { IPv4Net.new('1.2.3.0/24') + 0 }.to raise_error(Net::InvalidAddress)
+  end
+
+  it 'raises an error if -1 is added, because it is the broadcast address of the previous network' do
+    expect { IPv4Net.new('1.2.3.0/24') + (-1) }.to raise_error(Net::InvalidAddress)
   end
 end
 

@@ -200,7 +200,7 @@ module Net
     # and in the same network.
     #
     def +(n)
-      @address_class.new(@prefix + n)
+      @if_address_class.new(addr: @prefix + n, length: @length)
     end
 
     # Subtract n to the host part and return a new IPAddr. Note that there is no check that the produced IP address is valid

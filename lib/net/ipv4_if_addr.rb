@@ -68,15 +68,14 @@ module Net
         else
           raise FormatNotRecognized, 'Format not recognized'
         end
-
-        raise InvalidAddress, 'Network address specified' if @length < 31 && @addr == network.prefix
-        raise InvalidAddress, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
       else
         raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
 
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
+      raise InvalidAddress, 'Network address specified' if @length < 31 && @addr == network.prefix
+      raise InvalidAddress, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
     end
 
     # @return [String] the dotted-quad representation of the mask

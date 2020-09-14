@@ -49,6 +49,7 @@ module Net
       @length = 32
       @max_length = 32
       @address_class = IPv4Addr
+      @if_address_class = IPv4IfAddr
 
       if arg.respond_to?(:to_ipv4net)
         @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
