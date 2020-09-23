@@ -38,7 +38,7 @@ module Net
         binary = arg.delete(:binary)
         raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
 
-        @addr = if addr
+        if addr
           return initialize(addr)
         elsif binary
           raise ArgumentError, "Size not equal to 6 octets" if binary.length != 6
