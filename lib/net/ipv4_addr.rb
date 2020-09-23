@@ -41,7 +41,7 @@ module Net
         binary = arg.delete(:binary)
         raise FormatNotRecognized, "Unknown options #{arg.keys}" if arg.any?
 
-        @addr = if addr
+        if addr
           return initialize(addr)
         elsif binary
           raise FormatNotRecognized, "Size not equal to 4 octets" if binary.length != 4
