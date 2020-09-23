@@ -233,10 +233,22 @@ end
 describe :== do
   it 'matches equal interface addresses' do
     expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('0.0.0.1/0'))).to be_truthy
-    expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('4.0.0.1/0'))).to be_falsey
     expect((IPv4IfAddr.new('10.0.0.1/8') == IPv4IfAddr.new('10.0.0.1/8'))).to be_truthy
     expect((IPv4IfAddr.new('192.168.255.254/24') == IPv4IfAddr.new('192.168.255.254/24'))).to be_truthy
     expect((IPv4IfAddr.new('192.168.255.255/32') == IPv4IfAddr.new('192.168.255.255/32'))).to be_truthy
+  end
+
+  it 'does not match different interface addresses' do
+    expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('0.0.0.1/1'))).to be_falsey
+    expect((IPv4IfAddr.new('0.0.0.1/0') == IPv4IfAddr.new('4.0.0.1/0'))).to be_falsey
+  end
+
+  it 'does not match IPv6 interface addresses specified as object' do
+    expect((IPv4IfAddr.new('0.0.0.1/0') == IPv6IfAddr.new('2a09:62c0::1/64'))).to be_falsey
+  end
+
+  it 'does not match IPv6 interface addresses specified as string' do
+    expect((IPv4IfAddr.new('0.0.0.1/0') == '2a09:62c0::1/64')).to be_falsey
   end
 end
 

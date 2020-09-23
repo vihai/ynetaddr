@@ -158,6 +158,14 @@ describe :== do
   it 'returns false if interface addreses have different mask length' do
     expect(IPv6IfAddr.new('2a02:20::1/32') == '2a02:20::1/31').to be_falsey
   end
+
+  it 'returns false if comparing with IPv4IfAddr' do
+    expect(IPv6IfAddr.new('2a02:20::1/32') == IPv4IfAddr.new('192.168.0.1/24')).to be_falsey
+  end
+
+  it 'returns false if comparing with IPv4 string' do
+    expect(IPv6IfAddr.new('2a02:20::1/32') == '192.168.0.1/24').to be_falsey
+  end
 end
 
 describe :to_s do

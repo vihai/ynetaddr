@@ -41,8 +41,14 @@ module Net
     #
     def <=>(other)
       return nil if other.nil?
+      return nil if other.is_a?(IPAddr) && !(other.class <= self.class)
 
-      other = self.class.new(other) if !other.kind_of?(self.class)
+      begin
+        other = self.class.new(other) if !other.kind_of?(self.class)
+      rescue Net::FormatNotRecognized
+        return nil
+      end
+
       @addr <=> other.to_i
     end
 

@@ -301,6 +301,14 @@ describe :== do
   it 'returns false if networks have different prefix length' do
     expect(IPv6Net.new('2a02:20::/32') == '2a02:20::/31').to be_falsey
   end
+
+  it 'returns false if other network is IPv4' do
+    expect(IPv6Net.new('2a02:20::/32') == IPv4Net.new('192.168.0.0/24')).to be_falsey
+  end
+
+  it 'returns false if other network is IPv4' do
+    expect(IPv6Net.new('2a02:20::/32') == '192.168.0.0/24').to be_falsey
+  end
 end
 
 describe :< do

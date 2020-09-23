@@ -308,6 +308,16 @@ describe :== do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
       IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbc]')).to be_falsey
   end
+
+  it 'return false for IPv4Addr' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
+      IPv4Addr.new('192.160.0.1')).to be_falsey
+  end
+
+  it 'return false for IPv4 address string' do
+    expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]') ==
+      '192.160.0.1').to be_falsey
+  end
 end
 
 describe :eql? do

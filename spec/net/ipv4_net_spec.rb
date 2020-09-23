@@ -380,6 +380,14 @@ describe :== do
     expect((IPv4Net.new('192.168.255.255/24') == IPv4Net.new('192.168.255.255/32'))).to be_falsey
     expect((IPv4Net.new('192.168.255.255/32') == IPv4Net.new('192.168.255.255/24'))).to be_falsey
   end
+
+  it 'doesn\'t match IPv6 networks as objects' do
+    expect(IPv4Net.new('10.0.0.0/8') == IPv6Net.new('2a09:62c0::/48')).to be_falsey
+  end
+
+  it 'doesn\'t match IPv6 networks as objects' do
+    expect(IPv4Net.new('10.0.0.0/8') == '2a09:62c0::/48').to be_falsey
+  end
 end
 
 describe :< do

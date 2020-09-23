@@ -117,7 +117,13 @@ module Net
     #
     def ==(other)
       return false if !other
-      other = self.class.new(other) if !other.kind_of?(self.class)
+      return false if other.is_a?(IPNet) && !(other.class <= self.class)
+      begin
+        other = self.class.new(other) if !other.kind_of?(self.class)
+      rescue Net::FormatNotRecognized
+        return false
+      end
+
       @prefix == other.prefix && @length == other.length
     end
 

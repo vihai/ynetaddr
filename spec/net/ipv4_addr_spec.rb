@@ -277,6 +277,14 @@ describe :== do
     expect(IPv4Addr.new('0.0.0.0') == IPv4Addr.new('255.255.255.255')).to be_falsey
     expect(IPv4Addr.new('255.255.255.255') == IPv4Addr.new('0.0.0.0')).to be_falsey
   end
+
+  it 'return false for IPv6Addr' do
+    expect(IPv4Addr.new('1.2.3.4') == IPv6Addr.new('2a09:62c0::1')).to be_falsey
+  end
+
+  it 'return false for IPv6 address string' do
+    expect(IPv4Addr.new('1.2.3.4') == '2a09:62c0::1').to be_falsey
+  end
 end
 
 describe :eql? do
