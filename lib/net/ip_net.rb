@@ -35,9 +35,8 @@ module Net
     # @param [Integer, IPAddr] p Integer host byte-order representation of the prefix
     # @return [Integer] the actual prefix set
     #
-    def prefix=(p)
-      p = @address_class.new(p) if !p.kind_of?(@address_class)
-      @prefix = p.mask(mask)
+    def with_prefix(p)
+      self.class.new(prefix: p, length: @length)
     end
 
     # Explicitly set the prefix length. If any host bits are set, they will be reset to zero
@@ -45,11 +44,10 @@ module Net
     # @param [Integer, IPAddr] l Integer new length
     # @return [Integer] the actual length set
     #
-    def length=(l)
+    def with_length(l)
       raise ArgumentError, 'Invalid prefix length' if l < 0 || l > @max_length
 
-      @length = l
-      @prefix = @prefix & mask
+      self.class.new(prefix: @prefix, length: l)
     end
 
     # @return the mask as host byte-ordering Integer

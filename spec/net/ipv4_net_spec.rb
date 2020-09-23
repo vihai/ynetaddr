@@ -174,38 +174,32 @@ end
 
 # parent class methods
 
-describe :prefix= do
-  it 'returns prefix' do
-    expect((IPv4Net.new('192.168.0.0/16').prefix = '192.167.0.0')).to eq('192.167.0.0')
+describe :with_prefix do
+  it 'returns new IPv4Net with specified prefix' do
+    expect(IPv4Net.new('192.168.0.0/16').with_prefix('192.167.0.0')).to eq(IPv4Net.new('192.167.0.0/16'))
   end
 
   it 'assigns prefix host bits' do
-    a = IPv4Net.new('192.168.0.0/16')
-    a.prefix = '192.167.0.0'
-    expect(a).to eq(IPv4Net.new('192.167.0.0/16'))
+    expect(IPv4Net.new('192.168.0.0/16').with_prefix('192.167.0.0')).to eq(IPv4Net.new('192.167.0.0/16'))
   end
 
   it 'resets host bits' do
-    a = IPv4Net.new('192.168.0.0/16')
-    a.prefix = '192.167.0.255'
-    expect(a).to eq(IPv4Net.new('192.167.0.0/16'))
+    expect(IPv4Net.new('192.168.0.0/16').with_prefix('192.167.0.255')).to eq(IPv4Net.new('192.167.0.0/16'))
   end
 end
 
-describe :length= do
-  it 'returns length' do
-    expect((IPv4Net.new('192.168.0.0/24').length = 16)).to eq(16)
+describe :with_length do
+  it 'returns new IPv4Net with specified length' do
+    expect(IPv4Net.new('192.168.0.0/24').with_length(16)).to eq(IPv4Net.new('192.168.0.0/16'))
   end
 
   it 'rejects invalid length' do
-    expect { IPv4Net.new('192.168.0.0/24').length = -1 }.to raise_error(ArgumentError)
-    expect { IPv4Net.new('192.168.0.0/24').length = 33 }.to raise_error(ArgumentError)
+    expect { IPv4Net.new('192.168.0.0/24').with_length(-1) }.to raise_error(ArgumentError)
+    expect { IPv4Net.new('192.168.0.0/24').with_length(33) }.to raise_error(ArgumentError)
   end
 
   it 'resets host bits' do
-    a = IPv4Net.new('192.168.22.0/24')
-    a.length = 16
-    expect(a).to eq(IPv4Net.new('192.168.0.0/16'))
+    expect(IPv4Net.new('192.168.22.0/24').with_length(16)).to eq(IPv4Net.new('192.168.0.0/16'))
   end
 end
 

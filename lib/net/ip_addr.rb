@@ -89,13 +89,6 @@ module Net
       self.class.new(@addr & mask)
     end
 
-    # Mask this address with the specified mask (equivalent to a bitwise and) and set ourself with resulting value
-    #
-    def mask!(mask)
-      @addr &= mask
-      self
-    end
-
     # @return [Integer] an integer (host-byte-order) representation of the IP address
     #
     def to_i

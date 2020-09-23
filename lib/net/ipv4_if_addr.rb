@@ -76,6 +76,8 @@ module Net
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
       raise InvalidAddress, 'Network address specified' if @length < 31 && @addr == network.prefix
       raise InvalidAddress, 'Broadcast address specified' if @length < 31 && @addr == network.broadcast
+
+      freeze
     end
 
     # @return [String] the dotted-quad representation of the mask

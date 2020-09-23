@@ -74,6 +74,8 @@ module Net
 
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
+
+      freeze
     end
 
     # @return [String] the 16-bit fields representation of the mask. No compression or padding zero removal is applied.

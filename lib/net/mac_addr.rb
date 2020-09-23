@@ -39,7 +39,7 @@ module Net
         raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
 
         @addr = if addr
-          initialize(addr)
+          return initialize(addr)
         elsif binary
           raise ArgumentError, "Size not equal to 6 octets" if binary.length != 6
 
@@ -62,6 +62,8 @@ module Net
       else
         raise ArgumentError, "Cannot initialize from #{arg}"
       end
+
+      freeze
     end
 
     # Returns true if the address is unicast

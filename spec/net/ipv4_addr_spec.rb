@@ -395,20 +395,6 @@ describe :mask do
   end
 end
 
-describe :mask! do
-  it 'returns self' do
-    a = IPv4Addr.new('1.2.3.4')
-    expect(a.mask!(0xffff0000)).to be_equal(a)
-  end
-
-  it 'masks correctly' do
-    a = IPv4Addr.new(0x0f0f0f0f)
-    expect(a.to_i).to eq(0x0f0f0f0f)
-    a.mask!(0xffff0000)
-    expect(a.to_i).to eq(0x0f0f0000)
-  end
-end
-
 describe :to_i do
   it 'returns a kind of Integer' do
     expect(IPv4Addr.new('1.2.3.4').to_i).to be_a_kind_of(Integer)

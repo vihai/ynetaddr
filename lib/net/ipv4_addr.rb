@@ -42,7 +42,7 @@ module Net
         raise FormatNotRecognized, "Unknown options #{arg.keys}" if arg.any?
 
         @addr = if addr
-          initialize(addr)
+          return initialize(addr)
         elsif binary
           raise FormatNotRecognized, "Size not equal to 4 octets" if binary.length != 4
 
@@ -68,6 +68,8 @@ module Net
       else
         raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
+
+      freeze
     end
 
     # @return [String] a network-byte-ordered representation of the IP address

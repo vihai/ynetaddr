@@ -91,7 +91,9 @@ module Net
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
-      @prefix.mask!(mask)
+      @prefix = @prefix.mask(mask)
+
+      freeze
     end
 
     # @return [String] the dotted-quad representation of the mask

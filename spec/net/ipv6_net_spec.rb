@@ -140,38 +140,28 @@ end
 
 # parent class methods
 
-describe :prefix= do
-  it 'returns prefix' do
-    expect((IPv6Net.new('2a02:20::/32').prefix = '2a02:30::')).to eq('2a02:30::')
-  end
-
-  it 'assigns prefix host bits' do
-    a = IPv6Net.new('2a02:20::/32')
-    a.prefix = '2a02:30::'
-    expect(a).to eq(IPv6Net.new('2a02:30::/32'))
+describe :with_prefix do
+  it 'returns new IPv6Net with specified prefix' do
+    expect(IPv6Net.new('2a02:20::/32').with_prefix('2a02:30::')).to eq(IPv6Net.new('2a02:30::/32'))
   end
 
   it 'resets host bits' do
-    a = IPv6Net.new('2a02:20::/32')
-    a.prefix = '2a02:30::44'
-    expect(a).to eq(IPv6Net.new('2a02:30::/32'))
+    expect(IPv6Net.new('2a02:20::/32').with_prefix('2a02:30::44')).to eq(IPv6Net.new('2a02:30::/32'))
   end
 end
 
-describe :length= do
-  it 'returns length' do
-    expect((IPv6Net.new('2a02:20::/32').length = 16)).to eq(16)
+describe :with_length do
+  it 'returns new net with specified length' do
+    expect((IPv6Net.new('2a02:20::/32').with_length(16))).to eq(IPv6Net.new('2a02:20::/16'))
   end
 
   it 'rejects invalid length' do
-    expect { IPv6Net.new('2a02:20::/32').length = -1 }.to raise_error(ArgumentError)
-    expect { IPv6Net.new('2a02:20::/32').length = 129 }.to raise_error(ArgumentError)
+    expect { IPv6Net.new('2a02:20::/32').with_length(-1) }.to raise_error(ArgumentError)
+    expect { IPv6Net.new('2a02:20::/32').with_length(129) }.to raise_error(ArgumentError)
   end
 
   it 'resets host bits' do
-    a = IPv6Net.new('2a02:20::/32')
-    a.length = 16
-    expect(a).to eq(IPv6Net.new('2a02::/16'))
+    expect(IPv6Net.new('2a02:20::/32').with_length(16)).to eq(IPv6Net.new('2a02::/16'))
   end
 end
 

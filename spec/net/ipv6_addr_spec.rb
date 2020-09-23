@@ -411,20 +411,6 @@ describe :mask do
   end
 end
 
-describe :mask! do
-  it 'returns self' do
-    a = IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')
-    expect(a.mask!(0xffff0000)).to be_equal(a)
-  end
-
-  it 'masks correctly' do
-    a = IPv6Addr.new('2a02:1234:abcd:0000:9999:ffff:a90b:bbbb')
-    expect(a.to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
-    a.mask!(0xffff0000)
-    expect(a.to_i).to eq(0xa90b0000)
-  end
-end
-
 describe :to_i do
   it 'returns a kind of Integer' do
     expect(IPv6Addr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]').to_i).to be_a_kind_of(Integer)
