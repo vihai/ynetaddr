@@ -39,7 +39,7 @@ module Net
       elsif arg.kind_of?(Hash)
         addr = arg.delete(:addr)
         binary = arg.delete(:binary)
-        raise FormatNotRecognized, "Unknown options #{arg.keys}" if arg.any?
+        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
 
         if addr
           return initialize(addr)
