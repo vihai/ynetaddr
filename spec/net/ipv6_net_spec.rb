@@ -24,6 +24,11 @@ describe 'constructor' do
     expect(IPv6Net.new(::IPAddr.new('2a02:20:1:2::/64')).length).to eq(64)
   end
 
+  it 'accepts IPv6Addr' do
+    expect(IPv6Net.new(IPv6Addr.new('2a02:20:1:2::1')).prefix.to_i).to eq(0x2a020020000100020000000000000001)
+    expect(IPv6Net.new(IPv6Addr.new('2a02:20:1:2::1')).length).to eq(128)
+  end
+
   it 'resets host bits' do
     expect(IPv6Net.new('2a02:20:1:2:3:4:5:6/32').prefix).to eq(0x2a020020000000000000000000000000)
   end

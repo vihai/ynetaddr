@@ -58,6 +58,9 @@ module Net
       elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
         @prefix = IPv4Addr.new(arg.to_i)
         @length = arg.prefix
+      elsif arg.is_a?(IPv4Addr)
+        @prefix = arg
+        @length = 32
       elsif arg.kind_of?(Hash)
         prefix = arg.delete(:prefix)
         prefix_binary = arg.delete(:prefix_binary)

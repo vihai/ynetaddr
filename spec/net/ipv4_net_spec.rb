@@ -24,6 +24,11 @@ describe 'constructor' do
     expect(IPv4Net.new(::IPAddr.new('1.2.3.0/255.255.255.0')).length).to eq(24)
   end
 
+  it 'accepts IPv4Addr' do
+    expect(IPv4Net.new(IPv4Addr.new('1.2.3.4')).prefix.to_i).to eq(0x01020304)
+    expect(IPv4Net.new(IPv4Addr.new('1.2.3.4')).length).to eq(32)
+  end
+
   it 'resets host bits' do
     expect(IPv4Net.new('10.0.255.0/16').prefix).to eq(0x0A000000)
   end
