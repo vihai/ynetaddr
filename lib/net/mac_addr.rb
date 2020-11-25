@@ -11,7 +11,6 @@ module Net
   # Implements IEEE 802 MAC-address class with arithmetic and utility methods
   #
   class MacAddr
-
     class BadArithmetic < StandardError ; end
 
     include Comparable
@@ -251,4 +250,9 @@ module Net
       coder.tag = nil
     end
   end
+
+  BROADCAST = MacAddr.new('FF:FF:FF:FF:FF::FF')
+  NEAREST_BRIDGE = MacAddr.new('01:80:c2:00:00:0e')
+  NONTPMR_BRIDGE = MacAddr.new('01:80:c2:00:00:03')
+  CUSTOMER_BRIDGE = MacAddr.new('01:80:c2:00:00:00')
 end

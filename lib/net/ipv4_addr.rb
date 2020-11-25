@@ -6,12 +6,13 @@
 # License:: You can redistribute it and/or modify it under the terms of the LICENSE file.
 #
 
+require 'net/ipv4_net'
+
 module Net
 
   # IPv4 Address class
   #
   class IPv4Addr < IPAddr
-
     # Instantiates a new IPv4 address object
     #
     # @param addr Any supported IPv4 representation to initialize from:
@@ -156,5 +157,8 @@ module Net
     def ipv6?
       false
     end
+
+    NULL = IPv4Addr.new('0.0.0.0')
+    BROADCAST = IPv4Addr.new('255.255.255.255')
   end
 end
