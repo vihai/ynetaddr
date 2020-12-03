@@ -71,14 +71,14 @@ module Net
       other = @network.class.new(other) unless other.kind_of?(@network.class)
 
       if other == @network
-        raise NetworkAlreadyPresent, 'Network already present in tree' if @used
+        raise NetworkAlreadyPresent, "Network #{other} already present in tree" if @used
 
         @used = true
         return
       end
 
       if !(other < @network)
-        raise NetworkNotContained, 'Net not contained'
+        raise NetworkNotContained, "Network #{other} not contained in #{@network}"
       end
 
       if (other.prefix.to_i & (1 << (@network.max_length - (@network.length + 1))) == 0)
