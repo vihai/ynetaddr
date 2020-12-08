@@ -76,11 +76,11 @@ module Net
         when /^::(\d+\.\d+\.\d+\.\d+)$/i
           @addr = IPv4Addr.new($1).to_i
         when /[^0-9a-f:]/i
-          raise FormatNotRecognized, 'invalid character(s)'
+          raise FormatNotRecognized, "'#{addr}': invalid character(s)"
         when /::.*::/
-          raise FormatNotRecognized, 'multiple zero compressions'
+          raise FormatNotRecognized, "'#{addr}': multiple zero compressions"
         when /:::/
-          raise FormatNotRecognized, 'invalid format'
+          raise FormatNotRecognized, "'#{addr}': invalid format"
         when /^(.*)::(.*)$/
           addr, right = $1, $2
 

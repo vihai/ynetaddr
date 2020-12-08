@@ -64,7 +64,7 @@ module Net
           @addr = IPv6Addr.new($1)
           @length = $2.to_i
         else
-          raise FormatNotRecognized, 'Format not recognized'
+          raise FormatNotRecognized, "'#{addr}': Format not recognized"
         end
 
         raise InvalidAddress, 'Network address specified' if @length < @max_length - 1 && @addr == network.prefix

@@ -63,8 +63,8 @@ module Net
         raise FormatNotRecognized, 'Empty address' if parts.empty?
 
         @addr = parts.map { |c|
-                    raise FormatNotRecognized, 'Invalid digit' unless c =~ /^\d+$/
-                    raise FormatNotRecognized, 'Octet value invalid' if c.to_i > 255 || c.to_i < 0
+                    raise FormatNotRecognized, "'#{addr}': Invalid digit" unless c =~ /^\d+$/
+                    raise FormatNotRecognized, "'#{addr}': Octet value invalid" if c.to_i > 255 || c.to_i < 0
                   c.to_i }.pack('C*').unpack('N').first
       else
         raise FormatNotRecognized, "Cannot initialize from #{arg}"

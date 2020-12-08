@@ -66,7 +66,7 @@ module Net
           @length = $2.to_i
           @prefix = IPv6Addr.new($1)
         else
-          raise FormatNotRecognized, 'Format not recognized'
+          raise FormatNotRecognized, "'#{net}': Format not recognized"
         end
       else
         raise "Cannot initialize from #{arg}"

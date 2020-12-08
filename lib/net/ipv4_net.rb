@@ -85,7 +85,7 @@ module Net
           @prefix = IPv4Addr.new($1)
           @length = $2.to_i
         else
-          raise FormatNotRecognized, 'Format not recognized'
+          raise FormatNotRecognized, "'#{net}': Format not recognized"
         end
       else
         raise "Cannot initialize from #{arg}"
