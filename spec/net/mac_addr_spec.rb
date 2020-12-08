@@ -26,11 +26,11 @@ describe 'constructor' do
   end
 
   it 'reject invalid empty address' do
-    expect { MacAddr.new('') }.to raise_error(ArgumentError)
+    expect { MacAddr.new('') }.to raise_error(FormatNotRecognized)
   end
 
   it 'reject invalid address with alphanumeric chars' do
-    expect { MacAddr.new('0012.3456.fbar') }.to raise_error(ArgumentError)
+    expect { MacAddr.new('0012.3456.fbar') }.to raise_error(FormatNotRecognized)
   end
 
   it 'takes another MacAddr as input' do

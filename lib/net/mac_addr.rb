@@ -24,7 +24,7 @@ module Net
     #             hh:hh:hh:hh:hh:hh
     #             hhhhhhhhhhhh
     #
-    # Raises ArgumentError if the format is not supported
+    # Raises FormatNotRecognized if the format is not supported
     #
     def initialize(arg = '0000:0000:0000')
 
@@ -50,11 +50,11 @@ module Net
 
         addr = arg.to_s.downcase
 
-        raise ArgumentError, 'Invalid characters found' if addr =~ /[^0-9a-z:.]/
+        raise FormatNotRecognized, "'#{addr}': Invalid characters found" if addr =~ /[^0-9a-z:.]/
 
         addr = addr.to_s.tr('^[0-9a-f]', '')
 
-        raise ArgumentError, 'Wrong size' if addr.length != 12
+        raise FormatNotRecognized, "'#{addr}': Wrong size" if addr.length != 12
 
         # From hex to Fixnum/Bignum
         @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
