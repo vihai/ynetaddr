@@ -18,15 +18,15 @@ module Net
     #
     # @return [IPv4Net, IPv6Net] the instantiated network
     #
-    def self.new(*args)
+    def self.new(*args, **kargs)
       if self == IPNet
         begin
-          IPv6Net.new(*args)
+          IPv6Net.new(*args, **kargs)
         rescue FormatNotRecognized
-          IPv4Net.new(*args)
+          IPv4Net.new(*args, **kargs)
         end
       else
-        super
+        super(*args, **kargs)
       end
     end
 
@@ -179,13 +179,13 @@ module Net
     # @return [IPNet] a network enlarged by n bits, keeping the same prefix (resetting the host bytes)
     #
     def <<(n)
-      self.class.new({ :prefix => @prefix, :length => cliplen(@length - n) })
+      self.class.new(prefix: @prefix, length: cliplen(@length - n))
     end
 
     # @return [IPNet] a network shrinked by n bits, keeping the same prefix (resetting the host bytes)
     #
     def >>(n)
-      self.class.new({ :prefix => @prefix, :length => cliplen(@length + n) })
+      self.class.new(prefix: @prefix, length: cliplen(@length + n))
     end
 
     # Case comparison. If the object being matched is an IPv4/v6Addr return true if it is contained in the network

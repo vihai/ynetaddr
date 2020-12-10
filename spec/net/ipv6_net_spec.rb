@@ -129,7 +129,7 @@ end
 
 describe :new_pb_multicast do
   it 'produces correct address' do
-    expect(IPv6Net.new('2a02:20:1:2::5/64').new_pb_multicast(:global, 0x1234)).to eq('ff3e:40:2a02:20:1:2:0:1234')
+    expect(IPv6Net.new('2a02:20:1:2::5/64').new_pb_multicast(scope: :global, group_id: 0x1234)).to eq('ff3e:40:2a02:20:1:2:0:1234')
   end
 end
 

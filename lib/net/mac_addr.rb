@@ -26,40 +26,38 @@ module Net
     #
     # Raises FormatNotRecognized if the format is not supported
     #
-    def initialize(arg = '0000:0000:0000')
+    def initialize(arg = nil, addr: nil, binary: nil, **args)
 
-      if arg.respond_to?(:to_macaddr)
-        @addr = arg.to_macaddr.instance_variable_get(:@addr)
-      elsif arg.kind_of?(Integer)
-        @addr = arg
-      elsif arg.kind_of?(Hash)
-        addr = arg.delete(:addr)
-        binary = arg.delete(:binary)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+      if arg
+        if arg.kind_of?(Integer)
+          @addr = arg
+        elsif arg.respond_to?(:to_macaddr)
+          @addr = arg.to_macaddr.instance_variable_get(:@addr)
+        elsif arg.respond_to?(:to_s)
 
+          addr = arg.to_s.downcase
+
+          raise FormatNotRecognized, "'#{addr.inspect}': Invalid characters found" if addr =~ /[^0-9a-z:.]/
+
+          addr = addr.to_s.tr('^[0-9a-f]', '')
+
+          raise FormatNotRecognized, "'#{addr.inspect}': Wrong size" if addr.length != 12
+
+          # From hex to Fixnum/Bignum
+          @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
+        else
+          raise ArgumentError, "Cannot initialize from #{arg.inspect}"
+        end
+      else
         if addr
-          return initialize(addr)
+          initialize(addr)
         elsif binary
           raise ArgumentError, "Size not equal to 6 octets" if binary.length != 6
 
           @addr = binary.rjust(8, "\x00").unpack('Q>')[0]
         else
-          raise ArgumentError, 'missing address'
+          raise ArgumentError, 'Neither addr or binary specified'
         end
-      elsif arg.respond_to?(:to_s)
-
-        addr = arg.to_s.downcase
-
-        raise FormatNotRecognized, "'#{addr}': Invalid characters found" if addr =~ /[^0-9a-z:.]/
-
-        addr = addr.to_s.tr('^[0-9a-f]', '')
-
-        raise FormatNotRecognized, "'#{addr}': Wrong size" if addr.length != 12
-
-        # From hex to Fixnum/Bignum
-        @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
-      else
-        raise ArgumentError, "Cannot initialize from #{arg}"
       end
 
       freeze
@@ -221,7 +219,7 @@ module Net
     # Example: "#<MacAddr:00:12:34:56:78:9a>"
     #
     def inspect
-      "#<%MacAddr:#{to_s}>"
+      "#<Net::MacAddr:#{to_s}>"
     end
 
     # @return [Integer] a hash of the value to be used as key in hashes

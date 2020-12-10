@@ -8,6 +8,6 @@
 
 module Net
 module Addr
-  VERSION = '1.12.5'
+  VERSION = '1.13.0'
 end
 end

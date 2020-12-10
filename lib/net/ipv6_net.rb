@@ -27,7 +27,7 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = '::/0')
+    def initialize(arg = nil, prefix: nil, prefix_binary: nil, length: nil, mask: nil, **args)
 
       @fullmask = MASK
       @length = 128
@@ -35,47 +35,53 @@ module Net
       @address_class = IPv6Addr
       @if_address_class = IPv6IfAddr
 
-      if arg.respond_to?(:to_ipv6net)
-        @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)
-        @length = arg.to_ipv6net.length
+      if arg
+        if arg.kind_of?(Integer)
+          @prefix = IPv6Addr.new(arg)
+          @length = 128
+        elsif arg.respond_to?(:to_ipv6net)
+          @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)
+          @length = arg.to_ipv6net.length
+        elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
+          @prefix = IPv6Addr.new(arg.to_i)
+          @length = arg.prefix
+        elsif arg.is_a?(IPv6Addr)
+          @prefix = arg
+          @length = 128
+        elsif arg.respond_to?(:to_s)
+          net = arg.to_s
 
-      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
-        @prefix = IPv6Addr.new(arg.to_i)
-        @length = arg.prefix
-      elsif arg.is_a?(IPv6Addr)
-        @prefix = arg
-        @length = 128
-      elsif arg.kind_of?(Hash)
-        prefix = arg.delete(:prefix)
-        prefix_binary = arg.delete(:prefix_binary)
-        length = arg.delete(:length)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
-
-        @prefix = IPv6Addr.new(prefix) if prefix
-        @prefix = IPv6Addr.new(binary: prefix_binary) if prefix_binary
-        @length = length if length
-
-      elsif arg.kind_of?(Integer)
-        @prefix = IPv6Addr.new(arg)
-        @length = 128
-
-      elsif arg.respond_to?(:to_s)
-        net = arg.to_s
-
-        if net =~ /^(.+)\/(.+)$/
-          @length = $2.to_i
-          @prefix = IPv6Addr.new($1)
+          if net =~ /^(.+)\/(.+)$/
+            @length = $2.to_i
+            @prefix = IPv6Addr.new($1)
+          else
+            raise FormatNotRecognized, "'#{net.inspect}': Format not recognized"
+          end
         else
-          raise FormatNotRecognized, "'#{net}': Format not recognized"
+          raise ArgumentError, "Cannot initialize from #{arg.inspect}"
         end
       else
-        raise "Cannot initialize from #{arg}"
+        if prefix
+          @prefix = IPv6Addr.new(prefix)
+        elsif prefix_binary
+          @prefix = IPv6Addr.new(binary: prefix_binary)
+        else
+          raise ArgumentError, 'Neither prefix or prefix_binary specified'
+        end
+
+        if length
+          @length = length
+        elsif mask
+          @length = IPv4Net.mask_to_length(IPv4Addr.new(mask).to_i)
+        else
+          raise ArgumentError, 'Neither length or mask specified'
+        end
       end
 
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
-      @prefix = @prefix.mask(mask)
+      @prefix = @prefix.mask(self.mask)
 
       freeze
     end
@@ -122,7 +128,7 @@ module Net
     #
     # @return [IPv6Addr] the multicast address associated to this prefix
     #
-    def new_pb_multicast(scope, group_id)
+    def new_pb_multicast(scope:, group_id:)
       raise ArgumentError, 'invalid group id' if (group_id & 0xffffffffffffffffffffffff00000000) != 0
       raise ArgumentError, 'cannot apply for prefixes longer than /64' if @length > 64
 
@@ -130,7 +136,7 @@ module Net
       mc |= (@prefix.to_i >> 64) << 32
       mc |= group_id
 
-      IPv6Addr.new_multicast(scope, true, true, false, mc)
+      IPv6Addr.new_multicast(scope: scope, transient: true, prefix_based: true, embedded_rp: false, group_id: mc)
     end
 
     # @return [String] the reverse-DNS name associated to the IP network. If the network is not byte-aligned

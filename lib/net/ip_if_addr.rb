@@ -14,22 +14,22 @@ module Net
     #
     # @return [IPv4Addr, IPv6Addr] the instantiated network
     #
-    def self.new(*args)
+    def self.new(*args, **kargs)
       if self == IPIfAddr
         begin
-          IPv6IfAddr.new(*args)
+          IPv6IfAddr.new(*args, **kargs)
         rescue FormatNotRecognized
-          IPv4IfAddr.new(*args)
+          IPv4IfAddr.new(*args, **kargs)
         end
       else
-        super(*args)
+        super(*args, **kargs)
       end
     end
 
     # @return [IPNet] the network containing the interface address
     #
     def network
-      @net_class.new(:prefix => @addr & mask, :length => @length)
+      @net_class.new(prefix: @addr & mask, length: @length)
     end
 
     # @return the mask as host byte-ordering Integer

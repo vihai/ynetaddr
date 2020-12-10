@@ -37,64 +37,62 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = '::1')
+    def initialize(arg = nil, addr: nil, binary: nil, **args)
 
       @net_class = IPv6Net
 
-      if arg.respond_to?(:to_ipv6addr)
-        @addr = arg.to_ipv6addr.to_i
+      if arg
+        if arg.kind_of?(Integer)
+          @addr = arg
+        elsif arg.respond_to?(:to_ipv6addr)
+          @addr = arg.to_ipv6addr.to_i
+        elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
+          @addr = arg.to_i
+        elsif arg.respond_to?(:to_s)
+          addr = arg.to_s
+          addr = $1 if addr =~ /^\[(.*)\]$/i
 
-      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
-        @addr = arg.to_i
-      elsif arg.kind_of?(Integer)
-        @addr = arg
+          case addr
+          when ''
+            raise ArgumentError, 'empty address'
+          when /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i
+            @addr = IPv4Addr.new($1).to_i | 0xffff00000000
+          when /^::(\d+\.\d+\.\d+\.\d+)$/i
+            @addr = IPv4Addr.new($1).to_i
+          when /[^0-9a-f:]/i
+            raise FormatNotRecognized, "'#{addr.inspect}': invalid character(s)"
+          when /::.*::/
+            raise FormatNotRecognized, "'#{addr.inspect}': multiple zero compressions"
+          when /:::/
+            raise FormatNotRecognized, "'#{addr.inspect}': invalid format"
+          when /^(.*)::(.*)$/
+            addr, right = $1, $2
 
-      elsif arg.kind_of?(Hash)
-        addr = arg.delete(:addr)
-        binary = arg.delete(:binary)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+            l = addr.split(':')
+            r = right.split(':')
+            rest = 8 - l.size - r.size
 
+            @addr = (l + Array.new(rest, '0') + r).inject(0) { |i, s| i << 16 | s.hex }
+          else
+            @addr = addr.split(':').inject(0) { |i, s| i << 16 | s.hex }
+          end
+        else
+          raise ArgumentError, "Cannot initialize from #{arg.inspect}"
+        end
+      else
         if addr
-          return initialize(addr)
+          initialize(addr, **args)
         elsif binary
           raise FormatNotRecognized, "Size not equal to 16 octets" if binary.length != 16
 
           @addr = binary.unpack('N4').inject(0) { |i, x| (i << 32) + x }
         else
-          raise ArgumentError, 'missing address'
+          raise ArgumentError, 'Neither addr or binary specified'
         end
 
-      elsif arg.respond_to?(:to_s)
-        addr = arg.to_s
-        addr = $1 if addr =~ /^\[(.*)\]$/i
-
-        case addr
-        when ''
-          raise ArgumentError, 'empty address'
-        when /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i
-          @addr = IPv4Addr.new($1).to_i | 0xffff00000000
-        when /^::(\d+\.\d+\.\d+\.\d+)$/i
-          @addr = IPv4Addr.new($1).to_i
-        when /[^0-9a-f:]/i
-          raise FormatNotRecognized, "'#{addr}': invalid character(s)"
-        when /::.*::/
-          raise FormatNotRecognized, "'#{addr}': multiple zero compressions"
-        when /:::/
-          raise FormatNotRecognized, "'#{addr}': invalid format"
-        when /^(.*)::(.*)$/
-          addr, right = $1, $2
-
-          l = addr.split(':')
-          r = right.split(':')
-          rest = 8 - l.size - r.size
-
-          @addr = (l + Array.new(rest, '0') + r).inject(0) { |i, s| i << 16 | s.hex }
-        else
-          @addr = addr.split(':').inject(0) { |i, s| i << 16 | s.hex }
-        end
-      else
-        raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
+
+      freeze
     end
 
     # @return [String] a network-byte-ordered representation of the IP address
@@ -130,7 +128,7 @@ module Net
     # @param [Boolean]         embedded_rp   defines if the multicast address contains an embedded Rendezvois Point (RFC3956)
     # @return [IPv6Addr] the resulting multicast address
     #
-    def self.new_multicast(scope, transient, prefix_based, embedded_rp, group_id)
+    def self.new_multicast(scope:, transient:, prefix_based:, embedded_rp:, group_id:)
       raise ArgumentError, 'invalid group id' if (group_id & 0xffff0000000000000000000000000000) != 0
 
       if scope.kind_of?(Symbol)
@@ -153,7 +151,7 @@ module Net
     # @param [Integer, Symbol] scope is the multicast address scope (see {#new_multicast})
     def self.new_ss_multicast(scope, group_id)
       raise ArgumentError, 'invalid group id' if (group_id & 0xffffffffffffffffffffffff00000000) != 0
-      new_multicast(scope, true, true, false, group_id)
+      new_multicast(scope: scope, transient: true, prefix_based: true, embedded_rp: false, group_id: group_id)
     end
 
     # @return [Boolean] true if the address is in multicast range

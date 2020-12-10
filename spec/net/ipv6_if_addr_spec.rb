@@ -180,7 +180,7 @@ end
 
 describe :to_hash do
   it 'is correctly calculated' do
-    expect(IPv6IfAddr.new('::5/32')).to eq({ :addr => 0x5, :length => 32 })
+    expect(IPv6IfAddr.new('::5/32').to_hash).to eq({ addr: 0x5, length: 32 })
   end
 end
 

@@ -28,7 +28,7 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = '::1/128')
+    def initialize(arg = nil, addr: nil, addr_binary: nil, length: nil, mask: nil, **args)
 
       @fullmask = 0xffffffffffffffffffffffffffffffff
       @length = 128
@@ -36,40 +36,46 @@ module Net
       @address_class = IPv6Addr
       @net_class = IPv6Net
 
-      if arg.respond_to?(:to_ipv6ifaddr)
-        @addr = arg.to_ipv6ifaddr.addr
-        @length = arg.to_ipv6ifaddr.length
+      if arg
+        if arg.kind_of?(Integer)
+          @addr = IPv6Addr.new(arg)
+          @length = 128
+        elsif arg.respond_to?(:to_ipv6ifaddr)
+          @addr = arg.to_ipv6ifaddr.addr
+          @length = arg.to_ipv6ifaddr.length
+        elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
+          @addr = IPv6Addr.new(arg.to_i)
+          @length = arg.prefix
+        elsif arg.respond_to?(:to_s)
+          addr = arg.to_s
 
-      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
-        @addr = IPv6Addr.new(arg.to_i)
-        @length = arg.prefix
-      elsif arg.kind_of?(Hash)
-        addr = arg.delete(:addr)
-        addr_binary = arg.delete(:addr_binary)
-        length = arg.delete(:length)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
+          if addr =~ /^(.+)\/(.+)$/
+            @addr = IPv6Addr.new($1)
+            @length = $2.to_i
+          else
+            raise FormatNotRecognized, "'#{addr.inspect}': Format not recognized"
+          end
 
-        @addr = IPv6Addr.new(addr) if addr
-        @addr = IPv6Addr.new(binary: addr_binary) if addr_binary
-        @length = length if length
-
-      elsif arg.kind_of?(Integer)
-        @addr = IPv6Addr.new(arg)
-        @length = 128
-
-      elsif arg.respond_to?(:to_s)
-        addr = arg.to_s
-
-        if addr =~ /^(.+)\/(.+)$/
-          @addr = IPv6Addr.new($1)
-          @length = $2.to_i
+          raise InvalidAddress, "'#{addr.inspect}': Network address specified" if @length < @max_length - 1 && @addr == network.prefix
         else
-          raise FormatNotRecognized, "'#{addr}': Format not recognized"
+          raise ArgumentError, "Cannot initialize from #{arg.inspect}"
+        end
+      else
+        if addr
+          @addr = IPv6Addr.new(addr) if addr
+        elsif addr_binary
+          @addr = IPv6Addr.new(binary: addr_binary)
+        else
+          raise ArgumentError, "Neither addr or addr_binary specified"
         end
 
-        raise InvalidAddress, 'Network address specified' if @length < @max_length - 1 && @addr == network.prefix
-      else
-        raise FormatNotRecognized, "Cannot initialize from #{arg}"
+        if length
+          @length = length
+        elsif mask
+          @length = IPv6Net.mask_to_length(IPv6Addr.new(mask).to_i)
+        else
+          raise ArgumentError, "Neither length or mask specified"
+        end
       end
 
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
@@ -118,7 +124,7 @@ module Net
       mc |= (network.to_i >> 64) << 32
       mc |= group_id
 
-      IPv6Addr.new_multicast(scope, true, true, true, mc)
+      IPv6Addr.new_multicast(scope: scope, transient: true, prefix_based: true, embedded_rp: true, group_id: mc)
     end
 
     def ipv4?

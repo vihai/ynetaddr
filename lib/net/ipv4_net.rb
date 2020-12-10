@@ -42,7 +42,8 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = '127.0.0.1/8')
+    def initialize(arg = nil, prefix: nil, prefix_binary: nil, length: nil, mask: nil, **args)
+
       # TODO implement all inet_aton formats with hex/octal and classful addresses
 
       @fullmask = MASK
@@ -51,50 +52,53 @@ module Net
       @address_class = IPv4Addr
       @if_address_class = IPv4IfAddr
 
-      if arg.respond_to?(:to_ipv4net)
-        @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
-        @length = arg.to_ipv4net.length
+      if arg
+        if arg.kind_of?(Integer)
+          @prefix = IPv4Addr.new(arg)
+          @length = 32
+        elsif arg.respond_to?(:to_ipv4net)
+          @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
+          @length = arg.to_ipv4net.length
+        elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
+          @prefix = IPv4Addr.new(arg.to_i)
+          @length = arg.prefix
+        elsif arg.is_a?(IPv4Addr)
+          @prefix = arg
+          @length = 32
+        elsif arg.respond_to?(:to_s)
+          net = arg.to_s
 
-      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
-        @prefix = IPv4Addr.new(arg.to_i)
-        @length = arg.prefix
-      elsif arg.is_a?(IPv4Addr)
-        @prefix = arg
-        @length = 32
-      elsif arg.kind_of?(Hash)
-        prefix = arg.delete(:prefix)
-        prefix_binary = arg.delete(:prefix_binary)
-        length = arg.delete(:length)
-        maskp = arg.delete(:mask)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
-
-        @prefix = IPv4Addr.new(prefix) if prefix
-        @prefix = IPv4Addr.new(binary: prefix_binary) if prefix_binary
-
-        @length = length if length
-        @length = IPv4Net.mask_to_length(IPv4Addr.new(maskp).to_i) if maskp
-
-      elsif arg.kind_of?(Integer)
-        @prefix = IPv4Addr.new(arg)
-        @length = 32
-
-      elsif arg.respond_to?(:to_s)
-        net = arg.to_s
-
-        if net =~ /^(.+)\/(.+)$/
-          @prefix = IPv4Addr.new($1)
-          @length = $2.to_i
+          if net =~ /^(.+)\/(.+)$/
+            @prefix = IPv4Addr.new($1)
+            @length = $2.to_i
+          else
+            raise FormatNotRecognized, "'#{net.inspect}': Format not recognized"
+          end
         else
-          raise FormatNotRecognized, "'#{net}': Format not recognized"
+          raise ArgumentError, "Cannot initialize from #{arg.inspect}"
         end
       else
-        raise "Cannot initialize from #{arg}"
+        if prefix
+          @prefix = IPv4Addr.new(prefix)
+        elsif prefix_binary
+          @prefix = IPv4Addr.new(binary: prefix_binary)
+        else
+          raise ArgumentError, 'Neither prefix or prefix_binary specified'
+        end
+
+        if length
+          @length = length
+        elsif mask
+          @length = IPv4Net.mask_to_length(IPv4Addr.new(mask).to_i)
+        else
+          raise ArgumentError, 'Neither length or mask specified'
+        end
       end
 
       raise InvalidAddress, "Length #{@length} less than zero" if @length < 0
       raise InvalidAddress, "Length #{@length} greater than #{@max_length}" if @length > @max_length
 
-      @prefix = @prefix.mask(mask)
+      @prefix = @prefix.mask(self.mask)
 
       freeze
     end

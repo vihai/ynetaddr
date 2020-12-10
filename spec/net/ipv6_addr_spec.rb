@@ -96,24 +96,24 @@ end
 
 describe :new_multicast do
   it 'produces an IPv6Addr' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0)).to be_an_instance_of(IPv6Addr)
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0)).to be_an_instance_of(IPv6Addr)
   end
 
   it 'produces a multicast IPv6Addr' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast?).to be_truthy
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0).multicast?).to be_truthy
   end
 
   it 'raises an error if group_id is bigger than available space' do
-    expect { IPv6Addr.new_multicast(:global, false, false, false, 0x1ffff0000000000000000000000000000) }.to raise_error(ArgumentError)
+    expect { IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0x1ffff0000000000000000000000000000) }.to raise_error(ArgumentError)
   end
 
   it 'produces multicas address with correct scope' do
-    expect(IPv6Addr.new_multicast(:interface_local, false, false, false, 1234).multicast_scope).to eq(:interface_local)
-    expect(IPv6Addr.new_multicast(:link_local, false, false, false, 1234).multicast_scope).to eq(:link_local)
-    expect(IPv6Addr.new_multicast(:admin_local, false, false, false, 1234).multicast_scope).to eq(:admin_local)
-    expect(IPv6Addr.new_multicast(:site_local, false, false, false, 1234).multicast_scope).to eq(:site_local)
-    expect(IPv6Addr.new_multicast(:organization_local, false, false, false, 1234).multicast_scope).to eq(:organization_local)
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 1234).multicast_scope).to eq(:global)
+    expect(IPv6Addr.new_multicast(scope: :interface_local, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:interface_local)
+    expect(IPv6Addr.new_multicast(scope: :link_local, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:link_local)
+    expect(IPv6Addr.new_multicast(scope: :admin_local, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:admin_local)
+    expect(IPv6Addr.new_multicast(scope: :site_local, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:site_local)
+    expect(IPv6Addr.new_multicast(scope: :organization_local, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:organization_local)
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 1234).multicast_scope).to eq(:global)
   end
 end
 
@@ -130,29 +130,29 @@ end
 
 describe :multicast_transient? do
   it 'matches correctly' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_transient?).to be_falsey
-    expect(IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_transient?).to be_truthy
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0).multicast_transient?).to be_falsey
+    expect(IPv6Addr.new_multicast(scope: :global, transient: true, prefix_based: false, embedded_rp: false, group_id: 0).multicast_transient?).to be_truthy
   end
 end
 
 describe :multicast_well_known? do
   it 'matches correctly' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_well_known?).to be_truthy
-    expect(IPv6Addr.new_multicast(:global, true, false, false, 0).multicast_well_known?).to be_falsey
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0).multicast_well_known?).to be_truthy
+    expect(IPv6Addr.new_multicast(scope: :global, transient: true, prefix_based: false, embedded_rp: false, group_id: 0).multicast_well_known?).to be_falsey
   end
 end
 
 describe :multicast_prefix_based? do
   it 'matches correctly' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_prefix_based?).to be_falsey
-    expect(IPv6Addr.new_multicast(:global, false, true, false, 0).multicast_prefix_based?).to be_truthy
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0).multicast_prefix_based?).to be_falsey
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: true, embedded_rp: false, group_id: 0).multicast_prefix_based?).to be_truthy
   end
 end
 
 describe :multicast_embedded_rp? do
   it 'matches correctly' do
-    expect(IPv6Addr.new_multicast(:global, false, false, false, 0).multicast_embedded_rp?).to be_falsey
-    expect(IPv6Addr.new_multicast(:global, false, false, true, 0).multicast_embedded_rp?).to be_truthy
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: false, group_id: 0).multicast_embedded_rp?).to be_falsey
+    expect(IPv6Addr.new_multicast(scope: :global, transient: false, prefix_based: false, embedded_rp: true, group_id: 0).multicast_embedded_rp?).to be_truthy
   end
 end
 

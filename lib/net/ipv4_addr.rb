@@ -23,34 +23,31 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = nil,
-        addr: nil, binary: nil,
-        **args
-      )
+    def initialize(arg = nil, addr: nil, binary: nil, **args)
 
       @net_class = IPv4Net
 
       if arg
-        if arg.respond_to?(:to_ipv4addr)
+        if arg.kind_of?(Integer)
+          @addr = arg
+        elsif arg.respond_to?(:to_ipv4addr)
           @addr = arg.to_ipv4addr.to_i
         elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
           @addr = arg.to_i
-        elsif arg.kind_of?(Integer)
-          @addr = arg
         elsif arg.respond_to?(:to_s)
           init_from_string(arg.to_s, **args)
         else
-          raise FormatNotRecognized, "Cannot initialize from #{arg}"
+          raise ArgumentError, "Cannot initialize from #{arg}"
         end
       else
         if addr
-          return initialize(addr)
+          initialize(addr, **args)
         elsif binary
           raise FormatNotRecognized, "Size not equal to 4 octets" if binary.length != 4
 
           @addr = binary.unpack('N').first
         else
-          raise FormatNotRecognized, 'missing address'
+          raise ArgumentError, 'Neither addr or binary specified'
         end
       end
 
