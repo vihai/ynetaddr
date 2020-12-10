@@ -21,6 +21,17 @@ module Net
     #             [a.b.c.d]
     #             a.b.c.d
     #
+    # @param :addr
+    # @param :binary
+    # @param :dotquad     [boolena] Enables/disables the dotted-quad representation of IP addresses
+    # @param :dotquad_dec [boolean] Enables/disables the dotted-quad decimal representation parsing
+    # @param :dotquad_hex [boolean] Enables/disables the dotted-quad hexadecimal representation parsing
+    # @param :dotquad_oct [boolean] Enables/disables the dotted-quad octal representation parsing
+    # @param :sq_brackets [boolean] Enables/disables the bracketed representation
+    # @param :decimal     [boolean] Enables/disables the whole decimal address representation parsing
+    # @param :hexadecimal [boolean] Enables/disables the whole hexadecimal address representation parsing
+    # @param :octal       [boolean] Enables/disables the whole octal address representation parsing
+    #
     # Raises FormatNotRecognized if the representation isn't valid
     #
     def initialize(arg = nil, addr: nil, binary: nil, **args)
