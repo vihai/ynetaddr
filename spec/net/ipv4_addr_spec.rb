@@ -48,6 +48,11 @@ describe 'constructor' do
     expect { IPv4Addr.new(foobar: 'baz') }.to raise_error(ArgumentError)
   end
 
+  it 'accepts an object that responds to to_ipv4addr' do
+    expect(IPv4Addr.new(TestObj.new).to_i).to eq(741818957)
+  end
+
+
 #  it 'accept d.d.d format' do
 #    expect(IPv4Addr.new('1.2.65530').to_i).to eq(16908543)
 #  end
