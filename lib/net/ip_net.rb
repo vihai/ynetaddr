@@ -108,7 +108,7 @@ module Net
     #                address and network mask length
     #
     def to_hash
-      { :prefix => @prefix, :length => @length }
+      { prefix: @prefix, length: @length }
     end
 
     # @return [Boolean] true if both objects represent the same network
@@ -216,7 +216,7 @@ module Net
 
     # @return [IPNet] the next contiguous network
     def succ
-      self.class.new({ :prefix => @prefix + (1 << (@max_length - @length)), :length => @length })
+      self.class.new(prefix: @prefix + (1 << (@max_length - @length)), length: @length)
     end
     alias next succ
 

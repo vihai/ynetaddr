@@ -52,8 +52,8 @@ module Net
           net = arg.to_s
 
           if net =~ /^(.+)\/(.+)$/
+            @prefix = IPv6Addr.new($1, **args)
             @length = $2.to_i
-            @prefix = IPv6Addr.new($1)
           else
             raise FormatNotRecognized, "'#{net.inspect}': Format not recognized"
           end
@@ -62,7 +62,7 @@ module Net
         end
       else
         if prefix
-          @prefix = IPv6Addr.new(prefix)
+          @prefix = IPv6Addr.new(prefix, **args)
         elsif prefix_binary
           @prefix = IPv6Addr.new(binary: prefix_binary)
         else

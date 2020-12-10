@@ -50,7 +50,7 @@ module Net
           addr = arg.to_s
 
           if addr =~ /^(.+)\/(.+)$/
-            @addr = IPv4Addr.new($1)
+            @addr = IPv4Addr.new($1, **args)
             @length = $2.to_i
           else
             raise FormatNotRecognized, "'#{addr.inspect}': Format not recognized"
@@ -60,7 +60,7 @@ module Net
         end
       else
         if addr
-          @addr = IPv4Addr.new(addr) if addr
+          @addr = IPv4Addr.new(addr, **args)
         elsif addr_binary
           @addr = IPv4Addr.new(binary: addr_binary)
         else

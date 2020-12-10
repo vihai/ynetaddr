@@ -50,7 +50,7 @@ module Net
           addr = arg.to_s
 
           if addr =~ /^(.+)\/(.+)$/
-            @addr = IPv6Addr.new($1)
+            @addr = IPv6Addr.new($1, **args)
             @length = $2.to_i
           else
             raise FormatNotRecognized, "'#{addr.inspect}': Format not recognized"
@@ -62,7 +62,7 @@ module Net
         end
       else
         if addr
-          @addr = IPv6Addr.new(addr) if addr
+          @addr = IPv6Addr.new(addr, **args)
         elsif addr_binary
           @addr = IPv6Addr.new(binary: addr_binary)
         else

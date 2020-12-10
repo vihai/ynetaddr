@@ -28,7 +28,6 @@ module Net
       list
     end
 
-
     # Instantiates a new IPv4 network object
     #
     # @param net Any supported IPv4 representation to initialize from:
@@ -69,7 +68,7 @@ module Net
           net = arg.to_s
 
           if net =~ /^(.+)\/(.+)$/
-            @prefix = IPv4Addr.new($1)
+            @prefix = IPv4Addr.new($1, **args)
             @length = $2.to_i
           else
             raise FormatNotRecognized, "'#{net.inspect}': Format not recognized"
@@ -79,7 +78,7 @@ module Net
         end
       else
         if prefix
-          @prefix = IPv4Addr.new(prefix)
+          @prefix = IPv4Addr.new(prefix, **args)
         elsif prefix_binary
           @prefix = IPv4Addr.new(binary: prefix_binary)
         else
