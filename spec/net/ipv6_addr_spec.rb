@@ -47,7 +47,7 @@ describe 'constructor' do
 
   require 'ipaddr'
   it 'accepts ::IPAddr' do
-    expect(IPv4Addr.new(::IPAddr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
+    expect(IPv6Addr.new(::IPAddr.new('[2a02:1234:abcd:0000:9999:ffff:a90b:bbbb]')).to_i).to eq(0x2a021234abcd00009999ffffa90bbbbb)
   end
 
   it 'rejects a wrong size binary addr' do
