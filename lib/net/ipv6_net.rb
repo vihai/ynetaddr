@@ -39,7 +39,7 @@ module Net
         @prefix = IPv6Addr.new(arg.to_ipv6net.prefix)
         @length = arg.to_ipv6net.length
 
-      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
         @prefix = IPv6Addr.new(arg.to_i)
         @length = arg.prefix
       elsif arg.is_a?(IPv6Addr)

@@ -55,7 +55,7 @@ module Net
         @prefix = IPv4Addr.new(arg.to_ipv4net.prefix)
         @length = arg.to_ipv4net.length
 
-      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
         @prefix = IPv4Addr.new(arg.to_i)
         @length = arg.prefix
       elsif arg.is_a?(IPv4Addr)

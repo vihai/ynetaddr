@@ -44,7 +44,7 @@ module Net
       if arg.respond_to?(:to_ipv6addr)
         @addr = arg.to_ipv6addr.to_i
 
-      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
         @addr = arg.to_i
       elsif arg.kind_of?(Integer)
         @addr = arg

@@ -41,7 +41,7 @@ module Net
       if arg.respond_to?(:to_ipv4ifaddr)
         @addr = arg.to_ipv4ifaddr.addr
         @length = arg.to_ipv4ifaddr.length
-      elsif arg.class.name == 'IPAddr' # avoids having to require ipaddr
+      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
         @addr = IPv4Addr.new(arg.to_i)
         @length = arg.prefix
       elsif arg.kind_of?(Hash)
