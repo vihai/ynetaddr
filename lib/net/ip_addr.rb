@@ -16,15 +16,15 @@ module Net
     #
     # @return [IPv4Addr, IPv6Addr] the instantiated network
     #
-    def self.new(*args)
+    def self.new(*args, **kargs)
       if self == IPAddr
         begin
-          IPv6Addr.new(*args)
+          IPv6Addr.new(*args, **kargs)
         rescue FormatNotRecognized
-          IPv4Addr.new(*args)
+          IPv4Addr.new(*args, **kargs)
         end
       else
-        super(*args)
+        super(*args, **kargs)
       end
     end
 

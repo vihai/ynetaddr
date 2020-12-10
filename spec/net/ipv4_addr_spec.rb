@@ -13,36 +13,404 @@ module Net
 RSpec.describe IPv4Addr do
 
 describe 'constructor' do
-  it 'accepts d.d.d.d format' do
-    expect(IPv4Addr.new('1.2.0.255').to_i).to eq(0x010200ff)
+  let(:all_off) {
+    {
+     dotquad: false, dotquad_dec: false, dotquad_hex: false, dotquad_oct: false,
+     sq_brackets: false,
+     decimal: false,
+     hexadecimal: false
+    }
+  }
+
+
+  context 'with a non-keyword parameter' do
+    it 'initializes from integer' do
+      expect(IPv4Addr.new(0x01020304).to_i).to eq(0x01020304)
+    end
+
+    context 'without square brackets' do
+      it 'reject invalid empty address' do
+        expect { IPv4Addr.new('') }.to raise_error(ArgumentError)
+      end
+
+      it 'reject invalid address with consecutive dots' do
+        expect { IPv4Addr.new('1.2..4') }.to raise_error(FormatNotRecognized)
+      end
+
+      context 'dotquad decimal (d.d.d.d)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('1.2.0.255').to_i).to eq(0x010200ff)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('1.2.0.255', **all_off.merge(dotquad: true, dotquad_dec: true)).to_i).to eq(0x010200ff)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('1.2.0.255', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_dec is excluded form supported formats' do
+          expect { IPv4Addr.new('1.2.0.255', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-decimal characters are present' do
+          expect { IPv4Addr.new('1.2.0.255f', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('1.2.f0.255', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('1.2.0.255😡', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('foo', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'dotquad hexadecimal (h.h.h.h)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('0x22.0x33.0x44.0x55').to_i).to eq(0x22334455)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('0x22.0x33.0x44.0x55', **all_off.merge(dotquad: true, dotquad_hex: true)).to_i).to eq(0x22334455)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('0x22.0x33.0x44.0x55', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_hex is excluded form supported formats' do
+          expect { IPv4Addr.new('0x22.0x33.0x44.0x55', dotquad_hex: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-hex characters are present' do
+          expect { IPv4Addr.new('-0x22.0x33.0x44.0x55') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('0x22.0x33.-0x44.0x55') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('0x22.0x33.0x44.0xgg') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('0x22.0x33.0x44.0x😡') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'dotquad octal (o.o.o.o)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('022.033.044.055').to_i).to eq(303768621)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('022.033.044.055', **all_off.merge(dotquad: true, dotquad_oct: true)).to_i).to eq(303768621)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('022.033.044.055', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_oct is excluded form supported formats' do
+          expect { IPv4Addr.new('022.033.044.055', dotquad_oct: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-octal characters are present' do
+          expect { IPv4Addr.new('-022.033.044.055') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('022.033.-044.055') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('022.033.044.0gg') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('022.033.044.078') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('022.033.044.0😡') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'decimal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('16384576').to_i).to eq(16384576)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('16384576', **all_off.merge(sq_brackets: true, decimal: true)).to_i).to eq(16384576)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('16384576', decimal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('-16384576') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('16384576a') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('a16384576') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('aaa') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('😡') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'hexadecimal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('0x1234abcd').to_i).to eq(0x1234abcd)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('0x1234abcd', **all_off.merge(sq_brackets: true, hexadecimal: true)).to_i).to eq(0x1234abcd)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('0x1234abcd', hexadecimal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('-0x1234abcd') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('0x1234abcG') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('a0x1234abc') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('aaa') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('😡') }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing numbers greater than 2^32' do
+          expect { IPv4Addr.new('0x1234abcde') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'octal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[0123456]').to_i).to eq(0123456)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('[0123456]', **all_off.merge(sq_brackets: true, octal: true)).to_i).to eq(0123456)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('[0123456]', octal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('[-0123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0123456a]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[a0123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0a123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[aaa]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[😡]') }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing numbers greater than 2^32' do
+          expect { IPv4Addr.new('012345601234560123456') }.to raise_error(FormatNotRecognized)
+        end
+      end
+    end
+
+    context 'with square brackets' do
+      it 'reject invalid empty [] address' do
+        expect { IPv4Addr.new('[]') }.to raise_error(ArgumentError)
+      end
+
+      it 'reject invalid address with consecutive dots' do
+        expect { IPv4Addr.new('[1.2..4]') }.to raise_error(FormatNotRecognized)
+      end
+
+      context 'dotquad decimal (d.d.d.d)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[1.2.0.255]').to_i).to eq(0x010200ff)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('[1.2.0.255]', **all_off.merge(sq_brackets: true, dotquad: true, dotquad_dec: true)).to_i).to eq(0x010200ff)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('[1.2.0.255]', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_dec is excluded form supported formats' do
+          expect { IPv4Addr.new('[1.2.0.255]', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-decimal characters are present' do
+          expect { IPv4Addr.new('[1.2.0.255f]', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[1.2.f0.255]', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[1.2.0.255😡]', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[foo]', dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'dotquad hexadecimal (h.h.h.h)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[0x22.0x33.0x44.0x55]').to_i).to eq(0x22334455)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('[0x22.0x33.0x44.0x55]', **all_off.merge(sq_brackets: true, dotquad: true, dotquad_hex: true)).to_i).to eq(0x22334455)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_hex is excluded form supported formats' do
+          expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', dotquad_hex: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-hex characters are present' do
+          expect { IPv4Addr.new('[-0x22.0x33.0x44.0x55]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0x22.0x33.-0x44.0x55]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0x22.0x33.0x44.0xgg]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0x22.0x33.0x44.0x😡]') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'dotquad octal (o.o.o.o)' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[022.033.044.055]').to_i).to eq(303768621)
+        end
+
+        it 'is parsed when it is the only supported format' do
+          expect(IPv4Addr.new('[022.033.044.055]', **all_off.merge(sq_brackets: true, dotquad: true, dotquad_oct: true)).to_i).to eq(303768621)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad is excluded form supported formats' do
+          expect { IPv4Addr.new('[022.033.044.055]', dotquad: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when dotquad_oct is excluded form supported formats' do
+          expect { IPv4Addr.new('[022.033.044.055]', dotquad_oct: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when non-octal characters are present' do
+          expect { IPv4Addr.new('[-022.033.044.055]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[022.033.-044.055]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[022.033.044.0gg]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[022.033.044.078]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[022.033.044.0😡]') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'decimal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[16384576]').to_i).to eq(16384576)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('[16384576]', **all_off.merge(sq_brackets: true, decimal: true)).to_i).to eq(16384576)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('[16384576]', decimal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('[-16384576]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[16384576a]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[a16384576]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[aaa]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[😡]') }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing numbers greater than 2^32' do
+          expect { IPv4Addr.new('32432416384576') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'hexadecimal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[0x1234abcd]').to_i).to eq(0x1234abcd)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('[0x1234abcd]', **all_off.merge(sq_brackets: true, hexadecimal: true)).to_i).to eq(0x1234abcd)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('[0x1234abcd]', hexadecimal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('[-0x1234abcd]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0x1234abcG]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[a0x1234abc]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[aaa]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[😡]') }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing numbers greater than 2^32' do
+          expect { IPv4Addr.new('0x1234abcde') }.to raise_error(FormatNotRecognized)
+        end
+      end
+
+      context 'octal string' do
+        it 'is parsed by default' do
+          expect(IPv4Addr.new('[0123456]').to_i).to eq(0123456)
+        end
+
+        it 'is parsed when the only supported format' do
+          expect(IPv4Addr.new('[0123456]', **all_off.merge(sq_brackets: true, octal: true)).to_i).to eq(0123456)
+        end
+
+        it 'raises an error when not a supported format' do
+          expect { IPv4Addr.new('[0123456]', octal: false) }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing non numeric characters' do
+          expect { IPv4Addr.new('[-0123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0123456a]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[a0123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[0a123456]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[aaa]') }.to raise_error(FormatNotRecognized)
+          expect { IPv4Addr.new('[😡]') }.to raise_error(FormatNotRecognized)
+        end
+
+        it 'raises a FormatNotRecognized when containing numbers greater than 2^32' do
+          expect { IPv4Addr.new('012345601234560123456') }.to raise_error(FormatNotRecognized)
+        end
+      end
+    end
+
+    context 'with square brackets but disabled' do
+      it 'rejects all addresses with brackets' do
+        expect { IPv4Addr.new('[]', sq_brackets: false) }.to raise_error(ArgumentError)
+        expect { IPv4Addr.new('[1.2..4]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255]', **all_off.merge(sq_brackets: false, dotquad: true, dotquad_dec: true)) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255]', sq_brackets: false, dotquad: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255]', sq_brackets: false, dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255f]', sq_brackets: false, dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.f0.255]', sq_brackets: false, dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[1.2.0.255😡]', sq_brackets: false, dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[foo]', sq_brackets: false, dotquad_dec: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', **all_off.merge(sq_brackets: false, dotquad: true, dotquad_hex: true)) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', sq_brackets: false, dotquad: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0x55]', sq_brackets: false, dotquad_hex: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[-0x22.0x33.0x44.0x55]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.-0x44.0x55]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0xgg]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[0x22.0x33.0x44.0x😡]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.055]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.055]', **all_off.merge(sq_brackets: false, dotquad: true, dotquad_oct: true)) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.055]', sq_brackets: false, dotquad: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.055]', sq_brackets: false, dotquad_oct: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[-022.033.044.055]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.-044.055]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.0gg]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.078]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+        expect { IPv4Addr.new('[022.033.044.0😡]', sq_brackets: false) }.to raise_error(FormatNotRecognized)
+      end
+    end
   end
 
-  it 'accepts [d.d.d.d] format' do
-    expect(IPv4Addr.new('[1.2.0.255]').to_i).to eq(0x010200ff)
+  context 'with addr: parameter' do
+    it 'parses as usual' do
+      expect(IPv4Addr.new(addr: '1.2.0.255').to_i).to eq(0x010200ff)
+      expect(IPv4Addr.new(addr: 0x01020304).to_i).to eq(0x01020304)
+    end
   end
 
-  it 'accepts integer' do
-    expect(IPv4Addr.new(0x01020304).to_i).to eq(0x01020304)
+  context 'with binary: parameter' do
+    it 'directly assigns binary value' do
+      expect(IPv4Addr.new(binary: 'AEIO').to_i).to eq(0x4145494f)
+    end
+
+    it 'rejects a wrong size binary addr' do
+      expect { IPv4Addr.new(binary: 'AEIOU') }.to raise_error(FormatNotRecognized)
+      expect { IPv4Addr.new(binary: 'AEI') }.to raise_error(FormatNotRecognized)
+    end
   end
 
-  it 'accepts hash[:addr]' do
-    expect(IPv4Addr.new(addr: '1.2.0.255').to_i).to eq(0x010200ff)
-    expect(IPv4Addr.new(addr: 0x01020304).to_i).to eq(0x01020304)
-  end
-
-  it 'accepts hash[:binary]' do
-    expect(IPv4Addr.new(binary: 'AEIO').to_i).to eq(0x4145494f)
-  end
 
   require 'ipaddr'
   it 'accepts ::IPAddr' do
     expect(IPv4Addr.new(::IPAddr.new('1.2.3.4')).to_i).to eq(0x01020304)
   end
 
-  it 'rejects a wrong size binary addr' do
-    expect { IPv4Addr.new(binary: 'AEIOU') }.to raise_error(ArgumentError)
-    expect { IPv4Addr.new(binary: 'AEI') }.to raise_error(ArgumentError)
-  end
 
   it 'raises an ArgumentError if invoked with unknown arguments' do
     expect { IPv4Addr.new(foobar: 'baz') }.to raise_error(ArgumentError)
@@ -50,67 +418,6 @@ describe 'constructor' do
 
   it 'accepts an object that responds to to_ipv4addr' do
     expect(IPv4Addr.new(TestObj.new).to_i).to eq(741818957)
-  end
-
-
-#  it 'accept d.d.d format' do
-#    expect(IPv4Addr.new('1.2.65530').to_i).to eq(16908543)
-#  end
-#
-#  it 'accept d.d format' do
-#    expect(IPv4Addr.new('1.5487554').to_i).to eq(16908543)
-#  end
-#
-#  it 'accept d format' do
-#    expect(IPv4Addr.new('16908543').to_i).to eq(16908543)
-#  end
-
-#  it 'reject invalid octet (>255) values' do
-#    expect { IPv4Addr.new('1.2.0.256') }.to raise_error(ArgumentError)
-#  end
-#
-#  it 'reject invalid component values with format d.d.d' do
-#    expect { IPv4Addr.new('1.2.65536') }.to raise_error(ArgumentError)
-#  end
-#
-#  it 'reject invalid component values with format d.d' do
-#    expect { IPv4Addr.new('1.2.16777216') }.to raise_error(ArgumentError)
-#  end
-
-  it 'reject invalid empty address' do
-    expect { IPv4Addr.new('') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid empty [] address' do
-    expect { IPv4Addr.new('[]') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with alphanumeric chars' do
-    expect { IPv4Addr.new('foo') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with alphanumeric chars' do
-    expect { IPv4Addr.new('[foo]') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with alphanumeric chars' do
-    expect { IPv4Addr.new('1.2.3.0foo') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with alphanumeric chars' do
-    expect { IPv4Addr.new('1.2.3.f0') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with alphanumeric chars' do
-    expect { IPv4Addr.new('1.2.3.f0') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with consecutive dots' do
-    expect { IPv4Addr.new('1.2..4') }.to raise_error(ArgumentError)
-  end
-
-  it 'reject invalid address with negative components' do
-    expect { IPv4Addr.new('1.2.-3.4') }.to raise_error(ArgumentError)
   end
 
 end

@@ -23,25 +23,26 @@ module Net
     #
     # Raises FormatNotRecognized if the representation isn't valid
     #
-    def initialize(arg = '127.0.0.1')
+    def initialize(arg = nil,
+        addr: nil, binary: nil,
+        **args
+      )
 
       @net_class = IPv4Net
 
-      # TODO implement all inet_aton formats with hex/octal and classful addresses
-
-      if arg.respond_to?(:to_ipv4addr)
-        @addr = arg.to_ipv4addr.to_i
-
-      elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
-        @addr = arg.to_i
-      elsif arg.kind_of?(Integer)
-        @addr = arg
-
-      elsif arg.kind_of?(Hash)
-        addr = arg.delete(:addr)
-        binary = arg.delete(:binary)
-        raise ArgumentError, "Unknown options #{arg.keys}" if arg.any?
-
+      if arg
+        if arg.respond_to?(:to_ipv4addr)
+          @addr = arg.to_ipv4addr.to_i
+        elsif defined?(::IPAddr) && arg.kind_of?(::IPAddr)
+          @addr = arg.to_i
+        elsif arg.kind_of?(Integer)
+          @addr = arg
+        elsif arg.respond_to?(:to_s)
+          init_from_string(arg.to_s, **args)
+        else
+          raise FormatNotRecognized, "Cannot initialize from #{arg}"
+        end
+      else
         if addr
           return initialize(addr)
         elsif binary
@@ -51,26 +52,64 @@ module Net
         else
           raise FormatNotRecognized, 'missing address'
         end
-
-      elsif arg.respond_to?(:to_s)
-        addr = arg.to_s
-
-        # Remove square brackets
-        addr = $1 if addr =~ /^\[(.*)\]$/i
-
-        parts = addr.split('.')
-
-        raise FormatNotRecognized, 'Empty address' if parts.empty?
-
-        @addr = parts.map { |c|
-                    raise FormatNotRecognized, "'#{addr}': Invalid digit" unless c =~ /^\d+$/
-                    raise FormatNotRecognized, "'#{addr}': Octet value invalid" if c.to_i > 255 || c.to_i < 0
-                  c.to_i }.pack('C*').unpack('N').first
-      else
-        raise FormatNotRecognized, "Cannot initialize from #{arg}"
       end
 
       freeze
+    end
+
+    protected def parse_value(val, dec:, hex:, oct:)
+      # This convoluted parsing formula ensures that disabled formats do raise an exception even if disabled
+
+      (val.downcase.start_with?('0x') && (v=Integer(val, 16)) && hex && v) ||
+      (val.start_with?('0') && (v=Integer(val, 8)) && oct && v) ||
+      ((!val.start_with?('0') || val == '0') && (v=Integer(val, 10)) && dec && v) ||
+      (raise ArgumentError)
+    end
+
+    protected def init_from_string(val,
+        dotquad: true, dotquad_dec: true, dotquad_hex: true, dotquad_oct: true,
+        sq_brackets: true,
+        decimal: true,
+        hexadecimal: true,
+        octal: true
+      )
+
+      if sq_brackets
+        # Remove square brackets
+        val = $1 if val =~ /^\[(.*)\]$/
+      end
+
+      if val.empty?
+        raise FormatNotRecognized, 'Empty address'
+
+      elsif dotquad && (match = (/^(0x[0-9af]+|[0-9]+)\.(0x[0-9af]+|[0-9]+)\.(0x[0-9af]+|[0-9]+)\.(0x[0-9af]+|[0-9]+)$/i.match(val)))
+        parts = match[1..4].map do |part|
+          begin
+            parse_value(part, dec: dotquad_dec, hex: dotquad_hex, oct: dotquad_oct)
+          rescue ArgumentError
+            raise FormatNotRecognized, "'#{val.inspect}': Cannot parse octet value '#{part.inspect}'"
+          end
+        end
+
+        if parts.any? { |x| x > 0xff }
+          raise FormatNotRecognized, "'#{val.inspect}': Octet value greater than 255"
+        end
+
+        @addr = (parts[0] << 24) +
+                (parts[1] << 16) +
+                (parts[2] << 8) +
+                 parts[3]
+
+      else
+        begin
+          @addr = parse_value(val, dec: decimal, hex: hexadecimal, oct: octal)
+        rescue ArgumentError
+          raise FormatNotRecognized, "'#{val.inspect}': Cannot parse"
+        end
+
+        raise FormatNotRecognized, "'#{val.inspect}': Integer value greater than 2^32" if @addr >= 2**32
+        raise FormatNotRecognized, "'#{val.inspect}': Integer value less than zero" if @addr < 0
+      end
     end
 
     # @return [String] a network-byte-ordered representation of the IP address
