@@ -37,11 +37,11 @@ module Net
 
           addr = arg.to_s.downcase
 
-          raise FormatNotRecognized, "'#{addr.inspect}': Invalid characters found" if addr =~ /[^0-9a-z:.]/
+          raise FormatNotRecognized, "#{addr.inspect}: Invalid characters found" if addr =~ /[^0-9a-z:.]/
 
           addr = addr.to_s.tr('^[0-9a-f]', '')
 
-          raise FormatNotRecognized, "'#{addr.inspect}': Wrong size" if addr.length != 12
+          raise FormatNotRecognized, "#{addr.inspect}: Wrong size" if addr.length != 12
 
           # From hex to Fixnum/Bignum
           @addr = addr.split('').inject(0) { |a,v| a << 4 | v.hex }
@@ -219,7 +219,7 @@ module Net
     # Example: "#<MacAddr:00:12:34:56:78:9a>"
     #
     def inspect
-      "#<Net::MacAddr:#{to_s}>"
+      "<Net::MacAddr:#{to_s}>"
     end
 
     # @return [Integer] a hash of the value to be used as key in hashes

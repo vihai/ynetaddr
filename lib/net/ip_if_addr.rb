@@ -112,7 +112,7 @@ module Net
     # @return [String] a human-readable representation of the object
     #
     def inspect
-      "#<%#{self.class.to_s}:#{to_s}>"
+      "<#{self.class.to_s}:#{to_s}>"
     end
 
     # Returns a viable representation for encoders

@@ -53,10 +53,10 @@ module Net
             @addr = IPv6Addr.new($1, **args)
             @length = $2.to_i
           else
-            raise FormatNotRecognized, "'#{addr.inspect}': Format not recognized"
+            raise FormatNotRecognized, "#{addr.inspect}: Format not recognized"
           end
 
-          raise InvalidAddress, "'#{addr.inspect}': Network address specified" if @length < @max_length - 1 && @addr == network.prefix
+          raise InvalidAddress, "#{addr.inspect}: Network address specified" if @length < @max_length - 1 && @addr == network.prefix
         else
           raise ArgumentError, "Cannot initialize from #{arg.inspect}"
         end

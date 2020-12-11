@@ -95,12 +95,12 @@ module Net
           begin
             parse_value(part, dec: dotquad_dec, hex: dotquad_hex, oct: dotquad_oct)
           rescue ArgumentError
-            raise FormatNotRecognized, "'#{val.inspect}': Cannot parse octet value '#{part.inspect}'"
+            raise FormatNotRecognized, "#{val.inspect}: Cannot parse octet value #{part.inspect}"
           end
         end
 
         if parts.any? { |x| x > 0xff }
-          raise FormatNotRecognized, "'#{val.inspect}': Octet value greater than 255"
+          raise FormatNotRecognized, "#{val.inspect}: Octet value greater than 255"
         end
 
         @addr = (parts[0] << 24) +
@@ -112,11 +112,11 @@ module Net
         begin
           @addr = parse_value(val, dec: decimal, hex: hexadecimal, oct: octal)
         rescue ArgumentError
-          raise FormatNotRecognized, "'#{val.inspect}': Cannot parse"
+          raise FormatNotRecognized, "#{val.inspect}: Cannot parse"
         end
 
-        raise FormatNotRecognized, "'#{val.inspect}': Integer value greater than 2^32" if @addr >= 2**32
-        raise FormatNotRecognized, "'#{val.inspect}': Integer value less than zero" if @addr < 0
+        raise FormatNotRecognized, "#{val.inspect}: Integer value greater than 2^32" if @addr >= 2**32
+        raise FormatNotRecognized, "#{val.inspect}: Integer value less than zero" if @addr < 0
       end
     end
 

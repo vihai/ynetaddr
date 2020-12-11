@@ -98,7 +98,7 @@ module Net
     # @return [String] a human-readable representation of the IP address
     #
     def inspect
-      "#<%#{self.class.name}:#{to_s}>"
+      "<#{self.class.name}:#{to_s}>"
     end
 
     # @return [String] a JSON representation of the IP address which is usually the result of #to_s

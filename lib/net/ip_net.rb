@@ -83,7 +83,7 @@ module Net
 
     # @return [String] a human-readable representation of the IPv6 network
     def inspect
-      "#<%#{self.class.to_s}:#{to_s}>"
+      "<#{self.class.to_s}:#{to_s}>"
     end
 
     # @return [String] a string representation of the network address in address/plen format

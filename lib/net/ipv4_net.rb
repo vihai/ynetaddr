@@ -71,7 +71,7 @@ module Net
             @prefix = IPv4Addr.new($1, **args)
             @length = $2.to_i
           else
-            raise FormatNotRecognized, "'#{net.inspect}': Format not recognized"
+            raise FormatNotRecognized, "#{net.inspect}: Format not recognized"
           end
         else
           raise ArgumentError, "Cannot initialize from #{arg.inspect}"
