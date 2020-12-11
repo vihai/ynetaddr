@@ -355,5 +355,11 @@ module Net
         compress = nil
       end
     end
+
+    NULL = IPv6Addr.new('::')
+    LOOPBACK = IPv4Addr.new('::1')
+
+    MC_ALL_NODES = IPv4Addr.new('ff02::1')
+    MC_ALL_ROUTERS = IPv4Addr.new('ff02::2')
   end
 end

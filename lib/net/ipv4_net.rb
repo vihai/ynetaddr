@@ -250,5 +250,10 @@ module Net
     def ipv6?
       false
     end
+
+    DEFAULT = IPv4Net.new('0.0.0.0/0')
+    LOOPBACK = IPv4Net.new('127.0.0.0/8')
+    LINK_LOCAL = IPv4Net.new('169.254.0.0/16')
+    MULTICAST = IPv4Net.new('224.0.0.0/4')
   end
 end

@@ -206,6 +206,10 @@ module Net
     end
 
     NULL = IPv4Addr.new('0.0.0.0')
+    LOOPBACK = IPv4Addr.new('127.0.0.1')
     BROADCAST = IPv4Addr.new('255.255.255.255')
+
+    MC_ALL_HOSTS = IPv4Addr.new('224.0.0.1')
+    MC_ALL_ROUTERS = IPv4Addr.new('224.0.0.2')
   end
 end

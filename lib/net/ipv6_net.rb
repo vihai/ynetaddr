@@ -183,5 +183,7 @@ module Net
     def ipv6?
       true
     end
+
+    DEFAULT = IPv6Addr.new('::/0')
   end
 end
