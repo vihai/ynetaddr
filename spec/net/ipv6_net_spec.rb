@@ -278,9 +278,9 @@ describe :to_s do
   end
 end
 
-describe 'to_hash' do
+describe 'to_h' do
   it 'produces correct output' do
-    expect(IPv6Net.new('2a02:20::/128').to_hash).to eq({ :prefix => '2a02:20::', :length => 128 })
+    expect(IPv6Net.new('2a02:20::/128').to_h).to eq({ :prefix => '2a02:20::', :length => 128 })
   end
 end
 

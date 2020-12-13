@@ -49,9 +49,9 @@ module Net
         elsif arg.respond_to?(:to_s)
           addr = arg.to_s
 
-          if addr =~ /^(.+)\/(.+)$/
+          if addr =~ /^(.+)\/(0|[1-9][0-9]*)$/
             @addr = IPv6Addr.new($1, **args)
-            @length = $2.to_i
+            @length = Integer($2, 10)
           else
             raise FormatNotRecognized, "#{addr.inspect}: Format not recognized"
           end

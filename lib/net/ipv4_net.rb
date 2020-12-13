@@ -67,9 +67,9 @@ module Net
         elsif arg.respond_to?(:to_s)
           net = arg.to_s
 
-          if net =~ /^(.+)\/(.+)$/
+          if net =~ /^(.+)\/(0|[1-9][0-9]*)$/
             @prefix = IPv4Addr.new($1, **args)
-            @length = $2.to_i
+            @length = Integer($2, 10)
           else
             raise FormatNotRecognized, "#{net.inspect}: Format not recognized"
           end

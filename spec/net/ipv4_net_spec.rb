@@ -355,12 +355,12 @@ describe :to_s do
   end
 end
 
-describe :to_hash do
+describe :to_h do
   it 'produces correct output' do
-    expect(IPv4Net.new('0.0.0.0/0').to_hash).to eq({ :prefix => 0x00000000, :length => 0 })
-    expect(IPv4Net.new('10.0.0.0/8').to_hash).to eq({ :prefix => 0x0a000000, :length => 8 })
-    expect(IPv4Net.new('192.168.255.255/24').to_hash).to eq({ :prefix => 0xc0a8ff00, :length => 24 })
-    expect(IPv4Net.new('192.168.255.255/32').to_hash).to eq({ :prefix => 0xc0a8ffff, :length => 32 })
+    expect(IPv4Net.new('0.0.0.0/0').to_h).to eq({ :prefix => 0x00000000, :length => 0 })
+    expect(IPv4Net.new('10.0.0.0/8').to_h).to eq({ :prefix => 0x0a000000, :length => 8 })
+    expect(IPv4Net.new('192.168.255.255/24').to_h).to eq({ :prefix => 0xc0a8ff00, :length => 24 })
+    expect(IPv4Net.new('192.168.255.255/32').to_h).to eq({ :prefix => 0xc0a8ffff, :length => 32 })
   end
 end
 

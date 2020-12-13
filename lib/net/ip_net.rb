@@ -107,7 +107,7 @@ module Net
     # @return [Hash] a Hash with :prefix and :length keys respectively containing the Integer representation of interface's
     #                address and network mask length
     #
-    def to_hash
+    def to_h
       { prefix: @prefix, length: @length }
     end
 

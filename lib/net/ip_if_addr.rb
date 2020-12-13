@@ -105,8 +105,8 @@ module Net
     # @return [Hash] a Hash with :addr and :length keys respectively containing the Integer representation of interface's
     #                address and network mask length
     #
-    def to_hash
-      { :addr => @addr, :length => @length }
+    def to_h
+      { addr: @addr, length: @length }
     end
 
     # @return [String] a human-readable representation of the object

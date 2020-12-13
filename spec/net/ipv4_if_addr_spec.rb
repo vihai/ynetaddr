@@ -261,12 +261,12 @@ describe :to_s do
   end
 end
 
-describe :to_hash do
+describe :to_h do
   it 'produces correct output' do
-    expect(IPv4IfAddr.new('0.0.0.1/0').to_hash).to eq({ addr: 0x00000001, length: 0 })
-    expect(IPv4IfAddr.new('10.0.0.1/8').to_hash).to eq({ addr: 0x0a000001, length: 8 })
-    expect(IPv4IfAddr.new('192.168.255.254/24').to_hash).to eq({ addr: 0xc0a8fffe, length: 24 })
-    expect(IPv4IfAddr.new('192.168.255.255/32').to_hash).to eq({ addr: 0xc0a8ffff, length: 32 })
+    expect(IPv4IfAddr.new('0.0.0.1/0').to_h).to eq({ addr: 0x00000001, length: 0 })
+    expect(IPv4IfAddr.new('10.0.0.1/8').to_h).to eq({ addr: 0x0a000001, length: 8 })
+    expect(IPv4IfAddr.new('192.168.255.254/24').to_h).to eq({ addr: 0xc0a8fffe, length: 24 })
+    expect(IPv4IfAddr.new('192.168.255.255/32').to_h).to eq({ addr: 0xc0a8ffff, length: 32 })
   end
 end
 
