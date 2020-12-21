@@ -26,6 +26,7 @@ module Net
 
   class IPv6Net < IPNet
     DEFAULT = IPv6Net.new('::/0')
+    LINK_LOCAL = IPv6Net.new('fe80::/10')
   end
 
   class IPv4Net < IPNet
