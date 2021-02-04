@@ -6,6 +6,7 @@ module Net
 end
 
 require 'net/mac_addr'
+require 'net/mac_addr_64'
 
 require 'net/ip_addr'
 require 'net/ip_net'
