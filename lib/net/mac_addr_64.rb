@@ -222,7 +222,7 @@ module Net
     # Example: "#<MacAddr64:00:12:34:56:78:9a:bc:de>"
     #
     def inspect
-      "<#{self.class.name}:#{to_s}>"
+      "<EUI-64 #{to_s}>"
     end
 
     # @return [Integer] a hash of the value to be used as key in hashes

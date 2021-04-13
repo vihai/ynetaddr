@@ -219,7 +219,7 @@ module Net
     # Example: "#<MacAddr:00:12:34:56:78:9a>"
     #
     def inspect
-      "<Net::MacAddr:#{to_s}>"
+      "<EUI-48 #{to_s}>"
     end
 
     # @return [Integer] a hash of the value to be used as key in hashes
