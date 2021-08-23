@@ -263,6 +263,13 @@ describe :pick_free do
   end
 end
 
+describe :to_s do
+  it 'produces a string description of the tree' do
+    tree = IPTree.new(['2a02::/16', '2a02:8000::/17', '2a02:20::/32', '2a02:21::/32' ])
+    expect(tree.to_s).to be_a(String)
+  end
+end
+
 end
 
 end

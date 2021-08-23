@@ -183,7 +183,7 @@ module Net
     end
 
     def to_s(indent = 0)
-      s = ''
+      s = String.new
       s << @l.to_s(indent + (@used ? 2 : 0)) if @l
       s << @r.to_s(indent + (@used ? 2 : 0)) if @r
       s = (' ' * indent) + @network.to_s + " *\n" + s if @used
