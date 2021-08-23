@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Copyright (C) 2014-2017, Daniele Orlandi
 #

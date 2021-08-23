@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Copyright (C) 2014-2017, Daniele Orlandi
 #
@@ -278,7 +279,7 @@ module Net
       out = fields.map { |x| '%x' % x }
 
       if compress
-        s = ''
+        s = String.new
         s << ':' if compress.first == 0
         s << ':' if compress.last == 8
         out[compress] = s

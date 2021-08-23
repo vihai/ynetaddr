@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+#
+# Copyright (C) 2014-2021, Daniele Orlandi
+#
+# Author:: Daniele Orlandi <daniele@orlandi.com>
+#
+# License:: You can redistribute it and/or modify it under the terms of the LICENSE file.
+#
+
 require 'net/addr/version'
 
 module Net

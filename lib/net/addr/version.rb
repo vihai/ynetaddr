@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Copyright (C) 2014-2017, Daniele Orlandi
 #
@@ -8,6 +9,6 @@
 
 module Net
 module Addr
-  VERSION = '1.15.1'
+  VERSION = '1.16.0'
 end
 end
