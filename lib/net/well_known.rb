@@ -9,17 +9,17 @@
 
 module Net
   class IPv4Addr < IPAddr
-    NULL = IPv4Addr.new('0.0.0.0')
-    LOOPBACK = IPv4Addr.new('127.0.0.1')
-    BROADCAST = IPv4Addr.new('255.255.255.255')
+    NULL = ANY = INADDR_ANY = IPv4Addr.new('0.0.0.0')
+    LOOPBACK = INADDR_LOOPBACK = IPv4Addr.new('127.0.0.1')
+    BROADCAST = INADDR_BROADCAST = IPv4Addr.new('255.255.255.255')
 
     MC_ALL_HOSTS = IPv4Addr.new('224.0.0.1')
     MC_ALL_ROUTERS = IPv4Addr.new('224.0.0.2')
   end
 
   class IPv6Addr < IPAddr
-    NULL = IPv6Addr.new('::')
-    LOOPBACK = IPv6Addr.new('::1')
+    NULL = ANY = IN6ADDR_ANY = IPv6Addr.new('::')
+    LOOPBACK = IN6ADDR_LOOPBACK = IPv6Addr.new('::1')
 
     MC_ALL_NODES = IPv6Addr.new('ff02::1')
     MC_ALL_ROUTERS = IPv6Addr.new('ff02::2')
